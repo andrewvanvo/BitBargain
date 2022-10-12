@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -9,7 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { auth } from '../firebase';
-import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
 
 const LoginScreen = ({ navigation}) => {
@@ -40,6 +40,17 @@ const LoginScreen = ({ navigation}) => {
             console.log(error);
         });
     }
+
+    useEffect( () => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            if(user) {
+                navigation.navigate('Dashboard')
+            }
+        })
+        // when leaving the Login screen to Dashboard, the listener will stop
+        return unsubscribe;
+    }, [])
+
     const resetErrors = (formikProps) => {
         formikProps.setErrors({});
     }
