@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -54,7 +54,18 @@ const LoginScreen = ({ navigation}) => {
                                 secureTextEntry={true}
                                 style={styles.inputField}    
                             />
-                        </View >
+                        </View>
+                        <View style={styles.forgetContainer}>
+                            <TouchableOpacity style={styles.forgetButton}>
+                                <Text 
+                                style={{
+                                    fontSize: 12,
+                                    color: 'blue'
+                                }}
+                                onPress={()=>{Alert.alert('Instructions have been sent!')}} // Requires Email Input to be filled, and sends instructions to recipients email
+                                >Forgot your password?</Text>
+                            </TouchableOpacity>
+                        </View>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
@@ -68,7 +79,10 @@ const LoginScreen = ({ navigation}) => {
                             >
                                 <Text>Register</Text>
                             </TouchableOpacity>
+                            
                         </View>
+                        
+                            
                     </View>
                 )}
             </Formik>
@@ -106,5 +120,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'orange'
     },
+    forgetContainer: {
+        marginTop: 10
+    },
+    forgetButton:{
+        backgroundColor: 'transparent',
+    }
 
 });
