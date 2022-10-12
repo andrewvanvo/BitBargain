@@ -1,84 +1,68 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// import is tentative (I just used one of my existing firebase to play around with; 
-// import might change depending how the fb config is going be setup)
+
+
 import { auth } from '../firebase';
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 
 
-const LoginScreen = ({ navigation}) => {
-    // initial values for the input fields
+
+const ForgetPass = ({ navigation}) => {
     const loginValues = {
         email: '',
-        password: '',
-    }
-
-    // sign user into firebase if email/pw are authorized
-    const handleSignIn = (values) => {
-        signInWithEmailAndPassword(auth, values.email, values.password)
-        .then(userCredentials => {
-            const user = userCredentials.user;
-            console.log('User has logged in: ', user.email);
-        })
-        .catch(error => {
-            console.log('Login had an error!');
-        })
+       
     }
     
+    const forgotPass = (values) => {
+        sendPasswordResetEmail(auth, values.email)
+        .then(()=>{
+            console.log('Password reset email sent!')
+        })
+        .catch((error) => {
+            console.log('Reset Password had an error!')
+        })
+    }
     return (
         <View style={styles.formikContainer}>
             <Formik
                 initialValues={loginValues}
                 onSubmit={(credentials, actions) => {
-                    console.log('User trying to login: ', credentials.email, credentials.password);
-                    handleSignIn(credentials);
+                    console.log('User trying to request new password: ', credentials.email);
+                    forgotPass(credentials);
                     actions.resetForm();
+                    navigation.navigate('Login')
                 }}
             >
                 {(formikProps) => (
                     <View>
+                        <View>
+                            <Text>
+                                Forgot Password?
+                            </Text>
+                        </View>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                placeholder='E-mail...'
+                                placeholder='Enter email'
                                 value={formikProps.values.email}
                                 onChangeText={formikProps.handleChange('email')}
                                 style={styles.inputField}                             
                             />
-                            <TextInput
-                                placeholder='Password...'
-                                value={formikProps.values.password}
-                                onChangeText={formikProps.handleChange('password')}
-                                secureTextEntry={true}
-                                style={styles.inputField}    
-                            />
                         </View>
-                        <View style={styles.forgetContainer}>
-                            <TouchableOpacity style={styles.forgetButton}>
-                                <Text 
-                                style={{
-                                    fontSize: 12,
-                                    color: 'blue'
-                                }}
-                                onPress={()=>navigation.navigate('ForgetPass')} // Requires Email Input to be filled, and sends instructions to recipients email
-                                >Forgot your password?</Text>
-                            </TouchableOpacity>
-                        </View>
+                        
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={formikProps.handleSubmit} // eventually will submit user's data for acc creation
+                                onPress={() => navigation.navigate('Login')} // eventually will submit user's data for acc creation
                             >
-                                <Text>Login</Text>
+                                <Text>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => navigation.navigate('Register')}
+                                onPress={formikProps.handleSubmit}
                             >
-                                <Text>Register</Text>
+                                <Text>Send Email</Text>
                             </TouchableOpacity>
                             
                         </View>
@@ -89,9 +73,9 @@ const LoginScreen = ({ navigation}) => {
             </Formik>
         </View>
     );
-};
+}
 
-export default LoginScreen
+export default ForgetPass
 
 const styles = StyleSheet.create({
     formikContainer: {
