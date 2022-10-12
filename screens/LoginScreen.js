@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -9,7 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 
 
 const LoginScreen = ({ navigation}) => {
@@ -50,6 +50,7 @@ const LoginScreen = ({ navigation}) => {
         navigation.navigate('Register');
 
     }
+    
     return (
         <View style={styles.formikContainer}>
             <Formik
@@ -82,9 +83,21 @@ const LoginScreen = ({ navigation}) => {
                                 style={styles.inputField}   
                                 // onFocus={() => resetErrors(formikProps)}   
                             />
-                            <Text style={styles.errorMsg}>{formikProps.errors.password}</Text>
+                        <Text style={styles.errorMsg}>{formikProps.errors.password}</Text>
                             
                         </View >
+                        <View style={styles.forgetContainer}>
+                            <TouchableOpacity style={styles.forgetButton}>
+                                <Text 
+                                style={{
+                                    fontSize: 12,
+                                    color: 'blue'
+                                }}
+                                onPress={()=>navigation.navigate('ForgetPass')} // Requires Email Input to be filled, and sends instructions to recipients email
+                                >Forgot your password?</Text>
+                            </TouchableOpacity>
+                        </View>
+
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
@@ -98,7 +111,10 @@ const LoginScreen = ({ navigation}) => {
                             >
                                 <Text>Register</Text>
                             </TouchableOpacity>
+                            
                         </View>
+                        
+                            
                     </View>
                 )}
             </Formik>
@@ -136,9 +152,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'orange'
     },
+    forgetContainer: {
+        marginTop: 10
+    },
+    forgetButton:{
+        backgroundColor: 'transparent',
+
     errorMsg: {
         color: 'red',
+    }
         fontWeight: 'bold',
     },
-
 });
