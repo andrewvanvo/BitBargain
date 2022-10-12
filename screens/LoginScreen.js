@@ -9,24 +9,28 @@ const LoginScreen = () => {
             <Formik >
                 {() => (
                     <View>
-                        <View>
+                        <View style={styles.inputContainer}>
                             <TextInput
-                                placeholder='E-mail...'                                
+                                placeholder='E-mail...'
+                                style={styles.inputField}                                
                             />
                             <TextInput
                                 placeholder='Password...'
+                                style={styles.inputField}    
                             />
+                        </View >
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={styles.button}
+                            >
+                                <Text>Login</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.button}
+                            >
+                                <Text>Register</Text>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity
-                            style={styles.button}
-                        >
-                            <Text>Login</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.button}
-                        >
-                            <Text>Register</Text>
-                        </TouchableOpacity>
                     </View>
                 )}
             </Formik>
@@ -42,8 +46,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
     },
-    button: {
-        backgroundColor: 'orange',
+    inputField: {
+        backgroundColor: 'white',
         borderRadius: 10,
-    }
+        marginTop: 5,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+    },
+    buttonContainer: {
+        width: '70%',
+        marginTop: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+    button: {
+        borderRadius: 10,
+        width: '45%',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'orange'
+    },
+
 });
