@@ -5,7 +5,7 @@ import { Formik } from 'formik';
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword  } from 'firebase/auth';
 
 
 const RegisterScreen = ( {navigation} ) => {
@@ -13,13 +13,27 @@ const RegisterScreen = ( {navigation} ) => {
         email: '',
         password: '',
     }
+
+    // with the user's email/pw input, if valid, will submit to firebase auth to make an account.
+    const handleUserRegisteration = (values) => {
+        createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then( (userCredential) => {
+            console.log('New user created: ', values.email, values.password);
+        })
+        .catch(error => {
+            console.log('Registeration has an error!');
+
+        });
+    }
     
     return (
         <View style={styles.formikContainer}>
             <Formik
                 initialValues={loginValues}
                 onSubmit={(credentials, actions) => {
-                    console.log('User trying to login: ');
+                    console.log('User trying to make a new acc: ');
+                    handleUserRegisteration(credentials);
+                    actions.resetForm();
                 }}
             >
                 {(formikProps) => (
@@ -42,14 +56,14 @@ const RegisterScreen = ( {navigation} ) => {
                         </View >
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
-                                style={styles.button}
+                                style={[styles.button, styles.cancelButton]}
                                 onPress={() => navigation.goBack()}
                             >
                                 <Text>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.button}
-                                // onPress={} // eventually will navigate to a 'Register' screen
+                                style={[styles.button, styles.submitButton]}
+                                onPress={formikProps.handleSubmit} // eventually will navigate to a 'Register' screen
                             >
                                 <Text>Submit</Text>
                             </TouchableOpacity>
@@ -89,7 +103,12 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'orange'
     },
+    cancelButton: {
+        backgroundColor: 'lightgray',
+    },
+    submitButton: {
+        backgroundColor: 'orange',
+    }
 
 });
