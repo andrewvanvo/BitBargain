@@ -1,8 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native'
 import { Formik } from 'formik';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
@@ -10,36 +8,23 @@ import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 
-const LoginScreen = ({ navigation}) => {
-    // initial values for the input fields
+const RegisterScreen = ( {navigation} ) => {
     const loginValues = {
         email: '',
         password: '',
     }
-
-    // sign user into firebase if email/pw are authorized
-    const handleSignIn = (values) => {
-        signInWithEmailAndPassword(auth, values.email, values.password)
-        .then(userCredentials => {
-            const user = userCredentials.user;
-            console.log('User has logged in: ', user.email);
-        })
-        .catch(error => {
-            console.log('Login had an error!');
-        })
-    }
+    
     return (
         <View style={styles.formikContainer}>
             <Formik
                 initialValues={loginValues}
                 onSubmit={(credentials, actions) => {
-                    console.log('User trying to login: ', credentials.email, credentials.password);
-                    handleSignIn(credentials);
-                    actions.resetForm();
+                    console.log('User trying to login: ');
                 }}
             >
                 {(formikProps) => (
                     <View>
+                        <Text>THIS IS THE REGISTER SCREEN</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 placeholder='E-mail...'
@@ -58,15 +43,15 @@ const LoginScreen = ({ navigation}) => {
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={formikProps.handleSubmit} // eventually will submit user's data for acc creation
+                                onPress={() => navigation.goBack()}
                             >
-                                <Text>Login</Text>
+                                <Text>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => navigation.navigate('Register')}
+                                // onPress={} // eventually will navigate to a 'Register' screen
                             >
-                                <Text>Register</Text>
+                                <Text>Submit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -76,7 +61,7 @@ const LoginScreen = ({ navigation}) => {
     );
 };
 
-export default LoginScreen
+export default RegisterScreen
 
 const styles = StyleSheet.create({
     formikContainer: {
