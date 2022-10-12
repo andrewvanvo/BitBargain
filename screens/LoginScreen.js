@@ -1,7 +1,5 @@
-
-import React, { useState } from 'react'
+import React from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
-
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -24,13 +22,15 @@ const LoginScreen = ({ navigation}) => {
 
     // the validation schema that Formik form will valid with
     const signInSchema = Yup.object().shape({
-        email: Yup.string().email('Invalid E-mail').required('Required'),
-        password: Yup.string().required('Required'),
+        email: Yup.string()
+        .email('Invalid E-mail')
+        .required('Required'),
+        password: Yup.string()
+        .required('Required'),
     });
 
     // sign user into firebase if email/pw are authorized
     const handleSignIn = (values) => {
-        setHasLoginErorr(false);
         signInWithEmailAndPassword(auth, values.email, values.password)
         .then(userCredentials => {
             const user = userCredentials.user;
@@ -161,4 +161,6 @@ const styles = StyleSheet.create({
     errorMsg: {
         color: 'red',
     }
+        fontWeight: 'bold',
+    },
 });
