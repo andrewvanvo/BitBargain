@@ -18,18 +18,39 @@ const DashboardScreen = ({ navigation}) => {
 
     return (
         <View style={styles.mainContainer}>
+            <View style={styles.userInfoContainer}>
+                <Text style={{color: 'blue'}}>Other stuff maybe go up here? Ignore the colors for now!</Text>
+            </View>
+
             <View style={styles.buttonContainer}>
-                <Text>YOYO! THIS WILL BE OUR DASHBOARD!</Text>
+                <Text style={{color: 'orange'}}>YOYO! THIS WILL BE OUR DASHBOARD!</Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    // onPress={}               // will navigate somewhere, eventually
+                >
+                    <Text>Create List</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    // onPress={}               // will navigate somewhere, eventually
+                >
+                    <Text>Update Item</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    // onPress={}               // will navigate somewhere, eventually
+                >
+                    <Text>Saved Lists</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={handleSignOut}
                 >
                     <Text>Sign Out</Text>
                 </TouchableOpacity>
-
             </View>
-        </View>
 
+        </View>
     );
 }
 
@@ -37,22 +58,27 @@ export default DashboardScreen
 
 const styles = StyleSheet.create({
     mainContainer: {
+        flex: 1,
+        padding: 20,
+    },
+    userInfoContainer: {
+        flex: 1, 
+        backgroundColor: "darkorange",
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 1,
     },
     buttonContainer: {
-        width: '70%',
-        marginTop: 15,
+        flex: 1, 
+        backgroundColor: "blue",
         justifyContent: 'center',
         alignItems: 'center',
     },
     button: {
         borderRadius: 10,
-        width: '45%',
+        width: '30%',
         padding: 10,
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         backgroundColor: 'orange',
         marginTop: 20,
     },
