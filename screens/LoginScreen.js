@@ -2,12 +2,29 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native'
 import { Formik } from 'formik';
 
+// import is tentative (I just used one of my existing firebase to play around with; 
+// import might change depending how the fb config is going be setup)
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 
 const LoginScreen = () => {
-    // initial values the input fields will
+    // initial values for the input fields
     const loginValues = {
         email: '',
         password: '',
+    }
+
+    // sign user into firebase if email/pw are authorized
+    const handleSignIn = (values) => {
+        signInWithEmailAndPassword(auth, values.email, values.password)
+        .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('User has logged in: ', user.email);
+        })
+        .catch(error => {
+            console.log('Login had an error!');
+        })
     }
     return (
         <View style={styles.formikContainer}>
@@ -15,6 +32,7 @@ const LoginScreen = () => {
                 initialValues={loginValues}
                 onSubmit={(credentials) => {
                     console.log('User trying to login: ', credentials.email, credentials.password);
+                    handleSignIn(credentials);
                 }}
             >
                 {(formikProps) => (
