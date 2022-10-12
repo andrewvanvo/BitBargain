@@ -4,29 +4,45 @@ import { Formik } from 'formik';
 
 
 const LoginScreen = () => {
+    // initial values the input fields will
+    const loginValues = {
+        email: '',
+        password: '',
+    }
     return (
         <View style={styles.formikContainer}>
-            <Formik >
-                {() => (
+            <Formik
+                initialValues={loginValues}
+                onSubmit={(credentials) => {
+                    console.log('User trying to login: ', credentials.email, credentials.password);
+                }}
+            >
+                {(formikProps) => (
                     <View>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 placeholder='E-mail...'
-                                style={styles.inputField}                                
+                                value={formikProps.values.email}
+                                onChangeText={formikProps.handleChange('email')}
+                                style={styles.inputField}                             
                             />
                             <TextInput
                                 placeholder='Password...'
+                                value={formikProps.values.password}
+                                onChangeText={formikProps.handleChange('password')}
                                 style={styles.inputField}    
                             />
                         </View >
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
+                                onPress={formikProps.handleSubmit}
                             >
                                 <Text>Login</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.button}
+                                // onPress={} // eventually will navigate to a 'Register' screen
                             >
                                 <Text>Register</Text>
                             </TouchableOpacity>
