@@ -4,17 +4,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore  } from "firebase/firestore";
 
 // Your web app's Firebase configuration
-
-// We'll replace the config below, once our db is created!
 const firebaseConfig = {
-  apiKey: 'api-key',
-  authDomain: 'project-id.firebaseapp.com',
-  databaseURL: 'https://project-id.firebaseio.com',
-  projectId: 'project-id',
-  storageBucket: 'project-id.appspot.com',
-  messagingSenderId: 'sender-id',
-  appId: 'app-id',
-  measurementId: 'G-measurement-id',
+  apiKey: "AIzaSyDT8S0xGhbl21CCI91KtVa1xc529uabKsM",
+  authDomain: "practice-app-73f18.firebaseapp.com",
+  projectId: "practice-app-73f18",
+  storageBucket: "practice-app-73f18.appspot.com",
+  messagingSenderId: "487113968005",
+  appId: "1:487113968005:web:ba4745640cea703147dcec"
 };
 
 

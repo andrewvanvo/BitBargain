@@ -157,10 +157,9 @@ const styles = StyleSheet.create({
     },
     forgetButton:{
         backgroundColor: 'transparent',
-
+    },
     errorMsg: {
         color: 'red',
-    }
         fontWeight: 'bold',
     },
 });
