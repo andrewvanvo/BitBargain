@@ -1,6 +1,10 @@
-import React from 'react'
+
+import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
+
 import { Formik } from 'formik';
+import * as Yup from 'yup';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -17,22 +21,43 @@ const LoginScreen = ({ navigation}) => {
         password: '',
     }
 
+
+    // the validation schema that Formik form will valid with
+    const signInSchema = Yup.object().shape({
+        email: Yup.string().email('Invalid E-mail').required('Required'),
+        password: Yup.string().required('Required'),
+    });
+
     // sign user into firebase if email/pw are authorized
     const handleSignIn = (values) => {
+        setHasLoginErorr(false);
         signInWithEmailAndPassword(auth, values.email, values.password)
         .then(userCredentials => {
             const user = userCredentials.user;
             console.log('User has logged in: ', user.email);
         })
         .catch(error => {
-            console.log('Login had an error!');
-        })
+            console.log(error);
+        });
+    }
+    const resetErrors = (formikProps) => {
+        formikProps.setErrors({});
+    }
+
+    const navigateToRegister = (formikProps) => {
+        // when we navigate away from LoginScreen, also reset any errors
+        resetErrors(formikProps);
+        navigation.navigate('Register');
+
     }
     
     return (
         <View style={styles.formikContainer}>
             <Formik
                 initialValues={loginValues}
+                validationSchema={signInSchema}     // add the Yup schema we defined above
+                validateOnChange={false}            // have Formik validate ONLY after submission, not during change
+                validateOnBlur={false}
                 onSubmit={(credentials, actions) => {
                     console.log('User trying to login: ', credentials.email, credentials.password);
                     handleSignIn(credentials);
@@ -46,16 +71,21 @@ const LoginScreen = ({ navigation}) => {
                                 placeholder='E-mail...'
                                 value={formikProps.values.email}
                                 onChangeText={formikProps.handleChange('email')}
-                                style={styles.inputField}                             
+                                style={styles.inputField}
+                                // onFocus={() => resetErrors(formikProps)}   // should the errors go away after focusing the fields again??                       
                             />
+                            <Text style={styles.errorMsg}>{formikProps.errors.email}</Text>
                             <TextInput
                                 placeholder='Password...'
                                 value={formikProps.values.password}
                                 onChangeText={formikProps.handleChange('password')}
                                 secureTextEntry={true}
-                                style={styles.inputField}    
+                                style={styles.inputField}   
+                                // onFocus={() => resetErrors(formikProps)}   
                             />
-                        </View>
+                        <Text style={styles.errorMsg}>{formikProps.errors.password}</Text>
+                            
+                        </View >
                         <View style={styles.forgetContainer}>
                             <TouchableOpacity style={styles.forgetButton}>
                                 <Text 
@@ -67,16 +97,17 @@ const LoginScreen = ({ navigation}) => {
                                 >Forgot your password?</Text>
                             </TouchableOpacity>
                         </View>
+
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={formikProps.handleSubmit} // eventually will submit user's data for acc creation
+                                onPress={formikProps.handleSubmit}
                             >
                                 <Text>Login</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => navigation.navigate('Register')}
+                                onPress={() => navigateToRegister(formikProps)}
                             >
                                 <Text>Register</Text>
                             </TouchableOpacity>
@@ -126,6 +157,8 @@ const styles = StyleSheet.create({
     },
     forgetButton:{
         backgroundColor: 'transparent',
-    }
 
+    errorMsg: {
+        color: 'red',
+    }
 });

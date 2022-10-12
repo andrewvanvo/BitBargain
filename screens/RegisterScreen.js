@@ -10,15 +10,17 @@ import { createUserWithEmailAndPassword  } from 'firebase/auth';
 
 const RegisterScreen = ( {navigation} ) => {
     const loginValues = {
+        fname: '',
+        lname: '',
         email: '',
         password: '',
     }
 
     // with the user's email/pw input, if valid, will submit to firebase auth to make an account.
     const handleUserRegisteration = (values) => {
-        createUserWithEmailAndPassword(auth, values.email, values.password)
+        createUserWithEmailAndPassword(auth, values.fname, values.lname, values.email, values.password)
         .then( (userCredential) => {
-            console.log('New user created: ', values.email, values.password);
+            console.log('New user created: ', values.fname, values.lname, values.email, values.password);
         })
         .catch(error => {
             console.log('Registeration has an error!');
@@ -39,7 +41,21 @@ const RegisterScreen = ( {navigation} ) => {
                 {(formikProps) => (
                     <View>
                         <Text>THIS IS THE REGISTER SCREEN</Text>
+                        
+                        <Text>Create New Account</Text>
                         <View style={styles.inputContainer}>
+                            <TextInput
+                                placeholder='First Name...'
+                                value={formikProps.values.fname}
+                                onChangeText={formikProps.handleChange('fname')}
+                                style={styles.inputField}
+                            />
+                            <TextInput
+                                placeholder='Last Name...'
+                                value={formikProps.values.lname}
+                                onChangeText={formikProps.handleChange('lname')}
+                                style={styles.inputField}
+                            />
                             <TextInput
                                 placeholder='E-mail...'
                                 value={formikProps.values.email}
