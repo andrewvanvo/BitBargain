@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert, Image } from 'react-native'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -13,7 +13,7 @@ import { auth } from '../firebase';
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
 import Icon from "react-native-vector-icons/Ionicons";
-import logo from '../assets/BitBargain_logo.png';
+import logo from '../assets/BitBargain-logo.png';
 
 const LoginScreen = ({ navigation}) => {
     // initial values for the input fields
