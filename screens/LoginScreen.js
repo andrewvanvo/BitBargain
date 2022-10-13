@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
@@ -11,6 +12,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { auth } from '../firebase';
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
+import Icon from "react-native-vector-icons/Ionicons";
+import logo from '../assets/BitBargain_logo.png';
 
 const LoginScreen = ({ navigation}) => {
     // initial values for the input fields
@@ -64,6 +67,9 @@ const LoginScreen = ({ navigation}) => {
     
     return (
         <View style={styles.formikContainer}>
+            <View style={{}}>
+                <Image source={logo} style={{width:  300, height: 200}}></Image>
+            </View>
             <Formik
                 initialValues={loginValues}
                 validationSchema={signInSchema}     // add the Yup schema we defined above
@@ -78,24 +84,29 @@ const LoginScreen = ({ navigation}) => {
                 {(formikProps) => (
                     <View>
                         <View style={styles.inputContainer}>
-                            <TextInput
-                                placeholder='E-mail...'
-                                value={formikProps.values.email}
-                                onChangeText={formikProps.handleChange('email')}
-                                style={styles.inputField}
-                                // onFocus={() => resetErrors(formikProps)}   // should the errors go away after focusing the fields again??                       
-                            />
+                            <View style={styles.iconInput}>
+                                <Icon name="mail-outline" size={20} style={styles.icons}/>
+                                <TextInput
+                                    placeholder='E-mail...'
+                                    value={formikProps.values.email}
+                                    onChangeText={formikProps.handleChange('email')}
+                                    style={styles.inputField}
+                                    // onFocus={() => resetErrors(formikProps)}   // should the errors go away after focusing the fields again??                       
+                                />
+                            </View>
                             <Text style={styles.errorMsg}>{formikProps.errors.email}</Text>
-                            <TextInput
-                                placeholder='Password...'
-                                value={formikProps.values.password}
-                                onChangeText={formikProps.handleChange('password')}
-                                secureTextEntry={true}
-                                style={styles.inputField}   
-                                // onFocus={() => resetErrors(formikProps)}   
-                            />
-                        <Text style={styles.errorMsg}>{formikProps.errors.password}</Text>
-                            
+                            <View style={styles.iconInput}>
+                                <Icon name="lock-closed-outline" size={20} style={styles.icons}/>
+                                <TextInput
+                                    placeholder='Password...'
+                                    value={formikProps.values.password}
+                                    onChangeText={formikProps.handleChange('password')}
+                                    secureTextEntry={true}
+                                    style={styles.inputField}   
+                                    // onFocus={() => resetErrors(formikProps)}   
+                                />
+                            </View>
+                            <Text style={styles.errorMsg}>{formikProps.errors.password}</Text>  
                         </View >
                         <View style={styles.forgetContainer}>
                             <TouchableOpacity style={styles.forgetButton}>
@@ -141,12 +152,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
     },
-    inputField: {
+    iconInput: {
+        flexDirection: "row",
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 10,
+    },
+    inputField: {
         marginTop: 5,
         paddingVertical: 10,
         paddingHorizontal: 15,
+    },
+    icons: {
+        marginLeft: 15,
     },
     buttonContainer: {
         width: '70%',
@@ -162,9 +181,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'orange'
-    },
-    forgetContainer: {
-        marginTop: 10
     },
     forgetButton:{
         backgroundColor: 'transparent',

@@ -2,8 +2,6 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
 import { Formik } from 'formik';
 
-
-
 import { auth } from '../firebase';
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -44,7 +42,7 @@ const ForgetPass = ({ navigation}) => {
                         </View>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                placeholder='Enter email'
+                                placeholder='Email ID'
                                 value={formikProps.values.email}
                                 onChangeText={formikProps.handleChange('email')}
                                 style={styles.inputField}                             
