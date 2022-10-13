@@ -19,7 +19,11 @@ const DashboardScreen = ({ navigation}) => {
     return (
         <View style={styles.mainContainer}>
             <View style={styles.userInfoContainer}>
-                <Text style={{color: 'blue'}}>Other stuff maybe go up here? Ignore the colors for now!</Text>
+                <Text style={{color: 'blue'}}>User Profile Info Container.  Ignore the colors for now!</Text>
+            </View>
+
+            <View style={styles.liveFeedContainer}>
+                <Text style={{color: 'blue'}}>Live Feed Container Ignore the colors for now!</Text>
             </View>
 
             <View style={styles.buttonContainer}>
@@ -57,8 +61,10 @@ const DashboardScreen = ({ navigation}) => {
 export default DashboardScreen
 
 const styles = StyleSheet.create({
+    //https://reactnative.dev/docs/colors for named color palette
     mainContainer: {
         flex: 1,
+        flexDirection: 'column',
         padding: 20,
     },
     userInfoContainer: {
@@ -67,8 +73,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    liveFeedContainer: {
+        flex: 2, 
+        backgroundColor: "cornflowerblue",
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     buttonContainer: {
-        flex: 1, 
+        flex: 3, 
         backgroundColor: "blue",
         justifyContent: 'center',
         alignItems: 'center',
