@@ -35,10 +35,43 @@ const CATEGORY_DATA = [
     {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}}, 
   ]
 
+class Category extends React.Component {
+    constructor(props) {
+        super(props);
+        this.item = props.item;
+    }
+
+    render() {
+        return (
+            <TouchableOpacity
+            style={[styles.categoryButton,]}
+            >
+                <Text>{this.item.name}</Text>
+            </TouchableOpacity>
+        );
+    }
+}
+
   const CreateListScreen = ({navigation}) => {
+
+    const renderCategory = ({ item }) => {
+        return (
+            <Category item={item}/>
+        );
+    };
+
     return (
         <View style={styles.mainContainer}>
-            <Text>Hello World.</Text>
+            <View style={styles.categoryContainer}>
+                <FlatList
+                    data={CATEGORY_DATA}
+                    renderItem={renderCategory}
+                    keyExtractor={item => item.id}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                />
+            </View>
+            <View style={styles.productContainer}></View>
         </View>
     );
   }
@@ -52,5 +85,21 @@ const CATEGORY_DATA = [
         alignItems: "center",
         // backgroundColor: '',
         marginTop: 50,
+      },
+    categoryContainer: {
+        flex: 1,
+      },
+    categoryButton: {
+        width: 120,
+        backgroundColor: 'orange',
+        padding: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      productContainer: {
+        flex: 9,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%'
       },
   });
