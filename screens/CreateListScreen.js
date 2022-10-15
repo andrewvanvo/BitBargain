@@ -35,28 +35,29 @@ const CATEGORY_DATA = [
     {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}}, 
   ]
 
-class Category extends React.Component {
-    constructor(props) {
-        super(props);
-        this.item = props.item;
-    }
+  const Category = ( props ) => {
+    return (
+      <TouchableOpacity
+        style={[styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'green' : 'orange'}]}
+        onPress={() => props.setState(props.item.id)}
+      >
+        <Text>{props.item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
-    render() {
-        return (
-            <TouchableOpacity
-            style={[styles.categoryButton,]}
-            >
-                <Text>{this.item.name}</Text>
-            </TouchableOpacity>
-        );
-    }
-}
+  
 
   const CreateListScreen = ({navigation}) => {
+    const [selectedCategory, setSelectedCategory] = useState(0);
 
     const renderCategory = ({ item }) => {
         return (
-            <Category item={item}/>
+            <Category 
+                item={item}
+                state={selectedCategory}
+                setState={setSelectedCategory}
+            />
         );
     };
 
