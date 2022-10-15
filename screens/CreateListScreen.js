@@ -121,6 +121,13 @@ const CreateListScreen = ({navigation}) => {
                     keyExtractor={item => item.id}
                 />
             </View>
+            <View style={styles.continueButton}>
+                <TouchableOpacity
+                    // onPress={}               // eventually will navigate to the next screen
+                >
+                    <Text>Continue</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -164,5 +171,14 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 3,
         borderRadius: 10,
+    },
+    continueButton: {
+        borderRadius: 10,
+        width: '30%',
+        padding: 10,
+        margin: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'orange'
     }
 });
