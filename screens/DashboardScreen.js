@@ -43,7 +43,7 @@ const DashboardScreen = ({ navigation}) => {
                 <Text style={{color: 'orange'}}>YOYO! THIS WILL BE OUR DASHBOARD!</Text>
                 <TouchableOpacity
                     style={styles.button}
-                    // onPress={}               // will navigate somewhere, eventually
+                    onPress={() => navigation.navigate('CreateList')}               // will navigate somewhere, eventually
                 >
                     <Text>Create List</Text>
                 </TouchableOpacity>
