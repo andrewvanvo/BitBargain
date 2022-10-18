@@ -7,17 +7,49 @@ import RegisterScreen from './screens/RegisterScreen';
 import ForgetScreen from './screens/ForgetScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import CreateListScreen from './screens/CreateListScreen';
-
+import SettingsScreen from './screens/SettingsScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   return(
-    <Tab.Navigator screenOptions={{headerShown: false}}>
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="Create" component={CreateListScreen} />  
+    <Tab.Navigator 
+    initialRouteName='Home'
+    screenOptions={
+      { headerShown: false}}>
+      <Tab.Screen name="Home" component={DashboardScreen} options={{
+      tabBarIcon: ({focused}) => (
+        <View>
+          <Icon name='home' size={20} style={styles.icons}></Icon>
+        </View>
+      )}}/>
+      <Tab.Screen name="Create" component={CreateListScreen} options={{
+      tabBarIcon: ({focused}) => (
+        <View>
+          <Icon name='list-outline' size={20} style={styles.icons}></Icon>
+        </View>
+      )}}/>
+      <Tab.Screen name="Update" component={CreateListScreen} options={{
+      tabBarIcon: ({focused}) => (
+        <View>
+          <Icon name='barcode-outline' size={20} style={styles.icons}></Icon>
+        </View>
+      )}} />
+      <Tab.Screen name="Saved" component={CreateListScreen} options={{
+      tabBarIcon: ({focused}) => (
+        <View>
+          <Icon name='bookmark-outline' size={20} style={styles.icons}></Icon>
+        </View>
+      )}} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{
+      tabBarIcon: ({focused}) => (
+        <View>
+          <Icon name='settings-outline' size={20} style={styles.icons}></Icon>
+        </View>
+      )}} />
     </Tab.Navigator>
   );
 }
@@ -25,7 +57,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen name="Tabs" component={HomeTabs} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="ForgetPass" component={ForgetScreen} />

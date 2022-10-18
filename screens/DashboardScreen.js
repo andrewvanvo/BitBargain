@@ -28,16 +28,7 @@ class DashboardScreen extends Component {
     this.setState({user: {name: userSnapshot.data().fname + userSnapshot.data().lname}})
     }
 
-    handleSignOut = () => {
-        signOut(auth)
-        .then( () => {
-            console.log(auth.currentUser);
-            this.props.navigation.navigate('Login');
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    }
+
     render() {
         return (
             <View style={styles.mainContainer}>
@@ -63,29 +54,7 @@ class DashboardScreen extends Component {
                 <Text style={{color: 'blue'}}>Live Feed Container</Text>
             </View>
 
-            {/* NAVIGATION CONTAINER*/}
-            <View style={styles.buttonContainer}>
-                {/* <Text style={{color: 'orange'}}>YOYO! THIS WILL BE OUR DASHBOARD!</Text> */}
-               
-                <TouchableOpacity
-                    style={styles.button}
-                    // onPress={}               // will navigate somewhere, eventually
-                >
-                    <Text>Update Item</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.button}
-                    // onPress={}               // will navigate somewhere, eventually
-                >
-                    <Text>Saved Lists</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={this.handleSignOut}
-                >
-                    <Text>Sign Out</Text>
-                </TouchableOpacity>
-            </View>
+         
 
         </View>
         );
