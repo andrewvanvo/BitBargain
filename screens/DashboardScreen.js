@@ -9,128 +9,57 @@ import { collection, getDoc, doc, where, query } from'firebase/firestore';
 import { NavigationContainer } from '@react-navigation/native';
 import CreateListScreen from './CreateListScreen';
 
-class DashboardScreen extends Component {
-    state = {
-        user: {
-            name: ""
-        }
-    }
-    constructor(props) {
-        super(props);
-        this.getUser();
-    }
+
+const DashboardScreen = ({navigation}) => {
     
+    const [user, setUser] = useState({});
+    const [userAuth, setAuth] = useState({});
+    
+    useEffect(() => {
+        const getUser = async() => {
+            try {
+                const userCollection =  doc(db, 'Users', 'dzGxxSYSj9R3Kony0GM2');
+                const userSnapshot = await getDoc(userCollection);
+                if (userSnapshot.data() != undefined){
+                    setUser(userSnapshot.data());
+                    console.log('useEffect success');
+                }
+            }
+            catch {
+                console.log('Response failed.')
+            }
+            }
+            getUser();
+    }, [])
 
-    getUser = async() => {
-    const userCollection =  doc(db, 'Users', 'TNCb90XxqBmkaRDvGMKE');
-    const userSnapshot = await getDoc(userCollection);
-    console.log(userSnapshot.data().fname)
-    this.setState({user: {name: userSnapshot.data().fname + userSnapshot.data().lname}})
-    }
-
-
-    render() {
-        return (
-            <View style={styles.mainContainer}>
-
-            {/* USER PROFILE CONTAINER */}
-            <View style={styles.userInfoContainer}>
+    return (
+        <View style={styles.mainContainer}>
                 
+            <View style={styles.header}>
+                
+            </View>
+
+            <View style={styles.userInfoContainer}>
                 <View style = {styles.infoContainerTextBox}>
                     <Text>Dashboard</Text>
-                    <Text style={styles.username}>Good Afternoon, Tobey </Text>
-                    <Text>Rank: Gold </Text>
+                    <Text style={styles.username}>Good Afternoon, {user.fname} </Text>
+                    <Text>Rank: {user.rank} </Text>
                 </View>
-
                 <View style = {styles.infoContainerImgBox}>
                     <Image 
                         source={require('../assets/profile-pic-sample.png')} //swap out uri for when ranking images are available
                         style={styles.profileImage} />
                 </View>  
             </View>
-            
+        
             {/* LIVE FEED CONTAINER*/}
             <View style={styles.liveFeedContainer}>
                 <Text style={{color: 'blue'}}>Live Feed Container</Text>
             </View>
 
-         
-
         </View>
-        );
-    }
+    );
 }
-// const DashboardScreen = ({navigation}) => {
-
-
-//     getUser = async() => {
-//         const userDocument = await firestore.collection('Users').doc('TNCb90XxqBmkaRDvGMKE').get()
-//         console.log(userDocument)
-//     }
-
-//     const handleSignOut = () => {
-//         signOut(auth)
-//         .then( () => {
-//             console.log(auth.currentUser);
-//             navigation.navigate('Login');
-//         })
-//         .catch(error => {
-//             console.log(error);
-//         });
-//     }
-
-//     return (
-//         <View style={styles.mainContainer}>
-
-//             {/* USER PROFILE CONTAINER */}
-//             <View style={styles.userInfoContainer}>
-//                 <View style = {styles.infoContainerImgBox}>
-//                     <Image 
-//                         source={require('../assets/BitBargain-logo.png')} //swap out uri for when ranking images are available
-//                         style={styles.profileImage} />
-//                 </View>  
-//                 <View style = {styles.infoContainerTextBox}>
-//                     <Text style={{color: 'blue'}}>User Profile Info Container</Text>
-//                 </View>
-//             </View>
-            
-//             {/* LIVE FEED CONTAINER*/}
-//             <View style={styles.liveFeedContainer}>
-//                 <Text style={{color: 'blue'}}>Live Feed Container</Text>
-//             </View>
-
-//             {/* NAVIGATION CONTAINER*/}
-//             <View style={styles.buttonContainer}>
-//                 <Text style={{color: 'orange'}}>YOYO! THIS WILL BE OUR DASHBOARD!</Text>
-//                 <TouchableOpacity
-//                     style={styles.button}
-//                     onPress={() => navigation.navigate('CreateList')}               // will navigate somewhere, eventually
-//                 >
-//                     <Text>Create List</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity
-//                     style={styles.button}
-//                     // onPress={}               // will navigate somewhere, eventually
-//                 >
-//                     <Text>Update Item</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity
-//                     style={styles.button}
-//                     // onPress={}               // will navigate somewhere, eventually
-//                 >
-//                     <Text>Saved Lists</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity
-//                     style={styles.button}
-//                     onPress={handleSignOut}
-//                 >
-//                     <Text>Sign Out</Text>
-//                 </TouchableOpacity>
-//             </View>
-
-//         </View>
-//     );
-// }
 
 export default DashboardScreen
 
@@ -148,7 +77,7 @@ const styles = StyleSheet.create({
     userInfoContainer: {
         flex: 1, 
         flexDirection: 'row',
-        backgroundColor: "darkorange",
+        backgroundColor: "white",
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: 30
