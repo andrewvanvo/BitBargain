@@ -5,8 +5,9 @@ import * as Yup from 'yup';
 
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword  } from 'firebase/auth';
+import { setDoc, doc, } from 'firebase/firestore';
 
 
 const RegisterScreen = ( {navigation} ) => {
@@ -37,21 +38,31 @@ const RegisterScreen = ( {navigation} ) => {
     });
 
     // with the user's email/pw input, if valid, will submit to firebase auth to make an account.
-    const handleUserRegisteration = (values) => {
+    const handleUserRegisteration = async (values) => {
 
         // for the function below it requires the following parameters:
         // (auth: Auth, email: string, password: string)
         // for fname and lname, I think we can add those to the actual db later?
-        createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then( (userCredential) => {
-            console.log('New user created: ', values.email, values.password);
+        const {userCredential} = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        await setDoc(doc(db, 'Users', auth.currentUser.uid), {
+            fname: values.fname,
+            lname: values.lname,
+            email: values.email,
+            rank: 'Bronze'
         })
-        .catch(error => {
-            console.log('Registeration has an error!', error.code);
+        console.log('New user created: ', values.email, values.password)
 
-        });
-    }
-    
+            
+            // await setDoc(doc(db, 'Users', userCredential.user.uid), {
+            //     fname: values.fname,
+            //     lname: values.lname,
+            //     email: values.email,
+            //     rank: 'Bronze'
+            // });
+        // })
+        // .catch(error => {
+        //     console.log('Registeration has an error!', error.code);
+    };
     return (
         <View style={styles.formikContainer}>
             <Formik

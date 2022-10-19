@@ -1,13 +1,8 @@
 import React, {useState, useEffect, Component} from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert, Image, FlastList} from 'react-native'
-
 import { auth, db } from '../firebase/';
 import { getAdditionalUserInfo, signOut } from 'firebase/auth';
 import { collection, getDoc, doc, where, query } from'firebase/firestore';
-
-
-import { NavigationContainer } from '@react-navigation/native';
-import CreateListScreen from './CreateListScreen';
 
 
 const DashboardScreen = ({navigation}) => {
@@ -18,7 +13,8 @@ const DashboardScreen = ({navigation}) => {
     useEffect(() => {
         const getUser = async() => {
             try {
-                const userCollection =  doc(db, 'Users', 'dzGxxSYSj9R3Kony0GM2');
+                const user = auth.currentUser.uid //TODO
+                const userCollection =  doc(db, 'Users', user);
                 const userSnapshot = await getDoc(userCollection);
                 if (userSnapshot.data() != undefined){
                     setUser(userSnapshot.data());
