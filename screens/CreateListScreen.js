@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
+import { array } from 'yup';
 
 
 // MOCK DATA: some 'categories' of products that we might have. Used to render the horizontal scroll tab (horizontal flatlist)
@@ -10,24 +12,24 @@ const CATEGORY_DATA = [
 
 // MOCK DATA: different type of products under a specific category 
 const CPU_DATA = [
-    {id: 0, name: 'AMD Ryzen 5 5600X'}, 
-    {id: 1, name: 'AMD Ryzen 9 5900X'}, 
-    {id: 2, name: 'AMD Ryzen 5 3600'}, 
-    {id: 3, name: 'AMD Ryzen 9 5950X'}, 
-    {id: 4, name: 'AMD Ryzen 7 5800X'}, 
-    {id: 5, name: 'Intel Core i7-12700K'}, 
-    {id: 6, name: 'Intel Core i9-12900K'}, 
-    {id: 7, name: 'AMD Ryzen 5 5600G'},];
+    {id: 0, name: 'AMD Ryzen 5 5600X', quantity: 0}, 
+    {id: 1, name: 'AMD Ryzen 9 5900X', quantity: 0}, 
+    {id: 2, name: 'AMD Ryzen 5 3600', quantity: 0}, 
+    {id: 3, name: 'AMD Ryzen 9 5950X', quantity: 0}, 
+    {id: 4, name: 'AMD Ryzen 7 5800X', quantity: 0}, 
+    {id: 5, name: 'Intel Core i7-12700K', quantity: 0}, 
+    {id: 6, name: 'Intel Core i9-12900K', quantity: 0}, 
+    {id: 7, name: 'AMD Ryzen 5 5600G', quantity: 0},];
   
 const GPU_DATA = [
-    {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti'}, 
-    {id: 9, name: 'GIGABYTE GeForce RTX 3050'}, 
-    {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT'}, 
-    {id: 11, name: 'MSI Mech Radeon RX 6500 XT'}, 
-    {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT'}, 
-    {id: 13, name: 'GIGABYTE Radeon RX 6700 XT'}, 
-    {id: 14, name: 'EVGA GeForce RTX 3080 FTW3'}, 
-    {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
+    {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti', quantity: 0}, 
+    {id: 9, name: 'GIGABYTE GeForce RTX 3050', quantity: 0}, 
+    {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT', quantity: 0}, 
+    {id: 11, name: 'MSI Mech Radeon RX 6500 XT', quantity: 0}, 
+    {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT', quantity: 0}, 
+    {id: 13, name: 'GIGABYTE Radeon RX 6700 XT', quantity: 0}, 
+    {id: 14, name: 'EVGA GeForce RTX 3080 FTW3', quantity: 0}, 
+    {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3', quantity: 0},];
   
 // MOCK DATA: list of data of data to render the vertical flatlist
 const PRODUCT_DATA = [
@@ -53,7 +55,7 @@ const Category = ( props ) => {
 
 // Component for list of products in the vertical flatlist
 // https://reactjs.org/docs/react-component.html#constructor
-class NewProduct extends React.Component {
+class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
@@ -99,8 +101,40 @@ const CreateListScreen = ({navigation}) => {
 
     const renderProduct = ({ item }) => {    
         return (
-            <NewProduct item={item}/>
+            <Product item={item}/>
         );
+    };
+
+    const navigateToCurrentList = async () => {
+        var hasData = false;
+        try {
+            const data = await AsyncStorage.getItem('@storage_Key');
+            if(data !== null) {
+                // console.log('Navigating next screen w/o async storage.');
+                // console.log(currShoppingList.size);
+                if(JSON.parse(data).length === currShoppingList.size){
+                    hasData = true;
+                }
+                navigation.navigate('CurrentList');
+            }
+            
+        } catch(error) {
+            console.log(error);
+        }
+        if(!hasData){
+            try {
+                const newList = [];
+                currShoppingList.forEach(product => newList.push(product));
+                const jsonList = JSON.stringify(newList);
+    
+                await AsyncStorage.setItem('@storage_Key', jsonList);
+                // console.log('Navigating next screen WITH async storage.');
+                navigation.navigate('CurrentList');
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
     };
 
     return (
@@ -123,7 +157,7 @@ const CreateListScreen = ({navigation}) => {
             </View>
             <View style={styles.continueButton}>
                 <TouchableOpacity
-                    // onPress={}               // eventually will navigate to the next screen
+                    onPress={() => navigateToCurrentList()}               // navigate to the 'CurrentListScreen' with user's shopping list
                 >
                     <Text>Continue</Text>
                 </TouchableOpacity>
