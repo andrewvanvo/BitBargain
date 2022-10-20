@@ -14,24 +14,24 @@ const CATEGORY_DATA = [
 // we add 'quantity' here, so later we can adjust them in the 'CurrentList' screen (e.g., if user want to buy 1 of this, or 3, etc.)
 // we might be able to implement 'quantity' somewhere upstream, but tentatively, it looks ok under products
 const CPU_DATA = [
-    {id: 0, name: 'AMD Ryzen 5 5600X', quantity: 0}, 
-    {id: 1, name: 'AMD Ryzen 9 5900X', quantity: 0}, 
-    {id: 2, name: 'AMD Ryzen 5 3600', quantity: 0}, 
-    {id: 3, name: 'AMD Ryzen 9 5950X', quantity: 0}, 
-    {id: 4, name: 'AMD Ryzen 7 5800X', quantity: 0}, 
-    {id: 5, name: 'Intel Core i7-12700K', quantity: 0}, 
-    {id: 6, name: 'Intel Core i9-12900K', quantity: 0}, 
-    {id: 7, name: 'AMD Ryzen 5 5600G', quantity: 0},];
+    {id: 0, name: 'AMD Ryzen 5 5600X'}, 
+    {id: 1, name: 'AMD Ryzen 9 5900X'}, 
+    {id: 2, name: 'AMD Ryzen 5 3600'}, 
+    {id: 3, name: 'AMD Ryzen 9 5950X'}, 
+    {id: 4, name: 'AMD Ryzen 7 5800X'}, 
+    {id: 5, name: 'Intel Core i7-12700K'}, 
+    {id: 6, name: 'Intel Core i9-12900K'}, 
+    {id: 7, name: 'AMD Ryzen 5 5600G'},];
   
 const GPU_DATA = [
-    {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti', quantity: 0}, 
-    {id: 9, name: 'GIGABYTE GeForce RTX 3050', quantity: 0}, 
-    {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT', quantity: 0}, 
-    {id: 11, name: 'MSI Mech Radeon RX 6500 XT', quantity: 0}, 
-    {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT', quantity: 0}, 
-    {id: 13, name: 'GIGABYTE Radeon RX 6700 XT', quantity: 0}, 
-    {id: 14, name: 'EVGA GeForce RTX 3080 FTW3', quantity: 0}, 
-    {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3', quantity: 0},];
+    {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti'}, 
+    {id: 9, name: 'GIGABYTE GeForce RTX 3050'}, 
+    {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT'}, 
+    {id: 11, name: 'MSI Mech Radeon RX 6500 XT'}, 
+    {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT'}, 
+    {id: 13, name: 'GIGABYTE Radeon RX 6700 XT'}, 
+    {id: 14, name: 'EVGA GeForce RTX 3080 FTW3'}, 
+    {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
   
 // MOCK DATA: list of data of data to render the vertical flatlist
 const PRODUCT_DATA = [
@@ -134,12 +134,18 @@ const CreateListScreen = ({navigation}) => {
         } catch(error) {
             console.log(error);
         }
-        // create initial states when no states
+        // no state(s) exist, create states
         if(!hasData){
             try {
                 console.log('Create initial states....!');
                 const newList = [];
-                currShoppingList.forEach(product => newList.push(product));
+                // currShoppingList.forEach(product => newList.push(product));
+                currShoppingList.forEach(function(product) {
+                    product.quantity = 0;
+                    console.log(product);
+                    newList.push(product);
+                });
+
                 const jsonList = JSON.stringify(newList);
 
                 await AsyncStorage.setItem('@storage_Key', jsonList);
@@ -148,6 +154,9 @@ const CreateListScreen = ({navigation}) => {
                 console.log(error);
             }
         }
+
+        // notes:
+        // push whenever is selected, if and only if async doesn't already include the product
 
         navigation.navigate('CurrentList');
 

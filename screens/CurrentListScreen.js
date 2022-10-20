@@ -39,7 +39,7 @@ class Product extends React.Component {
                 var item = json.find(item => item.id === this.item.id);
                 item.quantity = this.state.quantity;
                 
-                if(item.quantity < 0) {
+                if(item.quantity < 1) {
                     const index = json.indexOf(item);
                     json.splice(index, 1);
                 }
