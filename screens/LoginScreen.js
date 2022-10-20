@@ -48,7 +48,7 @@ const LoginScreen = ({ navigation}) => {
     useEffect( () => {
         const unsubscribe = onAuthStateChanged(auth, user => {
             if(user) {
-                navigation.navigate('Tabs')
+                navigation.navigate('Home')
             }
         })
         // when leaving the Login screen to Dashboard, the listener will stop

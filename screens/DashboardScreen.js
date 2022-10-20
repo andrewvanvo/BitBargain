@@ -1,31 +1,32 @@
 import React, {useState, useEffect, Component} from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert, Image, FlastList} from 'react-native'
 import { auth, db } from '../firebase/';
-import { getAdditionalUserInfo, signOut } from 'firebase/auth';
+import { getAdditionalUserInfo, signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, getDoc, doc, where, query } from'firebase/firestore';
 
 
 const DashboardScreen = ({navigation}) => {
     
-    const [user, setUser] = useState({});
-    const [userAuth, setAuth] = useState({});
+    const [user, setUser] = useState({fname: 'Unknown', rank: 'Unknown'});
     
     useEffect(() => {
-        const getUser = async() => {
-            try {
-                const user = auth.currentUser.uid //TODO
-                const userCollection =  doc(db, 'Users', user);
-                const userSnapshot = await getDoc(userCollection);
-                if (userSnapshot.data() != undefined){
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            if(user) {
+                const uid = user.uid
+                const getUser = async () => {
+                    const userCollection = doc(db, 'Users', uid )
+                    const userSnapshot = await getDoc(userCollection);
                     setUser(userSnapshot.data());
                     console.log('useEffect success');
-                }
+                };
+                getUser();
             }
-            catch {
-                console.log('Response failed.')
+            else {
+                setUser({})
             }
-            }
-            getUser();
+        })
+        // when leaving the Login screen to Dashboard, the listener will stop
+        return unsubscribe;
     }, [])
 
     return (

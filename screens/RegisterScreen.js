@@ -43,25 +43,19 @@ const RegisterScreen = ( {navigation} ) => {
         // for the function below it requires the following parameters:
         // (auth: Auth, email: string, password: string)
         // for fname and lname, I think we can add those to the actual db later?
-        const {userCredential} = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        await setDoc(doc(db, 'Users', auth.currentUser.uid), {
+        try {
+            const {userCredential} = 
+            await createUserWithEmailAndPassword(auth, values.email, values.password);
+            await setDoc(doc(db, 'Users', auth.currentUser.uid), {
             fname: values.fname,
             lname: values.lname,
             email: values.email,
             rank: 'Bronze'
         })
         console.log('New user created: ', values.email, values.password)
-
-            
-            // await setDoc(doc(db, 'Users', userCredential.user.uid), {
-            //     fname: values.fname,
-            //     lname: values.lname,
-            //     email: values.email,
-            //     rank: 'Bronze'
-            // });
-        // })
-        // .catch(error => {
-        //     console.log('Registeration has an error!', error.code);
+        } catch (error) {
+            console.log('Registration has an error!', error.code)
+        }
     };
     return (
         <View style={styles.formikContainer}>
