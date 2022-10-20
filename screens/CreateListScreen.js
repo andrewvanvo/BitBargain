@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,8 @@ const CATEGORY_DATA = [
     {id: 4, name: 'PC Cooling'}, {id: 5, name: 'Memory'}, {id: 6, name: 'Storage'}, {id: 7, name: 'Monitors'},];
 
 // MOCK DATA: different type of products under a specific category 
+// we add 'quantity' here, so later we can adjust them in the 'CurrentList' screen (e.g., if user want to buy 1 of this, or 3, etc.)
+// we might be able to implement 'quantity' somewhere upstream, but tentatively, it looks ok under products
 const CPU_DATA = [
     {id: 0, name: 'AMD Ryzen 5 5600X', quantity: 0}, 
     {id: 1, name: 'AMD Ryzen 9 5900X', quantity: 0}, 
@@ -58,6 +60,7 @@ const Category = ( props ) => {
 class Product extends React.Component {
     constructor(props) {
         super(props);
+        this.continue = props.continue
         this.item = props.item;
         this.itemName = props.item.name;
         this.state = {
@@ -74,6 +77,15 @@ class Product extends React.Component {
             this.setState({ selected: false });
         }
     }
+    // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
+    componentDidUpdate() {
+        if(currShoppingList.size > 0) {
+            this.continue(true);
+        } else {
+            this.continue(false);
+        }
+    }
+
     render() {
         return (
             <TouchableOpacity
@@ -88,6 +100,8 @@ class Product extends React.Component {
 
 const CreateListScreen = ({navigation}) => {
     const [selectedCategory, setSelectedCategory] = useState(0);
+    const [canContinue, setCanContinue] = useState(false); 
+
 
     const renderCategory = ({ item }) => {
         return (
@@ -101,39 +115,41 @@ const CreateListScreen = ({navigation}) => {
 
     const renderProduct = ({ item }) => {    
         return (
-            <Product item={item}/>
+            <Product 
+                item={item}
+                continue={setCanContinue}
+            />
         );
     };
 
     const navigateToCurrentList = async () => {
-        var hasData = false;
+        var hasData = true;
+
+        // check if states exist in async storage
         try {
             const data = await AsyncStorage.getItem('@storage_Key');
-            if(data !== null) {
-                // console.log('Navigating next screen w/o async storage.');
-                // console.log(currShoppingList.size);
-                if(JSON.parse(data).length === currShoppingList.size){
-                    hasData = true;
-                }
-                navigation.navigate('CurrentList');
+            console.log(JSON.parse(data));
+            if(JSON.parse(data).length === 0){
+                hasData = false;
             }
-            
         } catch(error) {
             console.log(error);
         }
+        // create initial states
         if(!hasData){
             try {
                 const newList = [];
                 currShoppingList.forEach(product => newList.push(product));
                 const jsonList = JSON.stringify(newList);
-    
+
                 await AsyncStorage.setItem('@storage_Key', jsonList);
-                // console.log('Navigating next screen WITH async storage.');
                 navigation.navigate('CurrentList');
             } catch (error) {
                 console.log(error);
             }
         }
+
+        navigation.navigate('CurrentList');
 
     };
 
@@ -155,9 +171,10 @@ const CreateListScreen = ({navigation}) => {
                     keyExtractor={item => item.id}
                 />
             </View>
-            <View style={styles.continueButton}>
+            <View style={[styles.continueButton, {backgroundColor: canContinue ? 'orange' : 'lightgray'}]}>
                 <TouchableOpacity
                     onPress={() => navigateToCurrentList()}               // navigate to the 'CurrentListScreen' with user's shopping list
+                    disabled={canContinue ? false : true}
                 >
                     <Text>Continue</Text>
                 </TouchableOpacity>
@@ -213,6 +230,5 @@ const styles = StyleSheet.create({
         margin: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'orange'
     }
 });

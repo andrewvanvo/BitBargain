@@ -23,6 +23,7 @@ class Product extends React.Component {
         
     }
 
+    // when states are changed, make an update to async storage
     componentDidUpdate() {
         this.updateData();
       }
@@ -30,18 +31,17 @@ class Product extends React.Component {
     updateData = async () => {
         var json;
 
-            // save current quantity and save to array
         try {
+            // save current state to an array
             const data = await AsyncStorage.getItem('@storage_Key');
+
             if(data !== null) {
                 json = JSON.parse(data);
 
                 var item = json.find(item => item.id === this.item.id);
                 item.quantity = this.state.quantity;
             }
-            // remove outdated states from async storage
-            await AsyncStorage.removeItem('@storage_Key');
-            // add updated states to async storage
+            // replace previous states with updated states
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
             
         } catch(error) {
