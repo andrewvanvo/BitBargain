@@ -17,9 +17,7 @@ class Product extends React.Component {
         this.setState({quantity: this.state.quantity + 1});
     }
     removeProduct = () => {
-        if(this.state.quantity > 0){
-            this.setState({quantity: this.state.quantity - 1});
-        }
+        this.setState({quantity: this.state.quantity - 1});
         
     }
 
@@ -40,8 +38,14 @@ class Product extends React.Component {
 
                 var item = json.find(item => item.id === this.item.id);
                 item.quantity = this.state.quantity;
+                
+                if(item.quantity < 0) {
+                    const index = json.indexOf(item);
+                    json.splice(index, 1);
+                }
             }
             // replace previous states with updated states
+            console.log('diz the data!', json);
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
             
         } catch(error) {
@@ -50,7 +54,9 @@ class Product extends React.Component {
     }
 
     render() {
-        return (
+        // when user sets quantity below 0, that indicates to remove from the shopping list
+        // will probably implement an alert/modal for this in the future.
+        return this.state.quantity < 0 ? null : (
             <View
                 style={[styles.productTile, {backgroundColor: 'white'}]}
             >

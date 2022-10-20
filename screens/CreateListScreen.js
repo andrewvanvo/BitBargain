@@ -128,16 +128,16 @@ const CreateListScreen = ({navigation}) => {
         // check if states exist in async storage
         try {
             const data = await AsyncStorage.getItem('@storage_Key');
-            console.log(JSON.parse(data));
             if(JSON.parse(data).length === 0){
                 hasData = false;
             }
         } catch(error) {
             console.log(error);
         }
-        // create initial states
+        // create initial states when no states
         if(!hasData){
             try {
+                console.log('Create initial states....!');
                 const newList = [];
                 currShoppingList.forEach(product => newList.push(product));
                 const jsonList = JSON.stringify(newList);
