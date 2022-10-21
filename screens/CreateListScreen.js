@@ -100,8 +100,7 @@ class Product extends React.Component {
 
 const CreateListScreen = ({navigation}) => {
     const [selectedCategory, setSelectedCategory] = useState(0);
-    const [canContinue, setCanContinue] = useState(false); 
-
+    const [canContinue, setCanContinue] = useState(false);
 
     const renderCategory = ({ item }) => {
         return (
@@ -123,43 +122,37 @@ const CreateListScreen = ({navigation}) => {
     };
 
     const navigateToCurrentList = async () => {
-        var hasData = true;
+        var cartItems = [];
 
-        // check if states exist in async storage
+        // get shopping cart items
         try {
             const data = await AsyncStorage.getItem('@storage_Key');
-            if(JSON.parse(data).length === 0){
-                hasData = false;
+            if(data !== null) {
+                var jsonObject = JSON.parse(data);
+                jsonObject.forEach(function(item){
+                    cartItems.push(item);
+                });
             }
         } catch(error) {
             console.log(error);
         }
-        // no state(s) exist, create states
-        if(!hasData){
-            try {
-                console.log('Create initial states....!');
-                const newList = [];
-                // currShoppingList.forEach(product => newList.push(product));
-                currShoppingList.forEach(function(product) {
-                    product.quantity = 0;
-                    console.log(product);
-                    newList.push(product);
-                });
 
-                const jsonList = JSON.stringify(newList);
+        // add new items to shopping cart
+        try {
+            currShoppingList.forEach(async function(product) {
+                const found = cartItems.find(x => x.id === product.id);
+                if(found == undefined){
+                    product.quantity = 1;
+                    cartItems.push(product);
+                }
+            });
 
-                await AsyncStorage.setItem('@storage_Key', jsonList);
-                navigation.navigate('CurrentList');
-            } catch (error) {
-                console.log(error);
-            }
+            await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+        } catch (error) {
+            console.log(error);
         }
-
-        // notes:
-        // push whenever is selected, if and only if async doesn't already include the product
-
+        
         navigation.navigate('CurrentList');
-
     };
 
     return (

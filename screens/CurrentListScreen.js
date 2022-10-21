@@ -45,7 +45,6 @@ class Product extends React.Component {
                 }
             }
             // replace previous states with updated states
-            console.log('diz the data!', json);
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
             
         } catch(error) {
@@ -56,7 +55,7 @@ class Product extends React.Component {
     render() {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
-        return this.state.quantity < 0 ? null : (
+        return this.state.quantity < 1 ? null : (
             <View
                 style={[styles.productTile, {backgroundColor: 'white'}]}
             >
@@ -98,6 +97,7 @@ const CurrentListScreen = ({ navigation }) => {
                 const data = await AsyncStorage.getItem('@storage_Key')
                 if(data !== null) {
                     var json = JSON.parse(data);
+                    // console.log('CurrentList screen: importing data: ', json);
                     setData(json);
                 }
             } catch(error) {
