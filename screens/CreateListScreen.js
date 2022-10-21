@@ -89,7 +89,7 @@ class Product extends React.Component {
     render() {
         return (
             <TouchableOpacity
-                style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'gray' : 'white'}]}
+                style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'lightgray' : 'white'}]}
                 onPress={this.toggleProduct}
             >
                 <Text>{this.itemName}</Text>
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '30%',
         padding: 10,
-        margin: 15,
+        margin: 5,
         alignItems: 'center',
         justifyContent: 'center',
     }

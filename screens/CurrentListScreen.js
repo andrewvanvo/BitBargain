@@ -59,18 +59,20 @@ class Product extends React.Component {
             <View
                 style={[styles.productTile, {backgroundColor: 'white'}]}
             >
-                <Text>{this.itemName}</Text>
-                <View>
-                    <TouchableOpacity
-                        onPress={this.addProduct}
-                    >
-                        <Text>+</Text>
-                    </TouchableOpacity>
-                    <Text>{this.state.quantity}</Text>
+                <Text style={{flex: 1, fontSize: 24, textAlign: 'center'}}>{this.itemName}</Text>
+                <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         onPress={this.removeProduct}
+                        style={{flex: 1, backgroundColor: 'pink', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
                     >
-                        <Text>-</Text>
+                        <Text style={{fontSize: 24}}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={{flex: 1, fontSize: 24, textAlign: 'center'}}>{this.state.quantity}</Text>
+                    <TouchableOpacity
+                        onPress={this.addProduct}
+                        style={{flex: 1, backgroundColor: 'lightgreen', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
+                    >
+                        <Text style={{fontSize: 24}}>+</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -147,13 +149,18 @@ const styles = StyleSheet.create({
     },
     productTile: {
         // backgroundColor: 'green',
-        width: 350,
-        padding: 80,
+        width: '95%',
+        padding: 30,
         marginVertical: 8,
         marginHorizontal: 16,
         borderColor: 'black',
         borderWidth: 3,
         borderRadius: 10,
+    },
+    buttonContainer:{
+        margin: 30,
+        flexDirection: 'row',  
+        justifyContent: 'center', alignItems: 'center'      
     },
     selectStoreButton: {
         borderRadius: 10,
