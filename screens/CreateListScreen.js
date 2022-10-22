@@ -10,47 +10,30 @@ import { firestore } from '../firebase';
 // MOCK DATA: different type of products under a specific category 
 // we add 'quantity' here, so later we can adjust them in the 'CurrentList' screen (e.g., if user want to buy 1 of this, or 3, etc.)
 // we might be able to implement 'quantity' somewhere upstream, but tentatively, it looks ok under products
-const CPU_DATA = [
-    {id: 0, name: 'AMD Ryzen 5 5600X'}, 
-    {id: 1, name: 'AMD Ryzen 9 5900X'}, 
-    {id: 2, name: 'AMD Ryzen 5 3600'}, 
-    {id: 3, name: 'AMD Ryzen 9 5950X'}, 
-    {id: 4, name: 'AMD Ryzen 7 5800X'}, 
-    {id: 5, name: 'Intel Core i7-12700K'}, 
-    {id: 6, name: 'Intel Core i9-12900K'}, 
-    {id: 7, name: 'AMD Ryzen 5 5600G'},];
+// const CPU_DATA = [
+//     {id: 0, name: 'AMD Ryzen 5 5600X'}, 
+//     {id: 1, name: 'AMD Ryzen 9 5900X'}, 
+//     {id: 2, name: 'AMD Ryzen 5 3600'}, 
+//     {id: 3, name: 'AMD Ryzen 9 5950X'}, 
+//     {id: 4, name: 'AMD Ryzen 7 5800X'}, 
+//     {id: 5, name: 'Intel Core i7-12700K'}, 
+//     {id: 6, name: 'Intel Core i9-12900K'}, 
+//     {id: 7, name: 'AMD Ryzen 5 5600G'},];
   
-const GPU_DATA = [
-    {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti'}, 
-    {id: 9, name: 'GIGABYTE GeForce RTX 3050'}, 
-    {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT'}, 
-    {id: 11, name: 'MSI Mech Radeon RX 6500 XT'}, 
-    {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT'}, 
-    {id: 13, name: 'GIGABYTE Radeon RX 6700 XT'}, 
-    {id: 14, name: 'EVGA GeForce RTX 3080 FTW3'}, 
-    {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
+// const GPU_DATA = [
+//     {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti'}, 
+//     {id: 9, name: 'GIGABYTE GeForce RTX 3050'}, 
+//     {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT'}, 
+//     {id: 11, name: 'MSI Mech Radeon RX 6500 XT'}, 
+//     {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT'}, 
+//     {id: 13, name: 'GIGABYTE Radeon RX 6700 XT'}, 
+//     {id: 14, name: 'EVGA GeForce RTX 3080 FTW3'}, 
+//     {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
   
-// MOCK DATA: list of data of data to render the vertical flatlist
-
-
-getProducts = async (categoryType) => {
-    const productRef = collection(firestore, 'products');
-    const productQuery = query(productRef, where(`categories.type`, '==', categoryType));
-    const productSnap = await getDocs(productQuery);
-
-    var productList = [];
-
-    productSnap.forEach((doc) => {
-      var object = doc.data();
-      var product_id = object['product_id'];
-      var product_name = object['product_name'];
-      console.log(product_id, product_name);
-
-      productList.push({id: product_id, name: product_name})
-    });
-
-    return productList;
-  }
+// const PRODUCT_DATA = [
+//     {id: 0, name: CPU_DATA}, {id: 1, name: GPU_DATA}, {id: 2, name: []}, {id: 3, name: []}, 
+//     {id: 4, name: []}, {id: 5, name: []}, {id: 6, name: []}, {id: 7, name: []},
+// ]
 
 
 // User's added items. Can be used for later screens.
@@ -117,15 +100,49 @@ const CreateListScreen = ({navigation}) => {
     const [canContinue, setCanContinue] = useState(false);
 
     const [categories, setCategories] = useState([]);
-
-    const [CPUData, setCPUData] = useState([]);
-
-    var product_data = [
-        {id: 0, name: CPUData}, {id: 1, name: GPU_DATA}, {id: 2, name: {}}, {id: 3, name: {}}, 
-        {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}},
+    const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
+        {id: 0, name: [], category: 'CPU'},             // I could probably abstrate it more later on 
+        {id: 1, name: [], category: 'GPU'}, 
+        {id: 2, name: [], category: 'Motherboard'}, 
+        {id: 3, name: [], category: 'PSU'}, 
+        {id: 4, name: [], category: 'PC Cooling'}, 
+        {id: 5, name: [], category: 'Memory'}, 
+        {id: 6, name: [], category: 'Storage'}, 
+        {id: 7, name: [], category: 'Monitor'},
     ]
+);
 
-    // load category flatlist with data from db
+    // dynamically update data for the product flatlist
+    useEffect(() => {
+        const productRef = collection(firestore, 'products');
+        const unsubscribe = onSnapshot(productRef, (productSnap) => {
+            var product_data_experimental = [
+                {id: 0, name: [], category: 'CPU'}, 
+                {id: 1, name: [], category: 'GPU'}, 
+                {id: 2, name: [], category: 'Motherboard'}, 
+                {id: 3, name: [], category: 'PSU'}, 
+                {id: 4, name: [], category: 'PC Cooling'}, 
+                {id: 5, name: [], category: 'Memory'}, 
+                {id: 6, name: [], category: 'Storage'}, 
+                {id: 7, name: [], category: 'Monitor'},
+            ]
+    
+            productSnap.forEach((doc) => {
+            var object = doc.data();
+            var product_id = object['product_id'];
+            var product_name = object['product_name'];
+            const rightCategory = product_data_experimental.find(item => item.category === object['categories']['type']);
+            
+            if(rightCategory){
+                rightCategory.name.push({id: product_id, name: product_name});
+            }
+            }); 
+            setWholeList(product_data_experimental)
+        })
+        return () => unsubscribe;
+    }, []);
+
+    // dynamically update data for the category flatlist 
     useEffect(() => {
         const categoryRef = collection(firestore, 'categories');
         const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
@@ -138,27 +155,6 @@ const CreateListScreen = ({navigation}) => {
         });
         return () => unsubscribe();
     }, []);
-
-    // just the CPU section for now,
-    // render live data (e.g., whenever a new doc is added to fb, the product dynamically renders in the app)
-    useEffect(() => {
-        const ProductRef = collection(firestore, 'products');
-        const unsubscribe = onSnapshot(ProductRef, (productSnap) => {
-            const products = [];
-            productSnap.forEach((doc) => {
-                var object = doc.data();
-                var product_id = object['product_id'];
-                var product_name = object['product_name'];
-          
-                products.push({id: product_id, name: product_name})
-            });
-            setCPUData(products);
-        });
-        return () => unsubscribe();
-    }, []);
-
-
-
 
     const renderCategory = ({ item }) => {
         return (
@@ -226,7 +222,7 @@ const CreateListScreen = ({navigation}) => {
             </View>
             <View style={styles.productContainer}>
                 <FlatList
-                    data={product_data[selectedCategory]['name']}
+                    data={wholeList[selectedCategory]['name']}
                     renderItem={renderProduct}
                     keyExtractor={item => item.id}
                 />
@@ -239,6 +235,9 @@ const CreateListScreen = ({navigation}) => {
                     <Text>Continue</Text>
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={() => getProducts()} style={{backgroundColor: 'lightgreen', borderRadius: 10, margin: 10, padding: 12}}>
+                    <Text>Experimenting</Text>
+                </TouchableOpacity>
         </View>
     );
 }
