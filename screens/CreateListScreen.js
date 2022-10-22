@@ -31,10 +31,7 @@ const GPU_DATA = [
     {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
   
 // MOCK DATA: list of data of data to render the vertical flatlist
-const PRODUCT_DATA = [
-    {id: 0, name: CPU_DATA}, {id: 1, name: GPU_DATA}, {id: 2, name: {}}, {id: 3, name: {}}, 
-    {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}},
-]
+
 
 getProducts = async (categoryType) => {
     const productRef = collection(firestore, 'products');
@@ -121,6 +118,13 @@ const CreateListScreen = ({navigation}) => {
 
     const [categories, setCategories] = useState([]);
 
+    const [CPUData, setCPUData] = useState([]);
+
+    var product_data = [
+        {id: 0, name: CPUData}, {id: 1, name: GPU_DATA}, {id: 2, name: {}}, {id: 3, name: {}}, 
+        {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}},
+    ]
+
     // load category flatlist with data from db
     useEffect(() => {
         const categoryRef = collection(firestore, 'categories');
@@ -134,6 +138,26 @@ const CreateListScreen = ({navigation}) => {
         });
         return () => unsubscribe();
     }, []);
+
+    // just the CPU section for now,
+    // render live data (e.g., whenever a new doc is added to fb, the product dynamically renders in the app)
+    useEffect(() => {
+        const ProductRef = collection(firestore, 'products');
+        const unsubscribe = onSnapshot(ProductRef, (productSnap) => {
+            const products = [];
+            productSnap.forEach((doc) => {
+                var object = doc.data();
+                var product_id = object['product_id'];
+                var product_name = object['product_name'];
+          
+                products.push({id: product_id, name: product_name})
+            });
+            setCPUData(products);
+        });
+        return () => unsubscribe();
+    }, []);
+
+
 
 
     const renderCategory = ({ item }) => {
@@ -202,7 +226,7 @@ const CreateListScreen = ({navigation}) => {
             </View>
             <View style={styles.productContainer}>
                 <FlatList
-                    data={PRODUCT_DATA[selectedCategory]['name']}
+                    data={product_data[selectedCategory]['name']}
                     renderItem={renderProduct}
                     keyExtractor={item => item.id}
                 />

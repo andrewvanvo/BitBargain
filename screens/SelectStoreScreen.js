@@ -1,14 +1,22 @@
 import { StyleSheet, Text, View, Button } from 'react-native'
 import React from 'react'
-import { collection, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
 import { firestore } from '../firebase';
 
 const SelectStore = () => {
 
   // testing CRUD methods, structuring the db based on Andrew's design
 
-  // CREATE
-
+  // CREATE - add products, based on user's input later on...
+  setProducts = async () => {
+    const productRef = collection(firestore, 'products');
+    await setDoc(doc(productRef, 'some_document_id'), {
+      categories: {type: "CPU", brand: "Intel"},
+      product_id: 987165,
+      product_name: 'Intel Core i7-12700K',
+      stores_carrying: {112233: 550},
+    });
+  }
 
 
   // READ - get all products by category
@@ -24,21 +32,17 @@ const SelectStore = () => {
     });
   }
   
-  // CREATE - add products, based on user's input later on...
-  setProducts = async () => {
-    const productRef = collection(firestore, 'products');
-    await setDoc(doc(productRef, 'some_document_id'), {
-      categories: {type: "CPU", brand: "Intel"},
-      product_id: 987165,
-      product_name: 'Intel Core i7-12700K',
-      stores_carrying: {112233: 550},
-    });
+  // DELETE
+  deleteProducts = async () => {
+    await deleteDoc(doc(firestore, 'products', 'some_document_id'));
   }
+
+
 
   return (
     <View style={styles.mainContainer}>
       <Button
-        onPress={() => setProducts()}
+        // onPress={() => deleteProducts()}
         title='Select Store'
       >
       </Button>
