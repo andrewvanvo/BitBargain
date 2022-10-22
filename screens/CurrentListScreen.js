@@ -63,7 +63,7 @@ class Product extends React.Component {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         onPress={this.removeProduct}
-                        style={{flex: 1, backgroundColor: 'pink', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
+                        style={{flex: 1, backgroundColor: 'lightcoral', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
                     >
                         <Text style={{fontSize: 24}}>-</Text>
                     </TouchableOpacity>
@@ -120,7 +120,7 @@ const CurrentListScreen = ({ navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    // onPress={() => navigateToCurrentList()}  
+                    onPress={() => navigation.navigate('SelectStore')}  
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>

@@ -3,12 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { array } from 'yup';
+import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
+import { firestore } from '../firebase';
 
-
-// MOCK DATA: some 'categories' of products that we might have. Used to render the horizontal scroll tab (horizontal flatlist)
-const CATEGORY_DATA = [
-    {id: 0, name: 'CPUs'}, {id: 1, name: 'GPUs'}, {id: 2, name: 'Motherboards'}, {id: 3, name: 'PSUs'}, 
-    {id: 4, name: 'PC Cooling'}, {id: 5, name: 'Memory'}, {id: 6, name: 'Storage'}, {id: 7, name: 'Monitors'},];
 
 // MOCK DATA: different type of products under a specific category 
 // we add 'quantity' here, so later we can adjust them in the 'CurrentList' screen (e.g., if user want to buy 1 of this, or 3, etc.)
@@ -39,6 +36,26 @@ const PRODUCT_DATA = [
     {id: 4, name: {}}, {id: 5, name: {}}, {id: 6, name: {}}, {id: 7, name: {}},
 ]
 
+getProducts = async (categoryType) => {
+    const productRef = collection(firestore, 'products');
+    const productQuery = query(productRef, where(`categories.type`, '==', categoryType));
+    const productSnap = await getDocs(productQuery);
+
+    var productList = [];
+
+    productSnap.forEach((doc) => {
+      var object = doc.data();
+      var product_id = object['product_id'];
+      var product_name = object['product_name'];
+      console.log(product_id, product_name);
+
+      productList.push({id: product_id, name: product_name})
+    });
+
+    return productList;
+  }
+
+
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
 
@@ -47,7 +64,7 @@ const currShoppingList = new Set();
 const Category = ( props ) => {
     return (
         <TouchableOpacity
-        style={[styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'green' : 'orange'}]}
+        style={[styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'lightcoral' : 'orange'}]}
         onPress={() => props.setState(props.item.id)}
         >
         <Text>{props.item.name}</Text>
@@ -101,6 +118,23 @@ class Product extends React.Component {
 const CreateListScreen = ({navigation}) => {
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [canContinue, setCanContinue] = useState(false);
+
+    const [categories, setCategories] = useState([]);
+
+    // load category flatlist with data from db
+    useEffect(() => {
+        const categoryRef = collection(firestore, 'categories');
+        const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
+            const categories = [];
+            categorySnap.forEach((doc) => {
+                categories.push(doc.data());
+                // console.log(doc.data());
+            });
+            setCategories(categories);
+        });
+        return () => unsubscribe();
+    }, []);
+
 
     const renderCategory = ({ item }) => {
         return (
@@ -159,7 +193,7 @@ const CreateListScreen = ({navigation}) => {
         <View style={styles.mainContainer}>
             <View style={styles.categoryContainer}>
                 <FlatList
-                    data={CATEGORY_DATA}
+                    data={categories}
                     renderItem={renderCategory}
                     keyExtractor={item => item.id}
                     horizontal={true}
