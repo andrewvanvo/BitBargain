@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -56,24 +56,30 @@ class Product extends React.Component {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
         return this.state.quantity < 1 ? null : (
-            <View
-                style={[styles.productTile, {backgroundColor: 'white'}]}
-            >
-                <Text style={{flex: 1, fontSize: 24, textAlign: 'center'}}>{this.itemName}</Text>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        onPress={this.removeProduct}
-                        style={{flex: 1, backgroundColor: 'lightcoral', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
-                    >
-                        <Text style={{fontSize: 24}}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={{flex: 1, fontSize: 24, textAlign: 'center'}}>{this.state.quantity}</Text>
-                    <TouchableOpacity
-                        onPress={this.addProduct}
-                        style={{flex: 1, backgroundColor: 'lightgreen', justifyContent: 'center', alignItems: 'center', borderRadius: 10}}
-                    >
-                        <Text style={{fontSize: 24}}>+</Text>
-                    </TouchableOpacity>
+            <View style={[styles.productTile]}>
+                <Image
+                    source={{uri: this.item.url}}
+                    style={styles.productImg}
+                />
+                <View style={styles.otherStuff}>
+                    <View style={styles.productNameContainer}>
+                        <Text style={styles.productName}>{this.itemName}</Text>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            onPress={this.removeProduct}
+                            style={styles.adjustBtns}
+                        >
+                            <Text>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.productQuantity}>{this.state.quantity}</Text>
+                        <TouchableOpacity
+                            onPress={this.addProduct}
+                            style={styles.adjustBtns}
+                        >
+                            <Text>+</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );
@@ -99,7 +105,6 @@ const CurrentListScreen = ({ navigation }) => {
                 const data = await AsyncStorage.getItem('@storage_Key')
                 if(data !== null) {
                     var json = JSON.parse(data);
-                    // console.log('CurrentList screen: importing data: ', json);
                     setData(json);
                 }
             } catch(error) {
@@ -138,9 +143,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 50,
     },
-    categoryContainer: {
-        flex: 1,
-    },
     productContainer: {
         flex: 9,
         justifyContent: 'center',
@@ -148,19 +150,46 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     productTile: {
-        // backgroundColor: 'green',
-        width: '95%',
-        padding: 30,
+        width: 350,
+        height: 200,
+        padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
         borderColor: 'black',
-        borderWidth: 3,
+        borderWidth: 2,
         borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    adjustBtns: {
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        borderRadius: 5,
+    },
+    productNameContainer: {
+        flex: 5,
+        justifyContent: 'center', 
+        alignItems: 'center',
+    },
+    productName: {
+        flexWrap: 'wrap',
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center',
     },
     buttonContainer:{
-        margin: 30,
         flexDirection: 'row',  
-        justifyContent: 'center', alignItems: 'center'      
+        alignItems: 'center',
+        flex: 1,
+        backgroundColor: 'orange',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: 'black',
+        width: '80%'
+
     },
     selectStoreButton: {
         borderRadius: 10,
@@ -170,5 +199,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'orange'
+    },
+    productImg: {
+        width: 150,
+        height: 150,
+        flex: 1
+    },
+    otherStuff: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 20,
+    },
+
+    productQuantity: {
+        fontSize: 12,
+        flex: 1, 
+        textAlign: 'center'
     }
 });

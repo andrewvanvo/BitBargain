@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { collection, query, where, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
 import { firestore } from '../firebase';
+
 
 const SelectStore = () => {
 
@@ -41,11 +42,12 @@ const SelectStore = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <Button
+
+      {/* <Button
         // onPress={() => deleteProducts()}
         title='Select Store'
       >
-      </Button>
+      </Button> */}
     </View>
   )
 }

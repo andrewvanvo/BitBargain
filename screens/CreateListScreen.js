@@ -57,7 +57,6 @@ const Category = ( props ) => {
 class Product extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props);
         this.continue = props.continue
         this.item = props.item;
         this.itemName = props.item.name;
@@ -87,7 +86,7 @@ class Product extends React.Component {
     render() {
         return (
             <TouchableOpacity
-                style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'lightgray' : 'white'}]}
+                style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
                 onPress={this.toggleProduct}
             >   
                 <Image
@@ -155,7 +154,6 @@ const CreateListScreen = ({navigation}) => {
             const categories = [];
             categorySnap.forEach((doc) => {
                 categories.push(doc.data());
-                // console.log(doc.data());
             });
             setCategories(categories);
         });
