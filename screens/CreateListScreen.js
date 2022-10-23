@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { array } from 'yup';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
@@ -57,6 +57,7 @@ const Category = ( props ) => {
 class Product extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props);
         this.continue = props.continue
         this.item = props.item;
         this.itemName = props.item.name;
@@ -88,8 +89,12 @@ class Product extends React.Component {
             <TouchableOpacity
                 style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'lightgray' : 'white'}]}
                 onPress={this.toggleProduct}
-            >
-                <Text>{this.itemName}</Text>
+            >   
+                <Image
+                    source={{uri: this.item.url}}
+                    style={styles.productImg}
+                />
+                <Text style={styles.productInfo}>{this.itemName}</Text>
             </TouchableOpacity>
         );
     }
@@ -131,10 +136,11 @@ const CreateListScreen = ({navigation}) => {
             var object = doc.data();
             var product_id = object['product_id'];
             var product_name = object['product_name'];
+            var image_url = object['image_url']
             const rightCategory = product_data_experimental.find(item => item.category === object['categories']['type']);
             
             if(rightCategory){
-                rightCategory.name.push({id: product_id, name: product_name});
+                rightCategory.name.push({id: product_id, name: product_name, url: image_url});
             }
             }); 
             setWholeList(product_data_experimental)
@@ -235,9 +241,6 @@ const CreateListScreen = ({navigation}) => {
                     <Text>Continue</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => getProducts()} style={{backgroundColor: 'lightgreen', borderRadius: 10, margin: 10, padding: 12}}>
-                    <Text>Experimenting</Text>
-                </TouchableOpacity>
         </View>
     );
 }
@@ -275,12 +278,15 @@ const styles = StyleSheet.create({
     productTile: {
         // backgroundColor: 'green',
         width: 350,
-        padding: 80,
+        padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
         borderColor: 'black',
-        borderWidth: 3,
+        borderWidth: 2,
         borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center'
     },
     continueButton: {
         borderRadius: 10,
@@ -289,5 +295,14 @@ const styles = StyleSheet.create({
         margin: 5,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    productImg: {
+        width: 150,
+        height: 150,
+    },
+    productInfo: {
+        flexWrap: 'wrap',
+        flex: 1,
+        textAlign: 'center'
+    },
 });
