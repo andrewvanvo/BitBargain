@@ -8,7 +8,6 @@ class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
-        this.itemName = props.item.name;
         this.state = {
             quantity: props.item.quantity,
         };
@@ -36,7 +35,7 @@ class Product extends React.Component {
             if(data !== null) {
                 json = JSON.parse(data);
 
-                var item = json.find(item => item.id === this.item.id);
+                var item = json.find(item => item.product_id === this.item.product_id);
                 item.quantity = this.state.quantity;
                 
                 if(item.quantity < 1) {
@@ -58,12 +57,12 @@ class Product extends React.Component {
         return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile]}>
                 <Image
-                    source={{uri: this.item.url}}
+                    source={{uri: this.item.image_url}}
                     style={styles.productImg}
                 />
                 <View style={styles.otherStuff}>
                     <View style={styles.productNameContainer}>
-                        <Text style={styles.productName}>{this.itemName}</Text>
+                        <Text style={styles.productName}>{this.item.product_name}</Text>
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
@@ -120,7 +119,7 @@ const CurrentListScreen = ({ navigation }) => {
                 <FlatList
                     data={data}
                     renderItem={renderProduct}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.product_id}
                 />
             </View>
             <View style={styles.selectStoreButton}>

@@ -59,7 +59,6 @@ class Product extends React.Component {
         super(props);
         this.continue = props.continue
         this.item = props.item;
-        this.itemName = props.item.name;
         this.state = {
             selected: false,
         };
@@ -90,10 +89,10 @@ class Product extends React.Component {
                 onPress={this.toggleProduct}
             >   
                 <Image
-                    source={{uri: this.item.url}}
+                    source={{uri: this.item.image_url}}
                     style={styles.productImg}
                 />
-                <Text style={styles.productInfo}>{this.itemName}</Text>
+                <Text style={styles.productInfo}>{this.item.product_name}</Text>
             </TouchableOpacity>
         );
     }
@@ -133,13 +132,10 @@ const CreateListScreen = ({navigation}) => {
     
             productSnap.forEach((doc) => {
             var object = doc.data();
-            var product_id = object['product_id'];
-            var product_name = object['product_name'];
-            var image_url = object['image_url']
             const rightCategory = product_data_experimental.find(item => item.category === object['categories']['type']);
             
             if(rightCategory){
-                rightCategory.name.push({id: product_id, name: product_name, url: image_url});
+                rightCategory.name.push(object);
             }
             }); 
             setWholeList(product_data_experimental)
@@ -198,7 +194,7 @@ const CreateListScreen = ({navigation}) => {
         // add new items to shopping cart
         try {
             currShoppingList.forEach(async function(product) {
-                const found = cartItems.find(x => x.id === product.id);
+                const found = cartItems.find(x => x.product_id === product.product_id);
                 if(found == undefined){
                     product.quantity = 1;
                     cartItems.push(product);
@@ -228,7 +224,7 @@ const CreateListScreen = ({navigation}) => {
                 <FlatList
                     data={wholeList[selectedCategory]['name']}
                     renderItem={renderProduct}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.product_id}
                 />
             </View>
             <View style={[styles.continueButton, {backgroundColor: canContinue ? 'orange' : 'lightgray'}]}>
