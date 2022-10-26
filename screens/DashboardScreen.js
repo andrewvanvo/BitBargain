@@ -47,16 +47,12 @@ const DashboardScreen = ({}) => {
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
-  //https://reactnative.dev/docs/colors for named color palette
+    //https://reactnative.dev/docs/colors for named color palette
 
   //TOP LEVEL CONTAINER
   mainContainer: {
     flex: 1,
     flexDirection: "column",
-
-    borderWidth: 1,
-
-    // padding: 20,
   },
 
 });

@@ -35,10 +35,9 @@ export const DashboardHeader = ({ user }) => {
             </Text>
             <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
           </View>
-
           <View>
             <Image
-              source={require("../assets/profile-pic-sample.png")}
+              source={require("../assets/sample_images/profile-pic-sample.png")}
               resizeMode="cover"
               style={{
                 width: 40,
@@ -52,17 +51,17 @@ export const DashboardHeader = ({ user }) => {
       </View>
 
       <View style={styles.headerContainer}>
-        <View style={{ justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Image
-                source={require("../assets/BitBargain-logo.png")}
+                source={require("../assets/sample_images/rank-unranked-img.png")}
                 resizeMode="cover"
                 style={{
-                  width: 200,
-                  height: 200,
+                  width: 150,
+                  height: 150,
                 }}
               ></Image>
         </View>
-        <View style={{fontSize: 20, marginTop: 10}}>
+        <View style={{ flex: 1, fontSize: 20, marginTop: 10}}>
           <Text style={{color: 'white'}}>Current Rank: {user.rank} </Text>
           <Text style={{color: 'white'}}>Upvotes: 200</Text>
           <Text style={{color: 'white'}}>Number of Submissions: 20 </Text>
