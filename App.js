@@ -10,6 +10,9 @@ import CreateListScreen from './screens/CreateListScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/Ionicons";
+import CurrentListScreen from './screens/CurrentListScreen';
+import SelectStoreScreen  from './screens/SelectStoreScreen';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,6 +64,9 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="ForgetPass" component={ForgetScreen} />
+        <Stack.Screen name="CreateList" component={CreateListScreen} />
+        <Stack.Screen name="CurrentList" component={CurrentListScreen} />
+        <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
