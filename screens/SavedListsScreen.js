@@ -13,7 +13,7 @@ class List extends React.Component {
     }
     render() {
         return (
-            <Pressable
+            <Pressable style={styles.listTile}
                 //onPress={}
             >   
                 <Text>{this.item.listName}</Text>
@@ -59,16 +59,34 @@ const SavedListsScreen = ({navigation}) => {
 }
 export default SavedListsScreen;
 
-
 const styles = StyleSheet.create({
     mainContainer: {
+        backgroundColor: 'orange',
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 50,
     },
     listContainer: {
+        backgroundColor: 'orange',
         flex: 1,
+        //justifyContent: 'center',
+        //alignItems: 'center',
+        //width: '100%'
+    },
+    listTile: {
+        
+        backgroundColor: 'white',
+        width: 350,
+        padding: 10,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        borderColor: 'black',
+        borderWidth: 2,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center'
     },
     
 });
