@@ -7,6 +7,8 @@ import RegisterScreen from './screens/RegisterScreen';
 import ForgetScreen from './screens/ForgetScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import CreateListScreen from './screens/CreateListScreen';
+import CurrentListScreen from './screens/CurrentListScreen';
+import SelectStoreScreen  from './screens/SelectStoreScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +21,8 @@ export default function App() {
         <Stack.Screen name="ForgetPass" component={ForgetScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="CreateList" component={CreateListScreen} />
+        <Stack.Screen name="CurrentList" component={CurrentListScreen} />
+        <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
