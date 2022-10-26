@@ -9,6 +9,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import CreateListScreen from './screens/CreateListScreen';
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
+import SavedListsScreen from './screens/SavedListsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
         <Stack.Screen name="CreateList" component={CreateListScreen} />
         <Stack.Screen name="CurrentList" component={CurrentListScreen} />
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
+        <Stack.Screen name="SavedLists" component={SavedListsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

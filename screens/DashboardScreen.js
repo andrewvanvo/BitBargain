@@ -55,7 +55,7 @@ const DashboardScreen = ({ navigation}) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
-                    // onPress={}               // will navigate somewhere, eventually
+                    onPress={() => navigation.navigate('SavedLists')}               // will navigate somewhere, eventually
                 >
                     <Text>Saved Lists</Text>
                 </TouchableOpacity>
