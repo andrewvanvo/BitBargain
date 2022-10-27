@@ -15,6 +15,7 @@ import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPasswo
 import Icon from "react-native-vector-icons/Ionicons";
 import logo from '../assets/BitBargain-logo.png';
 
+
 const LoginScreen = ({ navigation}) => {
     // initial values for the input fields
     const loginValues = {
@@ -47,7 +48,7 @@ const LoginScreen = ({ navigation}) => {
     useEffect( () => {
         const unsubscribe = onAuthStateChanged(auth, user => {
             if(user) {
-                navigation.navigate('Dashboard')
+                navigation.navigate('Home')
             }
         })
         // when leaving the Login screen to Dashboard, the listener will stop
