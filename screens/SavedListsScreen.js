@@ -24,12 +24,24 @@ class List extends React.Component {
 
     navigateToCurrentList = async(item)=>{
         var cartItems = [];
-        var productList =[];
         try {
+            //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
             this.item.productArray.forEach((product) =>{
-                productList.push(product)
+                //productList.push(product)
+                console.log(product)
+                this.props.dbProducts.forEach((dbproduct)=>{
+                    //CAN CHANGE WHEN DB STRUC CHANGES: USING PRODUCT DOC ID TO CHECK AGAINST
+                    console.log(dbproduct)
+                    if (product == dbproduct['product_id']){
+                        cartItems.push(dbproduct)
+                    }
+                })
             })
-            console.log(this.props.dbProducts)
+            //console.log(this.props.dbProducts)
+            console.log(cartItems)
+
+
+
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
             //console.log(test)
             //console.log(cartItems);
