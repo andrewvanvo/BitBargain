@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Pressable} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Pressable, Button, Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
 import { firestore } from '../firebase';
 
+const currShoppingList = new Set();
 class List extends React.Component {
     constructor(props) {
         super(props);
@@ -13,13 +14,30 @@ class List extends React.Component {
     }
     render() {
         return (
-            <Pressable style={styles.listTile}
-                //onPress={}
-            >   
+            <Pressable style={styles.listTile} 
+            onPress={()=>this.navigateToCurrentList(this.item)}>   
                 <Text>{this.item.listName}</Text>
             </Pressable>
         );
     }
+
+    navigateToCurrentList = async(item)=>{
+        var cartItems = [];
+        
+        try {
+            var test = this.item.userID
+            //this.item.productArray.forEach(async function (product){
+            //    cartItems.push(product)
+            //});
+            //await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+            console.log(test)
+            //console.log(cartItems);
+        } catch (error){
+            console.log(error);
+        }
+        
+        //navigation.navigate('CurrentList');
+    };
 }
 
 const SavedListsScreen = ({navigation}) => {
@@ -37,9 +55,9 @@ const SavedListsScreen = ({navigation}) => {
         return () => unsubscribe;
     }, []);
 
-    const renderList = ({ item, onPress }) => {
+    const renderList = ({ item }) => {
         return (
-            <List 
+            <List  
                 item={item}
             />
         );
@@ -51,7 +69,8 @@ const SavedListsScreen = ({navigation}) => {
                 <FlatList
                     data={savedLists}
                     renderItem={renderList}
-                    keyExtractor={item => item.listName}
+                    keyExtractor={item => item.listName} //listname must be unique, ensure it is when saving list
+
                 />
             </View>
         </View>
@@ -70,9 +89,7 @@ const styles = StyleSheet.create({
     listContainer: {
         backgroundColor: 'orange',
         flex: 1,
-        //justifyContent: 'center',
-        //alignItems: 'center',
-        //width: '100%'
+        
     },
     listTile: {
         
