@@ -11,6 +11,7 @@ class List extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
+        this.navigation = props.navigation; //nav prop accesible from parent screen
     }
     render() {
         return (
@@ -22,8 +23,8 @@ class List extends React.Component {
     }
 
     navigateToCurrentList = async(item)=>{
+        console.log(this.props)
         var cartItems = [];
-        
         try {
             var test = this.item.userID
             //this.item.productArray.forEach(async function (product){
@@ -35,8 +36,7 @@ class List extends React.Component {
         } catch (error){
             console.log(error);
         }
-        
-        //navigation.navigate('CurrentList');
+        this.navigation.navigate('CurrentList')
     };
 }
 
@@ -57,8 +57,10 @@ const SavedListsScreen = ({navigation}) => {
 
     const renderList = ({ item }) => {
         return (
-            <List  
+            
+            <List 
                 item={item}
+                navigation = {navigation} //pull navigation prop from parent screen and pass as prop
             />
         );
     };
@@ -75,7 +77,8 @@ const SavedListsScreen = ({navigation}) => {
             </View>
         </View>
     );
-}
+};
+
 export default SavedListsScreen;
 
 const styles = StyleSheet.create({
