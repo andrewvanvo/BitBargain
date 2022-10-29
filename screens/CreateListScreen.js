@@ -178,9 +178,6 @@ const CreateListScreen = ({navigation}) => {
         const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
             const categories = [];
             categorySnap.forEach((doc) => {
-                console.log('hi --- ', doc.data());
-
-                
                 categories.push(doc.data());
             });
             setCategories(categories);
