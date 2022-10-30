@@ -49,7 +49,7 @@ class List extends React.Component {
         } catch (error){
             console.log(error);
         }
-        this.navigation.navigate('CurrentList')
+        this.navigation.navigate('CurrentList', {storageKey: '@storage_Key'});
     };
 }
 const SavedListsScreen = ({navigation}) => {

@@ -122,6 +122,7 @@ class Tags extends React.Component {
 }
 
 const CreateListScreen = ({navigation}) => {
+
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [canContinue, setCanContinue] = useState(false);
 
@@ -214,7 +215,7 @@ const CreateListScreen = ({navigation}) => {
 
         // get shopping cart items
         try {
-            const data = await AsyncStorage.getItem('@storage_Key');
+            const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
                 jsonObject.forEach(function(item){
@@ -235,12 +236,12 @@ const CreateListScreen = ({navigation}) => {
                 }
             });
 
-            await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+            await AsyncStorage.setItem('@storage_Key1', JSON.stringify(cartItems));
         } catch (error) {
             console.log(error);
         }
         
-        navigation.navigate('CurrentList');
+        navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 
     var tagContainer = [];

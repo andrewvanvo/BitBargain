@@ -12,6 +12,7 @@ class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
+        this.storageKey = props.storageKey;
         this.state = {
             quantity: props.item.quantity,
         };
@@ -34,7 +35,7 @@ class Product extends React.Component {
 
         try {
             // save current state to an array
-            const data = await AsyncStorage.getItem('@storage_Key');
+            const data = await AsyncStorage.getItem(this.storageKey);
 
             if(data !== null) {
                 json = JSON.parse(data);
@@ -48,7 +49,7 @@ class Product extends React.Component {
                 }
             }
             // replace previous states with updated states
-            await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
+            await AsyncStorage.setItem(this.storageKey, JSON.stringify(json));
             
         } catch(error) {
             console.log(error);
@@ -89,16 +90,20 @@ class Product extends React.Component {
     }
 }
 
-const CurrentListScreen = ({ navigation }) => {
+const CurrentListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
+
     const [data, setData] = useState([]);
     const [showModal, setShowModal] = useState(false);
+
+    const { storageKey } = route.params;
     
-
-
     const renderProduct = ({ item }) => {
         return (
-        <Product item={item}/>
+        <Product 
+            item={item}
+            storageKey={storageKey}
+        />
         );
     };
     
@@ -107,7 +112,7 @@ const CurrentListScreen = ({ navigation }) => {
     useEffect(() => {
         const getData = async () => {
             try {
-                const data = await AsyncStorage.getItem('@storage_Key')
+                const data = await AsyncStorage.getItem(storageKey)
                 if(data !== null) {
                     var json = JSON.parse(data);
                     setData(json);
@@ -130,7 +135,7 @@ const CurrentListScreen = ({ navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('SelectStore')}  
+                    onPress={() => navigation.navigate(storageKey)}  
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
