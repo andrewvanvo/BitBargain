@@ -4,7 +4,9 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Pressable, B
 import { useNavigation } from '@react-navigation/native';
 
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
-import { firestore } from '../firebase';
+import { db } from '../firebase';
+import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
+import { debugErrorMap } from 'firebase/auth';
 
 class List extends React.Component {
     constructor(props) {
@@ -14,10 +16,11 @@ class List extends React.Component {
         this.dbProducts = props.savedProducts //product collection snapshot passed down
     }
     render() {
+        console.log(this.item)
         return (
             <Pressable style={styles.listTile} 
             onPress={()=>this.navigateToCurrentList(this.item)}>   
-                <Text>{this.item.listName}</Text>
+                <Text>{this.item.list_name}</Text>
             </Pressable>
         );
     }
@@ -26,7 +29,7 @@ class List extends React.Component {
         var cartItems = [];
         try {
             //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
-            this.item.productArray.forEach((product) =>{
+            this.item.product_array.forEach((product) =>{
                 //productList.push(product)
                 //console.log(product)
                 this.props.dbProducts.forEach((dbproduct)=>{
@@ -39,8 +42,6 @@ class List extends React.Component {
             })
             //console.log(this.props.dbProducts)
             //console.log(cartItems)
-
-
 
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
             //console.log(test)
@@ -57,7 +58,7 @@ const SavedListsScreen = ({navigation}) => {
     
     //dynamically update list of saved lists
     useEffect(() => {
-        const listsRef = collection(firestore, 'SavedLists'); //name of collection
+        const listsRef = collection(db, 'saved_lists'); //name of collection
         const unsubscribe = onSnapshot(listsRef, (listsSnap) => {
             const savedLists= []
             listsSnap.forEach((doc) => {
@@ -70,7 +71,7 @@ const SavedListsScreen = ({navigation}) => {
     }, []);
 
     useEffect(() => {
-        const productsRef = collection(firestore, 'Products'); //name of collection
+        const productsRef = collection(db, 'products'); //name of collection
         const unsubscribe = onSnapshot(productsRef, (productsSnap) => {
             const savedProducts= []
             productsSnap.forEach((doc) => {
@@ -101,7 +102,7 @@ const SavedListsScreen = ({navigation}) => {
                     data={savedLists}
                     extraData = {savedProducts}
                     renderItem={renderList}
-                    keyExtractor={item => item.listName} //listname must be unique, ensure it is when saving list
+                    keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving list
 
                 />
             </View>
