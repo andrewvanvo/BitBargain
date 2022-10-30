@@ -71,9 +71,7 @@ const RegisterScreen = ( {navigation} ) => {
                 }}
             >
                 {(formikProps) => (
-                    <View>
-                        <Text>THIS IS THE REGISTER SCREEN</Text>
-                        
+                    <View>                        
                         <Text>Create New Account</Text>
                         <View style={styles.inputContainer}>
                             <TextInput

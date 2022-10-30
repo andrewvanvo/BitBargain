@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { collection, query, where, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
-import { firestore } from '../firebase';
+import { db } from '../firebase';
 
 
 const SelectStore = () => {
@@ -22,7 +22,7 @@ const SelectStore = () => {
 
   // READ - get all products by category
   getProducts = async () => {
-    const productRef = collection(firestore, 'products');
+    const productRef = collection(db, 'products');
     const productQuery = query(productRef, where(`categories.type`, '==', 'CPU'));
     const productSnap = await getDocs(productQuery);
 
@@ -35,7 +35,7 @@ const SelectStore = () => {
   
   // DELETE
   deleteProducts = async () => {
-    await deleteDoc(doc(firestore, 'products', 'some_document_id'));
+    await deleteDoc(doc(db, 'products', 'some_document_id'));
   }
 
 

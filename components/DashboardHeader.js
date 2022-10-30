@@ -35,15 +35,13 @@ export const DashboardHeader = ({ user }) => {
             </Text>
             <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
           </View>
-          <View>
+          <View style={{overflow: 'hidden', width: 40, height: 40, borderRadius: 20, marginRight: 15}}>
             <Image
               source={require("../assets/sample_images/profile-pic-sample.png")}
               resizeMode="cover"
               style={{
                 width: 40,
                 height: 40,
-                borderRadius: 20,
-                marginRight: 15,
               }}
             ></Image>
           </View>
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     // justifyContent: "space-between",
     // alignItems: "flex-start",
-    backgroundColor: "#6495ed",
+    backgroundColor: "steelblue",
     // marginTop:
     // paddingHorizontal: `5%`,
   },

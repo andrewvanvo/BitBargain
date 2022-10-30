@@ -98,7 +98,7 @@ export const DashboardFeed = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1.2,
-      backgroundColor: '#6495ed',
+      backgroundColor: 'steelblue',
 
     },
     item: {

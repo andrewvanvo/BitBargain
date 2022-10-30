@@ -12,6 +12,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/Ionicons";
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
+import UpdateScreen from './screens/UpdateScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -35,7 +36,7 @@ function HomeTabs() {
           <Icon name='list-outline' size={20} style={styles.icons}></Icon>
         </View>
       )}}/>
-      <Tab.Screen name="Update" component={CreateListScreen} options={{
+      <Tab.Screen name="Update" component={UpdateScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='barcode-outline' size={20} style={styles.icons}></Icon>
