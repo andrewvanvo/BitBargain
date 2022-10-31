@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Modal, TextInput} from 'react-native'
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
+
+
 
 
 class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
+        this.storageKey = props.storageKey;
         this.state = {
             quantity: props.item.quantity,
         };
@@ -30,7 +35,7 @@ class Product extends React.Component {
 
         try {
             // save current state to an array
-            const data = await AsyncStorage.getItem('@storage_Key');
+            const data = await AsyncStorage.getItem(this.storageKey);
 
             if(data !== null) {
                 json = JSON.parse(data);
@@ -44,7 +49,7 @@ class Product extends React.Component {
                 }
             }
             // replace previous states with updated states
-            await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
+            await AsyncStorage.setItem(this.storageKey, JSON.stringify(json));
             
         } catch(error) {
             console.log(error);
@@ -85,14 +90,20 @@ class Product extends React.Component {
     }
 }
 
-const CurrentListScreen = ({ navigation }) => {
+const CurrentListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
+
     const [data, setData] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
-
+    const { storageKey } = route.params;
+    
     const renderProduct = ({ item }) => {
         return (
-        <Product item={item}/>
+        <Product 
+            item={item}
+            storageKey={storageKey}
+        />
         );
     };
     
@@ -101,7 +112,7 @@ const CurrentListScreen = ({ navigation }) => {
     useEffect(() => {
         const getData = async () => {
             try {
-                const data = await AsyncStorage.getItem('@storage_Key')
+                const data = await AsyncStorage.getItem(storageKey)
                 if(data !== null) {
                     var json = JSON.parse(data);
                     setData(json);
@@ -124,11 +135,71 @@ const CurrentListScreen = ({ navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('SelectStore')}  
+                    onPress={() => navigation.navigate(storageKey)}  
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
             </View>
+
+            {/*reference: https://reactnative.dev/docs/modal */}
+            <Modal
+                animationType='fade'
+                transparent={true}              // we can set this to 'false', and it'll seem like a new screen
+                visible={showModal}
+                onRequestClose={() => {
+                    setShowModal(!showModal);
+                }}
+            >
+                <View style={styles.modalCenter}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalText}>Save new list as: </Text>
+                        
+                        <Formik
+                            initialValues={{listName: ''}}
+                            onSubmit={(fieldValue, actions) => {
+                                //
+                                // A function that'll send the named list to DB
+                                // console.log(data);
+                                console.log('this is the list name -- ', fieldValue.listName);
+                                setShowModal(!showModal)
+                                actions.resetForm();
+                            }}
+                        >
+                            {(formikProps) => (
+                                <View>
+                                    <TextInput
+                                        placeholder='Enter a name...'
+                                        value={formikProps.values.listName}
+                                        onChangeText={formikProps.handleChange('listName')}
+                                        style={styles.inputField}
+                                    />
+                                    <View style={{flexDirection: 'row'}}>
+                                        <TouchableOpacity
+                                            style={[styles.button, styles.cancelBtn]}
+                                            onPress={() => setShowModal(!showModal)}
+                                        >
+                                            <Text>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.button, styles.submitBtn]}
+                                            onPress={formikProps.handleSubmit}
+                                        >
+                                            <Text>Submit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+
+                        </Formik>
+                    </View>
+                </View>
+            </Modal>
+            <TouchableOpacity
+                style={{margin: 5}}
+                onPress={() => setShowModal(true)}
+            >
+                <Text style={styles.textStyle}>Save for later</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -215,5 +286,51 @@ const styles = StyleSheet.create({
         fontSize: 12,
         flex: 1, 
         textAlign: 'center'
-    }
+    },
+
+
+    // Save named list, modal
+    modalCenter: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+        
+      },
+      modalContainer: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'orange',
+        borderWidth: 2,
+        padding: 30,
+        alignItems: 'center',
+      },
+      button: {
+        borderRadius: 5,
+        padding: 10,
+        margin: 5,
+      },
+      cancelBtn: {
+        backgroundColor: 'lightgray',
+      },
+      submitBtn: {
+        backgroundColor: 'orange',
+      },
+      textStyle: {
+        color: 'blue',
+        fontWeight: 'bold',
+        textAlign: 'center'
+      },
+      modalText: {
+        textAlign: 'center'
+      },
+      inputField: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'orange',
+        borderWidth: 1,
+        marginVertical: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+      },
 });
