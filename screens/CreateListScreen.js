@@ -76,6 +76,7 @@ class Product extends React.Component {
                                     tags={this.props.tags}
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
+                                    remove={false}
                                 >
                                 </Tags>
                             )
@@ -90,30 +91,77 @@ class Product extends React.Component {
 class Tags extends React.Component {
     constructor(props) {
         super(props);
-        // console.log(props.tag)
         this.item = props.item
+        this.remove = props.remove
+        this.productCopy = props.copy;
     }
 
-    getTags = (tag) => {
+    addTags = () => {
 
+
+        // add tag to tags list
         if(!(this.props.tags.includes(this.props.tag))) {
-            this.props.setTags(prevState => [...prevState, tag]);
+            this.props.setTags(prevState => [...prevState, this.props.tag]);
         }
-
         // filter the products
-
-        let cloneProducts = JSON.parse(JSON.stringify(this.props.productList))
+        // let cloneProducts = JSON.parse(JSON.stringify(this.props.productList));
+        let cloneProducts = this.props.productList;
         cloneProducts[0]['name'] = cloneProducts[0]['name'].filter(product => product['tags'].includes(this.props.tag));
+        
+        this.props.tags.forEach(tag => {
+            this.props.productList.slice(1).forEach(category => {
+                category['name'].forEach(product => {
+                    if(!(cloneProducts[0]['name'].includes(product)) && product['tags'].includes(this.props.tag)) {
+                        cloneProducts[0]['name'].push(product);
+                        // console.log(product.product_name);
+                        console.log(cloneProducts[0]['name'].includes(product), product['tags'], this.props.tag, ' --- ', product['tags'].includes(this.props.tag), '\n');
+                    }
+                });
+            });
+        });
+
 
         this.props.products(cloneProducts);
-        
+    }
+
+    removeTags = () => {
+        let cloneProducts = JSON.parse(JSON.stringify(this.props.productList))
+        cloneProducts[0]['name'] = [];
+
+        if(this.props.tags.includes(this.props.tag)) {
+            let newTags = this.props.tags.filter(tag => tag != this.props.tag);
+            console.log('new set of tags --- ', newTags);
+            this.props.setTags(newTags);
+        }
+        // console.log('should be same as above --- ', this.props.tags, this.props.tags.length, this.props.tag);
+        // console.log('current list of items --- ', cloneProducts[0]['name']);
+
+        if(this.props.tags.length > 1) {
+            this.props.tags.forEach(tag => {
+                if(tag != this.props.tag) {
+                    // console.log('tag is -- ', tag);
+                    this.props.productList.slice(1).forEach(category => {
+                        category['name'].forEach(product => {
+                            if(product['tags'].includes(tag)) {
+                                cloneProducts[0]['name'].push(product);
+                            }
+                        });
+                    });
+                }
+            });
+        } else {
+            this.props.productList.slice(1).forEach(category => {
+                cloneProducts[0]['name'] = cloneProducts[0]['name'].concat(category['name']);
+            });
+        }
+        this.props.products(cloneProducts);
     }
 
     render() {
         return(
             <TouchableOpacity 
                 style={{backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black'}}
-                onPress={() => this.getTags(this.props.tag)}
+                onPress={() => this.remove ? this.removeTags() : this.addTags()}
             >
                 <Text>{this.props.tag}</Text>
             </TouchableOpacity>
@@ -244,14 +292,19 @@ const CreateListScreen = ({navigation}) => {
     };
 
     var tagContainer = [];
+
     if(selectedCategory == 0) {
         tagContainer.push(
             tags.map((tag, index) => {
               return (
                 <Tags 
                     tag={tags[index]}
-                    tags={tags} 
+                    tags={tags}
+                    setTags={setTags} 
                     key={index}
+                    remove={true}
+                    products={setWholeList}
+                    productList={wholeList}
                 >
                 </Tags>
               )  
