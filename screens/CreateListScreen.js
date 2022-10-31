@@ -98,63 +98,59 @@ class Tags extends React.Component {
 
     addTags = () => {
 
+        let newProducts = new Set();
+        let currProducts = this.props.productList;
 
-        // add tag to tags list
         if(!(this.props.tags.includes(this.props.tag))) {
             this.props.setTags(prevState => [...prevState, this.props.tag]);
         }
-        // filter the products
-        // let cloneProducts = JSON.parse(JSON.stringify(this.props.productList));
-        let cloneProducts = this.props.productList;
-        cloneProducts[0]['name'] = cloneProducts[0]['name'].filter(product => product['tags'].includes(this.props.tag));
-        
-        this.props.tags.forEach(tag => {
-            this.props.productList.slice(1).forEach(category => {
-                category['name'].forEach(product => {
-                    if(!(cloneProducts[0]['name'].includes(product)) && product['tags'].includes(this.props.tag)) {
-                        cloneProducts[0]['name'].push(product);
-                        // console.log(product.product_name);
-                        console.log(cloneProducts[0]['name'].includes(product), product['tags'], this.props.tag, ' --- ', product['tags'].includes(this.props.tag), '\n');
-                    }
-                });
-            });
+
+        currProducts.slice(1).forEach(category => {
+            category['name'].forEach(product => {
+                if(product['tags'].includes(this.props.tag)) {
+                    newProducts.add(product);
+                }
+            })
         });
 
+        let productArray = Array.from(newProducts);
+        currProducts[0]['name'] = productArray;
 
-        this.props.products(cloneProducts);
+        this.props.products(currProducts);
     }
 
     removeTags = () => {
-        let cloneProducts = JSON.parse(JSON.stringify(this.props.productList))
-        cloneProducts[0]['name'] = [];
+
+        let newProducts = new Set();
+        let currProducts = this.props.productList;
 
         if(this.props.tags.includes(this.props.tag)) {
             let newTags = this.props.tags.filter(tag => tag != this.props.tag);
-            console.log('new set of tags --- ', newTags);
             this.props.setTags(newTags);
         }
-        // console.log('should be same as above --- ', this.props.tags, this.props.tags.length, this.props.tag);
-        // console.log('current list of items --- ', cloneProducts[0]['name']);
 
         if(this.props.tags.length > 1) {
             this.props.tags.forEach(tag => {
                 if(tag != this.props.tag) {
-                    // console.log('tag is -- ', tag);
                     this.props.productList.slice(1).forEach(category => {
                         category['name'].forEach(product => {
                             if(product['tags'].includes(tag)) {
-                                cloneProducts[0]['name'].push(product);
+                                newProducts.add(product);
                             }
-                        });
-                    });
+                        })
+                    })
                 }
             });
         } else {
             this.props.productList.slice(1).forEach(category => {
-                cloneProducts[0]['name'] = cloneProducts[0]['name'].concat(category['name']);
+                category['name'].forEach(product => newProducts.add(product));
             });
         }
-        this.props.products(cloneProducts);
+
+        let productArray = Array.from(newProducts);
+        currProducts[0]['name'] = productArray;
+
+        this.props.products(currProducts);
     }
 
     render() {
