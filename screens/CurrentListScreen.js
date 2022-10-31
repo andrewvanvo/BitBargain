@@ -45,9 +45,15 @@ class Product extends React.Component {
                 if(item.quantity < 1) {
                     const index = json.indexOf(item);
                     json.splice(index, 1);
+
+                    if(this.props.data.length == 1) {
+                        json = [];
+                    }
+                    this.props.setData(json);
                 }
             }
             // replace previous states with updated states
+            
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
             
         } catch(error) {
@@ -58,7 +64,9 @@ class Product extends React.Component {
     render() {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
-        return this.state.quantity < 1 ? null : (
+
+        return (
+        // return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile]}>
                 <Image
                     source={{uri: this.item.image_url}}
@@ -93,12 +101,14 @@ const CurrentListScreen = ({ navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
     const [data, setData] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    
-
 
     const renderProduct = ({ item }) => {
         return (
-        <Product item={item}/>
+        <Product 
+            item={item}
+            data={data}
+            setData={setData}
+        />
         );
     };
     
@@ -155,7 +165,6 @@ const CurrentListScreen = ({ navigation }) => {
                                 //
                                 // A function that'll send the named list to DB
                                 // console.log(data);
-                                console.log('this is the list name -- ', fieldValue.listName);
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}
