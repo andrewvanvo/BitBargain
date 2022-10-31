@@ -6,8 +6,6 @@ import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
 
-
-
 class Product extends React.Component {
     constructor(props) {
         super(props);
@@ -18,16 +16,12 @@ class Product extends React.Component {
     }
     addProduct = () => {
         this.setState({quantity: this.state.quantity + 1});
+        this.updateData();
     }
     removeProduct = () => {
         this.setState({quantity: this.state.quantity - 1});
-        
-    }
-
-    // when states are changed, make an update to async storage
-    componentDidUpdate() {
         this.updateData();
-      }
+    }
 
     updateData = async () => {
         var json;
@@ -45,15 +39,9 @@ class Product extends React.Component {
                 if(item.quantity < 1) {
                     const index = json.indexOf(item);
                     json.splice(index, 1);
-
-                    if(this.props.data.length == 1) {
-                        json = [];
-                    }
-                    this.props.setData(json);
                 }
             }
             // replace previous states with updated states
-            
             await AsyncStorage.setItem('@storage_Key', JSON.stringify(json));
             
         } catch(error) {
@@ -65,8 +53,7 @@ class Product extends React.Component {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
 
-        return (
-        // return this.state.quantity < 1 ? null : (
+        return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile]}>
                 <Image
                     source={{uri: this.item.image_url}}
@@ -111,7 +98,7 @@ const CurrentListScreen = ({ navigation }) => {
         />
         );
     };
-    
+
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
     useEffect(() => {
