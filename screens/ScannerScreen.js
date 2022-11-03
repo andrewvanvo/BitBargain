@@ -25,25 +25,39 @@ export default function ScannerScreen() {
   }
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
+    //modify for error handling if access permission not granted. Ask again?
   }
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      <View style ={styles.viewBox}>
+          <BarCodeScanner
+            style = {styles.scanner}
+            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          />
+      </View>
+      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} color= 'blue' />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
     container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 50,
+      flex: 1,
+      alignItems: 'center',
+      padding: 50,
+      justifyContent: 'top',
     },
-
+    scanner: {
+      height: 400,
+      width: 400,
+    },
+    viewBox:{
+      alignItems:'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      height: 300,
+      width: 300,
+      borderRadius: 30,
+    }
 });
