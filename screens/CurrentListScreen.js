@@ -92,9 +92,6 @@ const CurrentListScreen = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const { storageKey } = route.params;
-
-
-    const { storageKey } = route.params;
     
     const renderProduct = ({ item }) => {
         return (
