@@ -36,7 +36,7 @@ export default function ScannerScreen() {
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           />
       </View>
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} color= 'blue' />}
+      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
     </View>
   );
 }
