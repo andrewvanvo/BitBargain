@@ -12,7 +12,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/Ionicons";
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
-import NamedListScreen from './screens/NamedListScreen';
+import SavedListsScreen from './screens/SavedListsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -42,7 +42,7 @@ function HomeTabs() {
           <Icon name='barcode-outline' size={20} style={styles.icons}></Icon>
         </View>
       )}} />
-      <Tab.Screen name="Saved" component={NamedListScreen} options={{
+      <Tab.Screen name="Saved" component={SavedListsScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='bookmark-outline' size={20} style={styles.icons}></Icon>
@@ -68,7 +68,8 @@ export default function App() {
         <Stack.Screen name="CreateList" component={CreateListScreen} />
         <Stack.Screen name="CurrentList" component={CurrentListScreen} />
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
-        <Stack.Screen name="NamedList" component={NamedListScreen} />
+        <Stack.Screen name="SavedLists" component={SavedListsScreen} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
