@@ -19,16 +19,12 @@ class Product extends React.Component {
     }
     addProduct = () => {
         this.setState({quantity: this.state.quantity + 1});
+        this.updateData();
     }
     removeProduct = () => {
         this.setState({quantity: this.state.quantity - 1});
-        
-    }
-
-    // when states are changed, make an update to async storage
-    componentDidUpdate() {
         this.updateData();
-      }
+    }
 
     updateData = async () => {
         var json;
@@ -59,6 +55,7 @@ class Product extends React.Component {
     render() {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
+
         return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile]}>
                 <Image
@@ -92,9 +89,10 @@ class Product extends React.Component {
 
 const CurrentListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
-
     const [data, setData] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const { storageKey } = route.params;
+
 
     const { storageKey } = route.params;
     
@@ -103,10 +101,13 @@ const CurrentListScreen = ({ route, navigation }) => {
         <Product 
             item={item}
             storageKey={storageKey}
+            data={data}
+            setData={setData}
+
         />
         );
     };
-    
+
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
     useEffect(() => {
@@ -160,7 +161,6 @@ const CurrentListScreen = ({ route, navigation }) => {
                                 //
                                 // A function that'll send the named list to DB
                                 // console.log(data);
-                                console.log('this is the list name -- ', fieldValue.listName);
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}
