@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-} from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import { auth, db } from "../firebase/";
 import {
   getAdditionalUserInfo,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { collection, getDoc, doc, where, query } from "firebase/firestore";
+import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter } from "firebase/firestore";
 
-
-import { DashboardHeader } from '../components/DashboardHeader'
+import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardFeed } from "../components/DashboardFeed";
 
 const DashboardScreen = ({}) => {
   const [user, setUser] = useState({ fname: "Unknown", rank: "Unknown" });
-
+  const [dataSource, setDataSource] = useState([]);
+  const [lastDocument, setLastDocument] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -35,10 +34,50 @@ const DashboardScreen = ({}) => {
     return unsubscribe;
   }, []);
 
+
+  const getData = async () => {
+    try {
+      const first = query(collection(db, 'system_activity'), orderBy('key'), limit(3));
+      const documentSnapshots = await getDocs(first)
+      let documentData = documentSnapshots.docs.map(document => document.data());
+      setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
+      setDataSource(documentData)
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+ 
+
+  const getMore = async () => {
+    try {
+      if (lastDocument != null) {
+        console.log('Trying to retrieve more data!')
+        const next = query(collection(db, 'system_activity'), orderBy('key'), startAfter(lastDocument), limit(1))
+        const documentSnapshots = await getDocs(next)
+        let documentData = documentSnapshots.docs.map(document => document.data());
+        setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
+        setDataSource([...documentData, ...dataSource, ])
+        console.log('Success!')
+
+      }
+      else{
+        console.log('There is no more data!')
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, [])
+  
   return (
     <View style={styles.mainContainer}>
-        <DashboardHeader user={user} />
-        <DashboardFeed />
+      <DashboardHeader user={user} />
+      <DashboardFeed DATA={dataSource} refresh={refresh} onRefresh={getMore} />
     </View>
   );
 };
@@ -46,12 +85,11 @@ const DashboardScreen = ({}) => {
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
-    //https://reactnative.dev/docs/colors for named color palette
+  //https://reactnative.dev/docs/colors for named color palette
 
   //TOP LEVEL CONTAINER
   mainContainer: {
     flex: 1,
     flexDirection: "column",
   },
-
 });
