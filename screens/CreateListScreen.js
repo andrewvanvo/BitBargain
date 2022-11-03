@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-
 import { useNavigation } from '@react-navigation/native';
 import { array } from 'yup';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
-import { firestore } from '../firebase';
+import { db } from '../firebase';
 
 
 // MOCK DATA: different type of products under a specific category 
@@ -117,7 +117,7 @@ const CreateListScreen = ({navigation}) => {
 
     // dynamically update data for the product flatlist
     useEffect(() => {
-        const productRef = collection(firestore, 'products');
+        const productRef = collection(db, 'products');
         const unsubscribe = onSnapshot(productRef, (productSnap) => {
             var product_data_experimental = [
                 {id: 0, name: [], category: 'CPU'}, 
@@ -145,7 +145,7 @@ const CreateListScreen = ({navigation}) => {
 
     // dynamically update data for the category flatlist 
     useEffect(() => {
-        const categoryRef = collection(firestore, 'categories');
+        const categoryRef = collection(db, 'categories');
         const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
             const categories = [];
             categorySnap.forEach((doc) => {
