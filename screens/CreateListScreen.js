@@ -77,6 +77,7 @@ class Product extends React.Component {
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
                                     remove={false}
+
                                 >
                                 </Tags>
                             )
@@ -151,6 +152,7 @@ class Tags extends React.Component {
         currProducts[0]['name'] = productArray;
 
         this.props.products(currProducts);
+
     }
 
     render() {
@@ -158,6 +160,7 @@ class Tags extends React.Component {
             <TouchableOpacity 
                 style={{backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black'}}
                 onPress={() => this.remove ? this.removeTags() : this.addTags()}
+
             >
                 <Text>{this.props.tag}</Text>
             </TouchableOpacity>
@@ -166,6 +169,7 @@ class Tags extends React.Component {
 }
 
 const CreateListScreen = ({navigation}) => {
+
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [canContinue, setCanContinue] = useState(false);
 
@@ -301,6 +305,7 @@ const CreateListScreen = ({navigation}) => {
                     remove={true}
                     products={setWholeList}
                     productList={wholeList}
+
                 >
                 </Tags>
               )  

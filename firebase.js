@@ -17,6 +17,7 @@ const firebaseConfig = {
 };
 
 
+
 // Initialize Firebase
 let app = initializeApp(firebaseConfig);
 let auth = getAuth(app);

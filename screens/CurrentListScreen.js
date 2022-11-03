@@ -6,6 +6,8 @@ import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
 
+
+
 class Product extends React.Component {
     constructor(props) {
         super(props);
@@ -91,6 +93,9 @@ const CurrentListScreen = ({ route, navigation }) => {
     const [showModal, setShowModal] = useState(false);
     const { storageKey } = route.params;
 
+
+    const { storageKey } = route.params;
+    
     const renderProduct = ({ item }) => {
         return (
         <Product 
@@ -98,6 +103,7 @@ const CurrentListScreen = ({ route, navigation }) => {
             storageKey={storageKey}
             data={data}
             setData={setData}
+
         />
         );
     };
@@ -130,7 +136,7 @@ const CurrentListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('SelectStore')}  
+                    onPress={() => navigation.navigate(storageKey)}  
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
