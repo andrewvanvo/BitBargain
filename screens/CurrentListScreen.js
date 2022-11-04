@@ -157,7 +157,7 @@ const CurrentListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate(storageKey)}  
+                    onPress={() => navigation.navigate('SelectStore', {storageKey: '@storage_Key1'})}
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
