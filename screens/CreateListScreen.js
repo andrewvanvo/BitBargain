@@ -265,6 +265,7 @@ const CreateListScreen = ({navigation}) => {
             const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
+
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
                 });
@@ -287,7 +288,8 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-        
+
+        //console.log(cartItems)
         navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 
