@@ -19,7 +19,7 @@ class List extends React.Component {
         this.dbProducts = props.savedProducts //product collection snapshot passed down
     }
     render() {
-        console.log(this.item)
+        //console.log(this.item)
         return (
             <Pressable style={styles.listTile} 
             onPress={()=>this.navigateToCurrentList(this.item)}>   

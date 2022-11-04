@@ -5,6 +5,9 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
+import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
+import { db } from '../firebase';
+
 
 
 
@@ -105,6 +108,27 @@ const CurrentListScreen = ({ route, navigation }) => {
         );
     };
 
+    //Form Submission to DB fn
+    const submitToDatabase = (fieldValue) =>{
+        var passingData = {data}
+        //console.log(passingData)
+
+        var formattedProdId = []
+        passingData['data'].forEach((product) => {
+            formattedProdId.push(product['product_id']);
+        });
+        //console.log(formattedProdId)
+
+        const docRef = addDoc(collection(db,'saved_lists'),{
+            list_name: fieldValue['listName'],
+            product_array: formattedProdId
+            //set up user_id field later
+
+        })
+
+    }
+
+
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
     useEffect(() => {
@@ -155,9 +179,9 @@ const CurrentListScreen = ({ route, navigation }) => {
                         <Formik
                             initialValues={{listName: ''}}
                             onSubmit={(fieldValue, actions) => {
-                                //
                                 // A function that'll send the named list to DB
-                                // console.log(data);
+                                submitToDatabase(fieldValue)
+
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}
