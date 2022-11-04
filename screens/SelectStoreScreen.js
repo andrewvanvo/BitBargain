@@ -4,16 +4,15 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Modal, TextI
 import Icon from 'react-native-vector-icons/Ionicons';
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
-import { async } from '@firebase/util';
 
 class Store extends React.Component {
   constructor(props) {
     super(props);
     this.item = props.item;
-    this.store_id = props.item.store_id;
-    this.store_name = props.item.store_name;
-    this.storeProducts = props.productInfo.storeProducts;
-    this.totalPrice = props.productInfo.totalPrice;
+    this.storeId = props.item.store_id;
+    this.storeName = props.item.store_name;
+    this.storeProducts = props.item.storeProducts;
+    this.totalPrice = props.item.totalPrice;
     this.state = {
       showModal: false,
     };
@@ -32,7 +31,7 @@ class Store extends React.Component {
           <Text>{product.item.productName}</Text>
         </View>
         <View style={{flex: 1}}>
-          <Text>${product.item.productPrice}</Text>
+          <Text>{product.item.productPrice}</Text>
         </View>
       </View>
     );
@@ -42,14 +41,14 @@ class Store extends React.Component {
     return (
       <View>
         <TouchableOpacity
-          style={[styles.storeTile, {backgroundColor: this.store_id === this.props.state ? 'orange' : 'white'}]}
-          onPress={() => this.props.setState(this.store_id)}
+          style={[styles.storeTile, {backgroundColor: this.storeId === this.props.state ? 'orange' : 'white'}]}
+          onPress={() => this.props.setState(this.storeId)}
         >
           <View style={[styles.spacer,]}>
-            <Text style={styles.text}>{this.store_name}</Text>
+            <Text style={styles.text}>{this.storeName}</Text>
           </View>
           <View style={[styles.spacer,]}>
-            <Text style={styles.text}>{this.totalPrice}</Text>
+            <Text style={styles.text}>{'$'+String(this.totalPrice)}</Text>
           </View>
           <TouchableOpacity>
             <Icon 
@@ -68,7 +67,7 @@ class Store extends React.Component {
           >
             <View style={styles.modalCenter}>
               <View style={[styles.modalContainer, {padding: 0, height: 400}]}>
-                <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>{this.store_name}</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>{this.storeName}</Text>
                 <View style={{flex: 15, backgroundColor: 'white', width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 15}}>
                   <FlatList
                     data={this.storeProducts}
@@ -93,12 +92,10 @@ class Store extends React.Component {
 }
 
 const SelectStore = ({ route, navigation }) => {
-
   const { storageKey } = route.params;
   const [data, setData] = useState([]);
   const [allStores, setAllStores] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(0);
-
 
   useEffect(() => {
     const storeRef = collection(db, 'stores');
@@ -110,10 +107,8 @@ const SelectStore = ({ route, navigation }) => {
         setAllStores(stores);
         // console.log(stores);
     });
-
     return () => unsubscribe();
   }, []);
-
 
   // get list of selected products that were stored in AsyncStorage
   useEffect(() => {
@@ -130,10 +125,8 @@ const SelectStore = ({ route, navigation }) => {
     getData();
   }, []);
 
-  
   const assignProducts = (item) => {
     let storeID = item.store_id;
-    
     let totalPrice = 0;
     let storeProducts = [];
 
@@ -151,24 +144,24 @@ const SelectStore = ({ route, navigation }) => {
           storeProducts.push(storeProduct);
         }
       });
-      
     });
+    item.storeProducts = storeProducts;
+    item.totalPrice = totalPrice;
+  }
 
-    if(totalPrice == 0) {
-      totalPrice = 'Coming soon!';
-    } else {
-      totalPrice = '$'+String(totalPrice);
-    }
-
-    return {storeProducts: storeProducts, totalPrice: totalPrice};
+  const sortStorage = () => {
+    allStores.forEach(store => assignProducts(store));    
+    return allStores.sort((a, b) => a.totalPrice - b.totalPrice);
   }
 
   const renderStores = ( {item} ) => {
+    if(item.totalPrice === 0){        // don't show the store, if it carries no products of interest.
+      return null;
+    }
     return (
       <Store
         item={item}
         storageKey={storageKey}
-        productInfo={assignProducts(item)}
         state={selectedCategory}
         setState={setSelectedCategory}
       >
@@ -180,7 +173,7 @@ const SelectStore = ({ route, navigation }) => {
     <View style={styles.mainContainer}>
       <View style={styles.flatListView}>
         <FlatList
-          data={allStores}
+          data={sortStorage()}
           renderItem={renderStores}
           keyExtractor={store => store.store_id}
         >
