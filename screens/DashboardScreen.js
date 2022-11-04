@@ -29,7 +29,8 @@ const DashboardScreen = ({}) => {
           const userCollection = doc(db, "Users", uid);
           const userSnapshot = await getDoc(userCollection);
           setUser(userSnapshot.data());
-          console.log("useEffect success");
+          //console.log("useEffect success");
+          //Uses Secure Store
           storeUser(key, uid)
           
         };

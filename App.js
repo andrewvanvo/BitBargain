@@ -17,6 +17,7 @@ import SavedListsScreen from './screens/SavedListsScreen';
 //TEST
 import ScannerScreen from './screens/ScannerScreen';
 import TestingScreen from './screens/TestingScreen';
+import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -40,7 +41,7 @@ function HomeTabs() {
           <Icon name='list-outline' size={20} style={styles.icons}></Icon>
         </View>
       )}}/>
-      <Tab.Screen name="Update" component={CreateListScreen} options={{
+      <Tab.Screen name="Update" component={UpdateSelectStoreScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='barcode-outline' size={20} style={styles.icons}></Icon>
@@ -86,6 +87,7 @@ export default function App() {
         {/*TEST SCREENs*/}
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
+        <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
 
         
       </Stack.Navigator>
