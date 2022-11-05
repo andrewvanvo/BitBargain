@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
 import SavedListsScreen from './screens/SavedListsScreen';
+import NamedListScreen from './screens/NamedListScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -69,7 +70,7 @@ export default function App() {
         <Stack.Screen name="CurrentList" component={CurrentListScreen} />
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
         <Stack.Screen name="SavedLists" component={SavedListsScreen} />
-        
+        <Stack.Screen name="NamedList" component={NamedListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

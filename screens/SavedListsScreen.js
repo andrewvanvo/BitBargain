@@ -16,16 +16,15 @@ class List extends React.Component {
         this.dbProducts = props.savedProducts //product collection snapshot passed down
     }
     render() {
-        console.log(this.item)
         return (
             <Pressable style={styles.listTile} 
-            onPress={()=>this.navigateToCurrentList(this.item)}>   
+            onPress={()=>this.navigateToNamedList(this.item)}>   
                 <Text>{this.item.list_name}</Text>
             </Pressable>
         );
     }
 
-    navigateToCurrentList = async(item)=>{
+    navigateToNamedList = async(item)=>{
         var cartItems = [];
         try {
             //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
@@ -43,13 +42,13 @@ class List extends React.Component {
             //console.log(this.props.dbProducts)
             //console.log(cartItems)
 
-            await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+            await AsyncStorage.setItem('@named_list', JSON.stringify(cartItems));
             //console.log(test)
             //console.log(cartItems);
         } catch (error){
             console.log(error);
         }
-        this.navigation.navigate('CurrentList', {storageKey: '@storage_Key'});
+        this.navigation.navigate('NamedList', {storageKey: '@named_list'});
     };
 }
 const SavedListsScreen = ({navigation}) => {
