@@ -62,9 +62,9 @@ export const DashboardFeed = ({dataSource, refresh, onRefresh}) => {
     navigation.navigate('CommentScreen')
   }
 
-  const renderItem = ({item}, pushCommentScreen) => (
-    <Item item={item} pushCommentScreen={pushCommentScreen} />
-    // <Card item={item} pushCommentScreen={pushCommentScreen} />
+  const renderItem = ({item}) => (
+    // <Item item={item} pushCommentScreen={pushCommentScreen} />
+    <Card item={item} />
   );
 
   return (
