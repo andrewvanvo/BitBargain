@@ -19,7 +19,7 @@ class Store extends React.Component {
   }
 
   setShowModal = (show) => {
-    this.setState({ showModal: show});
+    this.setState({showModal: show});
   }
 
   renderProducts = (product) => {
@@ -49,6 +49,9 @@ class Store extends React.Component {
           </View>
           <View style={[styles.spacer,]}>
             <Text style={styles.text}>{'$'+String(this.totalPrice)}</Text>
+          </View>
+          <View>
+            <Text>{this.storeProducts.length} / {this.props.item.totalItems}</Text>
           </View>
           <TouchableOpacity>
             <Icon 
@@ -147,6 +150,7 @@ const SelectStore = ({ route, navigation }) => {
     });
     item.storeProducts = storeProducts;
     item.totalPrice = totalPrice;
+    item.totalItems = data.length;
   }
 
   const sortStorage = () => {

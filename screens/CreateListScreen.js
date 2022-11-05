@@ -283,7 +283,6 @@ const CreateListScreen = ({navigation}) => {
                     cartItems.push(product);
                 }
             });
-
             await AsyncStorage.setItem('@storage_Key1', JSON.stringify(cartItems));
         } catch (error) {
             console.log(error);

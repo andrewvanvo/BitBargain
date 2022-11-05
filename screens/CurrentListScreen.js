@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Modal, TextInput} from 'react-native'
 import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { useNavigation } from '@react-navigation/native';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebase';
@@ -19,14 +18,25 @@ class Product extends React.Component {
         this.storageKey = props.storageKey;
         this.state = {
             quantity: props.item.quantity,
+            showModal: false,
+            selectedStore: 'selectedStore' in props.item ? props.item.selectedStore : 'Select Store',
+            price: 'price' in props.item ? props.item.price : '- - -',
         };
     }
-    addProduct = () => {
-        this.setState({quantity: this.state.quantity + 1});
+
+    updateQuantity = (quantity) => {
+        this.setState({quantity: quantity});
         this.updateData();
     }
-    removeProduct = () => {
-        this.setState({quantity: this.state.quantity - 1});
+
+    setShowModal = (show) => {
+        this.setState({showModal: show});
+      }
+
+    selectStore = (store) => {
+        this.setState({selectedStore: store.store_name});
+        this.setState({price: '$'+store.price});
+        this.setShowModal(!this.state.showModal);
         this.updateData();
     }
 
@@ -42,6 +52,10 @@ class Product extends React.Component {
 
                 var item = json.find(item => item.product_id === this.item.product_id);
                 item.quantity = this.state.quantity;
+                item.selectedStore = this.state.selectedStore;
+                item.price = this.state.price;
+
+                // console.log(item);
                 
                 if(item.quantity < 1) {
                     const index = json.indexOf(item);
@@ -56,6 +70,26 @@ class Product extends React.Component {
         }
     }
 
+    renderStore = (store) => {
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => this.selectStore(store.item)}
+                    style={{ backgroundColor: 'orange', borderRadius: 5, margin: 5, padding: 10}}
+                >
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center'}}>
+                        <View style={{margin: 5}}>
+                            <Text>{store.item.store_name}</Text>
+                        </View>
+                        <View style={{margin: 5}}>
+                            <Text>${store.item.price}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     render() {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
@@ -66,25 +100,87 @@ class Product extends React.Component {
                     source={{uri: this.item.image_url}}
                     style={styles.productImg}
                 />
+
+                
                 <View style={styles.otherStuff}>
                     <View style={styles.productNameContainer}>
                         <Text style={styles.productName}>{this.item.product_name}</Text>
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            onPress={this.removeProduct}
-                            style={styles.adjustBtns}
+
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{flexDirection: 'row', borderRadius: 5, backgroundColor: 'white', padding: 5, 
+                                        marginRight: 20, borderWidth: 1,  borderColor: 'orange', elevation: 5}}
                         >
-                            <Text>-</Text>
+                            <Text style={{fontSize: 15}}>Qty: </Text>
+                            <ModalDropdown
+                                options={['0 (Delete)', '1', '2', '3', '4', '5']}
+                                animated={true}
+                                defaultValue={this.state.quantity}
+                                style={{borderRadius: 5, backgroundColor: 'white',}}
+                                textStyle={{fontSize: 15, borderBottomWidth: 1, borderColor: 'blue'}}
+                                dropdownStyle={{width: 60, borderColor: 'orange', borderWidth: 1}}
+                                dropdownTextStyle={{textAlign: 'center'}}
+                                showsVerticalScrollIndicator={false}
+                                onSelect={(value) => this.updateQuantity(value)}
+                            >
+                            </ModalDropdown>
+                        </View>
+
+                        <View style={{borderRadius: 5, backgroundColor: 'white', padding: 5, 
+                                        marginTop: 0, borderWidth: 1.5,  borderColor: 'orange',}}>
+                            <TouchableOpacity
+                                onPress={() => this.updateQuantity(0)}
+                            >
+                                <Text>Delete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+
+
+                    <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity
+                            style={{borderRadius: 5, backgroundColor: 'white', padding: 5, marginTop: 10, borderWidth: 1.5,  borderColor: 'orange'}}
+                            onPress={() => this.setShowModal(!this.state.showModal)}
+                        >
+                            <Text>{this.state.selectedStore}</Text>
                         </TouchableOpacity>
-                        <Text style={styles.productQuantity}>{this.state.quantity}</Text>
                         <TouchableOpacity
-                            onPress={this.addProduct}
-                            style={styles.adjustBtns}
+                            style={{borderRadius: 5, backgroundColor: 'white', padding: 5, marginTop: 10, borderColor: 'orange', borderWidth: 1.5, marginLeft: 10}}
                         >
-                            <Text>+</Text>
+                            <Text>{this.state.price}</Text>
                         </TouchableOpacity>
                     </View>
+                    <Modal
+                        animationType='fade'
+                        transparent={true}
+                        visible={this.state.showModal}
+                        onRequestClose={() => this.setShowModal(!this.state.showModal)}
+                    >
+                        <View style={styles.modalCenter}>
+
+                            {/* <View style={{height: 50, flexGrow: 0, backgroundColor: 'white'}}> */}
+                                <FlatList
+                                    data={this.item.stores_carrying.sort((store1, store2) => store1.price - store2.price)}
+                                    renderItem={this.renderStore}
+                                    keyExtractor={store => store.store_id}
+                                    style={{flexGrow: 0, backgroundColor: 'white', borderRadius: 5, padding: 10}}
+                                >
+                                </FlatList>
+
+                                {/* <TouchableOpacity
+                                    style={{flex: 1, borderRadius: 5, backgroundColor: 'orange', padding: 5, marginVertical: 15}}
+                                    onPress={() => this.setShowModal(!this.state.showModal)}
+                                >
+                                    <Text>Cancel</Text>
+                                </TouchableOpacity> */}
+
+                            {/* </View> */}
+
+                        </View>
+                    </Modal>
+
+
                 </View>
             </View>
         );
@@ -97,22 +193,47 @@ const CurrentListScreen = ({ route, navigation }) => {
     const [userID, setUserID] = useState (null);
 
     const [showModal, setShowModal] = useState(false);
-    const { storageKey } = route.params;
+    const {storageKey} = route.params;
 
+    const [allStores, setAllStores] = useState([]);
 
+    // get all existing stores from db
+    useEffect(() => {
+        const storeRef = collection(db, 'stores');
+        const unsubscribe = onSnapshot(storeRef, (storeSnap) => {
+            const stores = [];
+            storeSnap.forEach((doc) => {
+              stores.push(doc.data());
+            });
+            setAllStores(stores);
+            // console.log(stores);
+        });
+        return () => unsubscribe();
+      }, []);
+
+    const findStores = (product) => {
+
+        product.stores_carrying.forEach(store => {
+            allStores.forEach(storeAll => {
+                if(store.store_id === storeAll.store_id) {
+                    store.store_name = storeAll.store_name;
+                }
+            });
+        })
+        return product;
+    }
    
     const renderProduct = ({ item }) => {
         return (
         <Product 
-            item={item}
+            item={findStores(item)}
             storageKey={storageKey}
             data={data}
             setData={setData}
-
+            stores={allStores}
         />
         );
     };
-
 
     //Form Submission to DB fn
     const submitToDatabase = (fieldValue) =>{
@@ -132,7 +253,6 @@ const CurrentListScreen = ({ route, navigation }) => {
          
         })
     }
-
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
     useEffect(() => {
@@ -160,7 +280,7 @@ const CurrentListScreen = ({ route, navigation }) => {
                     setUserID(result)
                     
                 } else {
-                    console.log('no key exists')
+                    // console.log('no key exists')
                 }
             } catch(error) {
                 console.log(error);
@@ -168,9 +288,6 @@ const CurrentListScreen = ({ route, navigation }) => {
         }
         getUserID();
     }, []);
-
-
-
 
     return (
         <View style={styles.mainContainer}>
@@ -181,11 +298,11 @@ const CurrentListScreen = ({ route, navigation }) => {
                     keyExtractor={item => item.product_id}
                 />
             </View>
-            <View style={styles.selectStoreButton}>
+            <View style={styles.checkoutButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('SelectStore', {storageKey: '@storage_Key1'})}
+                    // onPress={}      // can navigate to 'checkout' if we want to.
                 >
-                    <Text>Select Store</Text>
+                    <Text>Checkout</Text>
                 </TouchableOpacity>
             </View>
 
@@ -300,19 +417,20 @@ const styles = StyleSheet.create({
     buttonContainer:{
         flexDirection: 'row',  
         alignItems: 'center',
+        justifyContent: 'space-between',
         flex: 1,
         backgroundColor: 'orange',
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: 'black',
+        // borderRadius: 5,
+        // borderWidth: 1,
+        // borderColor: 'black',
         width: '80%'
 
     },
-    selectStoreButton: {
+    checkoutButton: {
         borderRadius: 10,
         width: '30%',
         padding: 10,
-        margin: 15,
+        marginTop: 10,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'orange'
@@ -320,7 +438,7 @@ const styles = StyleSheet.create({
     productImg: {
         width: 150,
         height: 150,
-        flex: 1
+        flex: 1,
     },
     otherStuff: {
         flex: 1,
@@ -328,13 +446,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 20,
     },
-
-    productQuantity: {
-        fontSize: 12,
-        flex: 1, 
-        textAlign: 'center'
-    },
-
 
     // Save named list, modal
     modalCenter: {
