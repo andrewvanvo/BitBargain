@@ -59,7 +59,7 @@ export const DashboardHeader = ({ user }) => {
                 }}
               ></Image>
         </View>
-        <View style={{ flex: 1, fontSize: 20, marginTop: 10}}>
+        <View style={{ flex: 1, fontSize: 20, marginTop: 10, justifyContent:'center'}}>
           <Text style={{color: 'white'}}>Current Rank: {user.rank} </Text>
           <Text style={{color: 'white'}}>Upvotes: 200</Text>
           <Text style={{color: 'white'}}>Number of Submissions: 20 </Text>

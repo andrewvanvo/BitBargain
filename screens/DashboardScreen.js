@@ -11,7 +11,7 @@ import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnaps
 import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardFeed } from "../components/DashboardFeed";
 
-const DashboardScreen = ({}) => {
+const DashboardScreen = ({navigation}) => {
   const [user, setUser] = useState({ fname: "Unknown", rank: "Unknown" });
   const [dataSource, setDataSource] = useState([]);
   const [lastDocument, setLastDocument] = useState(null);
@@ -41,7 +41,7 @@ const DashboardScreen = ({}) => {
       const documentSnapshots = await getDocs(first)
       let documentData = documentSnapshots.docs.map(document => document.data());
       setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
-      setDataSource(documentData)
+      setDataSource(documentData.reverse())
     }
     catch (error) {
       console.log(error);
@@ -53,11 +53,11 @@ const DashboardScreen = ({}) => {
     try {
       if (lastDocument != null) {
         console.log('Trying to retrieve more data!')
-        const next = query(collection(db, 'system_activity'), orderBy('key'), startAfter(lastDocument), limit(1))
+        const next = query(collection(db, 'system_activity'), orderBy('key'), startAfter(lastDocument), limit(3))
         const documentSnapshots = await getDocs(next)
         let documentData = documentSnapshots.docs.map(document => document.data());
         setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
-        setDataSource([...documentData, ...dataSource, ])
+        setDataSource([...documentData.reverse(), ...dataSource, ])
         console.log('Success!')
 
       }
@@ -70,6 +70,7 @@ const DashboardScreen = ({}) => {
     }
   }
 
+
   useEffect(() => {
     getData();
   }, [])
@@ -77,7 +78,8 @@ const DashboardScreen = ({}) => {
   return (
     <View style={styles.mainContainer}>
       <DashboardHeader user={user} />
-      <DashboardFeed DATA={dataSource} refresh={refresh} onRefresh={getMore} />
+      <DashboardFeed dataSource={dataSource} refresh={refresh} onRefresh={getMore} />
+      
     </View>
   );
 };
