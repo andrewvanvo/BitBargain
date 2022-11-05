@@ -84,7 +84,9 @@ const UpdateSelectStoreScreen = ({navigation}) => {
     const filterList = () =>{
       console.log(`in function data ${data}`)
       if(data.length !== 0){
-        data['results'].forEach((element)=>{
+        const sliced = data['results'].slice(0,9)
+        sliced.forEach((element)=>{
+        //data['results'].forEach((element)=>{
           if(storeList.includes(element.name)){
             filteredList.push(element)
           }
