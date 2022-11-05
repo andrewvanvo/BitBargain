@@ -14,26 +14,26 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { Card } from '../components/DashboardCard';
 
 
-
-const Item = ({ username, imageURL, type, postCreated, postLikes, postDescription, pushCommentScreen }) => (
+const Item = ({ item, pushCommentScreen }) => (
     <View style={styles.item}>
         <View style={{width: 50, height: 50, overflow: 'hidden', borderWidth: 2, borderRadius: 25}}>
-          <Image
+          {/* <Image
           source={{uri: imageURL}}
           resizeMode="cover"
           style={{
             width: 50,
             height: 50,
             }}>
-          </Image>
+          </Image> */}
         </View>
 
         <View style={{flexDirection: "column", marginLeft: 15,}}>
           <View style={{ flexDirection: "row", alignItems: 'flex-start'}}>
-            <Text style={styles.title}>{username}</Text>
-            <Text style={{fontSize: 12, marginTop: 3}}> posted a {type}! - {postCreated}</Text>
+            <Text style={styles.title}>{item.username}</Text>
+            {/* <Text style={{fontSize: 12, marginTop: 3}}> posted a {type}! - {postCreated}</Text> */}
           </View>
           <View style={{flexDirection: 'row', height: 70, width: 250}}>
             <Text style={{flex: 1, flexWrap: 'wrap', fontSize: 11, marginTop: 5}}>
@@ -63,7 +63,8 @@ export const DashboardFeed = ({dataSource, refresh, onRefresh}) => {
   }
 
   const renderItem = ({item}, pushCommentScreen) => (
-    <Item username={item.username} imageURL={item.imageURL} type={item.postType} postLikes={item.postLikes} postCreated={item.postCreated} postDescription={item.postDescription} pushCommentScreen={pushCommentScreen} />
+    <Item item={item} pushCommentScreen={pushCommentScreen} />
+    // <Card item={item} pushCommentScreen={pushCommentScreen} />
   );
 
   return (
