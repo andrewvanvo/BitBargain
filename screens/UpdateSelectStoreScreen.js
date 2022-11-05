@@ -1,19 +1,44 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Platform, Text, View, StyleSheet, FlatList, Button } from 'react-native';
+import { Platform, Text, View, StyleSheet, FlatList, Button, Pressable } from 'react-native';
 
 import * as Location from 'expo-location';
+
+
+class List extends React.Component {
+  constructor(props) {
+      super(props);
+      this.item = props.item;
+      this.navigation = props.navigation; //nav prop accesible from parent screen
+      //this.dbProducts = props.savedProducts //product collection snapshot passed down
+  }
+  render() {
+      //console.log(this.item)
+      return (
+          <Pressable style={styles.listTile}>
+              <Text style={styles.storeName}>{this.item.name}</Text>
+              <Text style={styles.storeAddress}>{this.item.vicinity}</Text>
+          </Pressable>
+      );
+  }
+
+}
 
 const UpdateSelectStoreScreen = ({navigation}) => {
   //public gmaps api key and variables
   let api_key = 'AIzaSyApOw3rA0vexD0o73xlDZN8OoxIFgefUdY'
-  let radius = '15000' //radius in m
+  let radius = '50000' //radius in m
   let type = 'electronic_store' //https://developers.google.com/maps/documentation/places/web-service/supported_types
 
+  const storeList = ['Micro Center', 'Walmart', 'Target', "Gamestop", 'The Source',
+   'Memory Express', 'Canada Computers & Electronics', 'Best Buy', 'Staples']
+  
+  const filteredList =[]
 
   const [location, setLocation] = useState(null);
   const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(()=>{
     let runHook = true
@@ -32,8 +57,10 @@ const UpdateSelectStoreScreen = ({navigation}) => {
     return () => runHook = false
   }, [])
 
+  //initial placeholder location on load
   let lat = '44.5666670'
   let long = '-123.2833330'
+  //location data populated from api
   if (location){
     lat = location['coords']['latitude']
     long = location['coords']['longitude']
@@ -48,32 +75,90 @@ const UpdateSelectStoreScreen = ({navigation}) => {
       .catch((error) => console.error(error))
     }
     fetchGoogle();
-    //console.log(data)
-    data['results'].forEach(element => {
-      console.log(element.name)
-    });
-
-    }, [location]);
+    if(data !== []){
+      setLoading(false)
+    }
+  }, [location]);
   
+
+  //const filterList = (data) =>{
+  //  data['results'].forEach((element)=>{
+  //    if(storeList.includes(element.name)){
+  //      filteredList.push(element)
+  //    }
+  //  })
+  //  return filteredList
+  //}
+
+  const renderList = ({ item }) => {
+    return (
+        
+        <List 
+            item={item}
+            navigation = {navigation} //pull navigation prop from parent screen and pass as prop
+            //dbProducts ={savedProducts}
+        />
+    );
+  };
   return (
 
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
       
-      <View >
-        <Text> {lat} </Text>
-        <Text></Text>
+        {isLoading? 
+          <View style={styles.textContainer}>
+            <Text>Loading...</Text>
+          </View>
+          :
+          <View style={styles.listContainer}>
+            <FlatList
+                data={data['results']}
+                //data ={()=>filterList(data)}
+                renderItem={renderList}
+                //keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving li
+            />
+          </View>
+          }
       </View>
-      
-    </View>
   );
 }
 
 export default UpdateSelectStoreScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  listContainer: {
+    backgroundColor: 'orange',
+    flex: 1,
+    
+  },
+  listTile: {
+
+      backgroundColor: 'white',
+      width: 350,
+      padding: 10,
+      marginVertical: 8,
+      marginHorizontal: 16,
+      borderColor: 'black',
+      borderWidth: 2,
+      borderRadius: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'stretch'
+  },
+  textContainer:{
+    backgroundColor: 'orange',
+    flex: 1,
+  },
+  storeName:{
+    textAlign: 'left'
+  },
+
+  storeAddress:{
+    textAlign: 'right'
+  }
 }); 
