@@ -32,13 +32,12 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   let type = 'electronic_store' //https://developers.google.com/maps/documentation/places/web-service/supported_types
 
   const storeList = ['Micro Center', 'Walmart', 'Target', "Gamestop", 'The Source',
-   'Memory Express', 'Canada Computers & Electronics', 'Best Buy', 'Staples']
-  
-  const filteredList =[]
+   'Memory Express', 'Canada Computers & Electronics', 'Best Buy', 'Staples', 'Computer Elite']
 
   const [location, setLocation] = useState(null);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true)
+  const [isFilter, setFilter] = useState(false)
 
   useEffect(()=>{
     let runHook = true
@@ -80,15 +79,26 @@ const UpdateSelectStoreScreen = ({navigation}) => {
     }
   }, [location]);
   
-
-  //const filterList = (data) =>{
-  //  data['results'].forEach((element)=>{
-  //    if(storeList.includes(element.name)){
-  //      filteredList.push(element)
-  //    }
-  //  })
-  //  return filteredList
-  //}
+  useEffect(()=>{
+    var filteredList = []
+    const filterList = () =>{
+      console.log(`in function data ${data}`)
+      if(data.length !== 0){
+        data['results'].forEach((element)=>{
+          if(storeList.includes(element.name)){
+            filteredList.push(element)
+          }
+        }) 
+      }
+    }
+    if (data !== []){
+      console.log(`data in conditional check ${data}`)
+      filterList()
+      setFilter(filteredList)
+      console.log(`filtered list: ${filteredList}`)
+    }  
+  }, [data])
+  
 
   const renderList = ({ item }) => {
     return (
@@ -111,8 +121,10 @@ const UpdateSelectStoreScreen = ({navigation}) => {
           :
           <View style={styles.listContainer}>
             <FlatList
-                data={data['results']}
-                //data ={()=>filterList(data)}
+                //data={data['results']}
+                //extraData = {savedProducts}
+
+                data ={isFilter}
                 renderItem={renderList}
                 //keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving li
             />
