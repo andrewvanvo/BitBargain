@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Modal, TextInput} from 'react-native'
 import { Formik } from 'formik';
 import ModalDropdown from 'react-native-modal-dropdown';
-import Icon from 'react-native-vector-icons/Ionicons';
+import IconA5 from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebase';
 
@@ -41,9 +42,9 @@ class Product extends React.Component {
         this.setShowModal(!this.state.showModal);
 
         if(store.store_id == this.storeData[0].store_id) {
-            this.setState({cheapestPrice: 'Cheapest!'});
+            this.setState({cheapestPrice: 'Best Deal'});
         } else {
-            this.setState({cheapestPrice: 'Not cheapest'});
+            this.setState({cheapestPrice: 'Fair Price'});
         }
 
         this.updateData();
@@ -101,6 +102,13 @@ class Product extends React.Component {
     render() {
         // when user sets quantity below 0, that indicates to remove from the shopping list
         // will probably implement an alert/modal for this in the future.
+        let dealIcon;
+        if(this.state.cheapestPrice == 'Best Deal') {
+            dealIcon = <IconA5 name='fire-alt' size={15} style={{color: 'red'}}></IconA5>;
+        } else {
+            dealIcon = <View></View>
+        }
+
         return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile, ]}>
                 <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: ''}}>
@@ -131,7 +139,7 @@ class Product extends React.Component {
                                         borderWidth: 1,  borderColor: 'gray', marginHorizontal: 5}}>
                             <TouchableOpacity
                             >
-                                <Icon
+                                <Ionicons
                                     name='trash-outline' 
                                     size={20}
                                     style={{color: 'gray', marginHorizontal: 5}}
@@ -147,11 +155,14 @@ class Product extends React.Component {
                     <View>
                         <View style={[styles.productNameContainer, {backgroundColor: ''}]}>
                             <Text style={styles.productName}>{this.item.product_name}</Text>
+                            
+                            <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', width: 120, padding: 5, marginTop: 15}}>
+                                {dealIcon}
+                                <Text style={{color: 'white', textAlign: 'center', marginHorizontal: 10}}>{this.state.cheapestPrice}</Text>
+                                {dealIcon}
+                            </View>
                         </View>
 
-                        <View>
-                            <Text>{this.state.cheapestPrice}</Text>
-                        </View>
 
                         <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginVertical: 10, backgroundColor: ''}}>
                             <TouchableOpacity
