@@ -16,7 +16,9 @@ class List extends React.Component {
   render() {
       //console.log(this.item)
       return (
-          <Pressable style={styles.listTile}>
+          <Pressable style={styles.listTile}
+            //onPress={()=>}
+          >
               <Text style={styles.storeName}>{this.item.name}</Text>
               <Text style={styles.storeAddress}>{this.item.vicinity}</Text>
           </Pressable>
@@ -82,22 +84,19 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   useEffect(()=>{
     var filteredList = []
     const filterList = () =>{
-      console.log(`in function data ${data}`)
       if(data.length !== 0){
         const sliced = data['results'].slice(0,9)
         sliced.forEach((element)=>{
-        //data['results'].forEach((element)=>{
           if(storeList.includes(element.name)){
             filteredList.push(element)
+            console.log(element)
           }
         }) 
       }
     }
     if (data !== []){
-      console.log(`data in conditional check ${data}`)
       filterList()
       setFilter(filteredList)
-      console.log(`filtered list: ${filteredList}`)
     }  
   }, [data])
   
@@ -124,9 +123,8 @@ const UpdateSelectStoreScreen = ({navigation}) => {
           <View style={styles.listContainer}>
             <FlatList
                 //data={data['results']}
-                //extraData = {savedProducts}
-
                 data ={isFilter}
+                //extraData = {savedProducts}
                 renderItem={renderList}
                 //keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving li
             />
