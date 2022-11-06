@@ -7,9 +7,7 @@ import IconA5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebase';
-
 import * as SecureStore from 'expo-secure-store';
-
 
 
 class Product extends React.Component {
@@ -216,10 +214,8 @@ const CurrentListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
     const [data, setData] = useState([]);
     const [userID, setUserID] = useState (null);
-
     const [showModal, setShowModal] = useState(false);
     const {storageKey} = route.params;
-
     const [allStores, setAllStores] = useState([]);
 
     // get all existing stores from db
@@ -278,7 +274,6 @@ const CurrentListScreen = ({ route, navigation }) => {
          
         })
     }
-    // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
     useEffect(() => {
         const getData = async () => {
@@ -361,7 +356,7 @@ const CurrentListScreen = ({ route, navigation }) => {
                                         onChangeText={formikProps.handleChange('listName')}
                                         style={[styles.whiteBtn, styles.verticalSpacer]}
                                     />
-                                    <View style={{flexDirection: 'row'}}>
+                                    <View style={styles.isRow}>
                                         <TouchableOpacity
                                             style={[styles.whiteBtn, styles.grayBtn,]}
                                             onPress={() => setShowModal(!showModal)}

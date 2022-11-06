@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { array } from 'yup';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
@@ -156,13 +157,20 @@ class Tags extends React.Component {
     }
 
     render() {
+        let closeIcon;
+        if(this.remove) {
+            closeIcon = <Ionicons name={'close-outline'} size={18}/>
+        } else {
+            closeIcon = null;
+        }
         return(
             <TouchableOpacity 
-                style={{backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black'}}
+                style={{flexDirection: 'row', backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black',}}
                 onPress={() => this.remove ? this.removeTags() : this.addTags()}
 
             >
                 <Text>{this.props.tag}</Text>
+                {closeIcon}
             </TouchableOpacity>
         );
     }
