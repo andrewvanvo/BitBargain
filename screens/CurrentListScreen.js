@@ -87,10 +87,10 @@ class Product extends React.Component {
                     style={[styles.whiteBtn, styles.orangeBtn]}
                 >
                     <View style={styles.storeSpacing}>
-                        <View style={{margin: 5}}>
+                        <View style={styles.allAroundSpacer}>
                             <Text>{store.item.store_name}</Text>
                         </View>
-                        <View style={{margin: 5}}>
+                        <View style={styles.allAroundSpacer}>
                             <Text>${store.item.price}</Text>
                         </View>
                     </View>
@@ -116,18 +116,17 @@ class Product extends React.Component {
                         source={{uri: this.item.image_url}}
                         style={styles.productImg}
                     />
-                    <View style={[styles.quantityContainer, styles.VerticalSpacer]}>
-                        <View style={[styles.whiteBtn, styles.qtyBtn]}
+                    <View style={[styles.isRow, styles.verticalSpacer, {flex: 1}]}>
+                        <View style={[styles.whiteBtn, styles.isRow]}
                         >
-                            <Text style={[styles.shadow, styles.boldMediumWhite, styles.customSpacing1, {color: 'black'}]}>Qty: </Text>
+                            <Text style={[styles.shadow, styles.boldMediumWhite, styles.customQtyBtn]}>Qty: </Text>
                             <ModalDropdown
                                 options={['0 (Delete)', '1', '2', '3', '4', '5']}
                                 animated={true}
                                 defaultValue={String(this.state.quantity)}
-                                style={{borderRadius: 5, backgroundColor: 'white',}}
                                 textStyle={[styles.shadow, styles.interactable, {fontSize: 15, marginRight: 10}]}
-                                dropdownStyle={{width: 60, borderColor: 'orange', borderWidth: 1}}
-                                dropdownTextStyle={{textAlign: 'center'}}
+                                dropdownStyle={styles.dropDownMenu}
+                                dropdownTextStyle={[styles.boldMediumBlack, {fontSize: 12}]}
                                 showsVerticalScrollIndicator={false}
                                 onSelect={(value) => this.updateQuantity(value)}
                             >
@@ -140,7 +139,7 @@ class Product extends React.Component {
                                 <Ionicons
                                     name='trash-outline' 
                                     size={20}
-                                    style={[styles.shadow, {color: 'gray', marginHorizontal: 5}]}
+                                    style={[styles.shadow, styles.horizontalSpacer, {color: 'gray',}]}
                                     onPress={() => this.updateQuantity(0)}
                                 />
                             </TouchableOpacity>
@@ -154,8 +153,8 @@ class Product extends React.Component {
                         <View style={[styles.centerItems, {flex: 5}]}>
                             <Text style={[styles.productName, styles.shadow]}>{this.item.product_name}</Text>
                             
-                            <View style={[styles.isRow, styles.centerItems, styles.dealsView, {backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', 
-                                width: 120}]}>
+                            <View style={[styles.isRow, styles.centerItems, styles.dealsView, 
+                                        {backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', width: 120}]}>
                                 {dealIcon}
                                 <Text style={[styles.boldMediumWhite, styles.horizontalSpacer]}>{this.state.cheapestPrice}</Text>
                                 {dealIcon}
@@ -163,7 +162,7 @@ class Product extends React.Component {
                         </View>
 
 
-                        <View style={[styles.isRow, styles.centerItems, {marginVertical: 10}]}>
+                        <View style={[styles.isRow, styles.centerItems, styles.verticalSpacer]}>
                             <TouchableOpacity
                                 style={styles.whiteBtn}
                                 onPress={() => this.setShowModal(!this.state.showModal)}
@@ -188,7 +187,7 @@ class Product extends React.Component {
                         <TouchableOpacity 
                             onPress={() => this.setShowModal(!this.state.showModal)}
                             activeOpacity={0}
-                            style={[styles.modalCenter, ]}
+                            style={[styles.centerItems, ]}
                         >
                             <View>
                                 <View
@@ -341,16 +340,15 @@ const CurrentListScreen = ({ route, navigation }) => {
                     setShowModal(!showModal);
                 }}
             >
-                <View style={styles.modalCenter}>
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.modalText}>Save new list as: </Text>
+                <View style={styles.centerItems}>
+                    <View style={[styles.whiteBtn, styles.mediumPadding]}>
+                        <Text style={styles.boldMediumBlack}>Save new list as: </Text>
                         
                         <Formik
                             initialValues={{listName: ''}}
                             onSubmit={(fieldValue, actions) => {
                                 // A function that'll send the named list to DB
                                 submitToDatabase(fieldValue)
-
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}
@@ -361,17 +359,17 @@ const CurrentListScreen = ({ route, navigation }) => {
                                         placeholder='Enter a name...'
                                         value={formikProps.values.listName}
                                         onChangeText={formikProps.handleChange('listName')}
-                                        style={styles.inputField}
+                                        style={[styles.whiteBtn, styles.verticalSpacer]}
                                     />
                                     <View style={{flexDirection: 'row'}}>
                                         <TouchableOpacity
-                                            style={[styles.button, styles.cancelBtn]}
+                                            style={[styles.whiteBtn, styles.grayBtn,]}
                                             onPress={() => setShowModal(!showModal)}
                                         >
                                             <Text>Cancel</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[styles.button, styles.submitBtn]}
+                                            style={[styles.whiteBtn, styles.orangeBtn,]}
                                             onPress={formikProps.handleSubmit}
                                         >
                                             <Text>Submit</Text>
@@ -385,7 +383,7 @@ const CurrentListScreen = ({ route, navigation }) => {
                 </View>
             </Modal>
             <TouchableOpacity
-                style={{margin: 5}}
+                style={styles.allAroundSpacer}
                 onPress={() => setShowModal(true)}
             >
                 <Text style={[styles.boldMediumWhite, styles.interactable]}>Save for later</Text>
@@ -403,6 +401,12 @@ const styles = StyleSheet.create({
         textAlign: 'center', 
         fontWeight: 'bold',
         color: 'white',
+    },
+    boldMediumBlack: {
+        fontSize: 15, 
+        textAlign: 'center', 
+        fontWeight: 'bold',
+        color: 'black',
     },
     productName: {
         fontSize: 20,
@@ -434,6 +438,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'orange', 
         margin: 5, 
     },
+    grayBtn: {
+        borderColor: 'lightgray', 
+        backgroundColor: 'lightgray', 
+        margin: 5, 
+    },
     checkoutButton: {
         flex: 0,
         paddingVertical: 10,
@@ -441,7 +450,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 
-    // Positioning
+    // Positioning & Spacing
     centerItems: {
         flex: 1,
         justifyContent: "center",
@@ -454,11 +463,33 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
     },
 
-    // Miscellaneous
-    qtyBtn: {
+    horizontalSpacer: {
+        marginHorizontal: 10,
+    },
+    verticalSpacer: {
+        marginVertical: 10,
+    },
+    allAroundSpacer: {
+        margin: 5,
+    },
+    storeSpacing: {
         flexDirection: 'row', 
-        marginRight: 5, 
-        elevation: 2
+        justifyContent: 'space-between', 
+        alignContent: 'center'
+    },
+    productContainer: {
+        flex: 9,
+    },
+    mediumPadding: {
+        padding: 20,
+    },
+
+    // Customized stuff
+    storeModalTitle: {
+        margin: 0, 
+        borderBottomWidth: 0, 
+        borderBottomLeftRadius: 0, 
+        borderBottomRightRadius: 0,
     },
     selectStoreList: {
         flexGrow: 0, 
@@ -468,52 +499,15 @@ const styles = StyleSheet.create({
         borderTopColor: '', 
         borderTopWidth: 0
     },
-    storeModalTitle: {
-        margin: 0, 
-        borderBottomWidth: 0, 
-        borderBottomLeftRadius: 0, 
-        borderBottomRightRadius: 0, 
-    },
     dealsView: {
         flex: 0,
         borderRadius: 2, 
         padding: 5, 
-        marginTop: 15, 
+        marginTop: 25, 
     },
-
-
-    // Spacing
-    horizontalSpacer: {
-        marginHorizontal: 10,
-    },
-    VerticalSpacer: {
-        marginVertical: 10,
-    },
-
-    storeSpacing: {
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignContent: 'center'
-    },
-    customSpacing1: {
-        marginRight: 5, 
-        marginLeft: 10,
-    },
-    quantityContainer: {
-        flex: 1, 
-        flexDirection: 'row', 
-    },
-
-
-    productContainer: {
-        flex: 9,
-        width: '100%',
-    },
-
     productTile: {
         width: '100%',
         height: 250,
-        padding: 0,
         marginVertical: 8,
         borderColor: 'lightgray',
         borderWidth: 1,
@@ -523,51 +517,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-
     productImg: {
+        flex: 5,
         width: 180,
         height: 180,
-        marginTop:5 ,
-        flex: 5,
+        marginTop: 5,
     },
-
-    // Save named list, modal
-    modalCenter: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22,
-        
-      },
-      modalContainer: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        borderColor: 'orange',
-        borderWidth: 2,
-        padding: 30,
-        alignItems: 'center',
-      },
-      button: {
-        borderRadius: 5,
-        padding: 10,
-        margin: 5,
-      },
-      cancelBtn: {
-        backgroundColor: 'lightgray',
-      },
-      submitBtn: {
-        backgroundColor: 'orange',
-      },
-      modalText: {
-        textAlign: 'center'
-      },
-      inputField: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        borderColor: 'orange',
-        borderWidth: 1,
-        marginVertical: 15,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-      },
+    customQtyBtn: {
+        marginRight: 5, 
+        marginLeft: 10,
+        color: 'black',
+    },
+    dropDownMenu: {
+        width: 60, 
+        borderColor: 'orange', 
+        borderWidth: 1
+    },
 });
