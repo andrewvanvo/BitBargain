@@ -84,9 +84,9 @@ class Product extends React.Component {
             <View>
                 <TouchableOpacity
                     onPress={() => this.selectStore(store.item)}
-                    style={{ backgroundColor: 'orange', borderRadius: 5, margin: 5, padding: 10}}
+                    style={[styles.whiteBtn, styles.orangeBtn]}
                 >
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center'}}>
+                    <View style={styles.storeSpacing}>
                         <View style={{margin: 5}}>
                             <Text>{store.item.store_name}</Text>
                         </View>
@@ -111,22 +111,21 @@ class Product extends React.Component {
 
         return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile, ]}>
-                <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: ''}}>
+                <View style={[styles.isColumn, styles.centerItems]}>
                     <Image
                         source={{uri: this.item.image_url}}
                         style={styles.productImg}
                     />
-                    <View style={{flex: 1, flexDirection: 'row', marginVertical: 10,}}>
-                        <View style={{flexDirection: 'row', borderRadius: 5, backgroundColor: 'white', padding: 5, 
-                                        marginRight: 5, borderWidth: 1,  borderColor: 'orange', elevation: 2}}
+                    <View style={[styles.quantityContainer, styles.VerticalSpacer]}>
+                        <View style={[styles.whiteBtn, styles.qtyBtn]}
                         >
-                            <Text style={{fontSize: 15, fontWeight: 'bold', marginRight: 5, marginLeft: 10}}>Qty: </Text>
+                            <Text style={[styles.shadow, styles.boldMediumWhite, styles.customSpacing1, {color: 'black'}]}>Qty: </Text>
                             <ModalDropdown
                                 options={['0 (Delete)', '1', '2', '3', '4', '5']}
                                 animated={true}
                                 defaultValue={String(this.state.quantity)}
                                 style={{borderRadius: 5, backgroundColor: 'white',}}
-                                textStyle={{fontSize: 15, fontWeight: 'bold', borderBottomWidth: 1, borderColor: 'blue', color: 'blue', marginRight: 10}}
+                                textStyle={[styles.shadow, styles.interactable, {fontSize: 15, marginRight: 10}]}
                                 dropdownStyle={{width: 60, borderColor: 'orange', borderWidth: 1}}
                                 dropdownTextStyle={{textAlign: 'center'}}
                                 showsVerticalScrollIndicator={false}
@@ -135,14 +134,13 @@ class Product extends React.Component {
                             </ModalDropdown>
                         </View>
 
-                        <View style={{borderRadius: 5, backgroundColor: 'white', padding: 5, 
-                                        borderWidth: 1,  borderColor: 'gray', marginHorizontal: 5}}>
+                        <View style={styles.whiteBtn}>
                             <TouchableOpacity
                             >
                                 <Ionicons
                                     name='trash-outline' 
                                     size={20}
-                                    style={{color: 'gray', marginHorizontal: 5}}
+                                    style={[styles.shadow, {color: 'gray', marginHorizontal: 5}]}
                                     onPress={() => this.updateQuantity(0)}
                                 />
                             </TouchableOpacity>
@@ -151,31 +149,32 @@ class Product extends React.Component {
                 </View>
 
                 
-                <View style={[styles.otherStuff, {backgroundColor: ''}]}>
+                <View style={[styles.isColumn, styles.centerItems, {marginRight: 5}]}>
                     <View>
-                        <View style={[styles.productNameContainer, {backgroundColor: ''}]}>
-                            <Text style={styles.productName}>{this.item.product_name}</Text>
+                        <View style={[styles.centerItems, {flex: 5}]}>
+                            <Text style={[styles.productName, styles.shadow]}>{this.item.product_name}</Text>
                             
-                            <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', width: 120, padding: 5, marginTop: 15}}>
+                            <View style={[styles.isRow, styles.centerItems, styles.dealsView, {backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', 
+                                width: 120}]}>
                                 {dealIcon}
-                                <Text style={{color: 'white', textAlign: 'center', marginHorizontal: 10}}>{this.state.cheapestPrice}</Text>
+                                <Text style={[styles.boldMediumWhite, styles.horizontalSpacer]}>{this.state.cheapestPrice}</Text>
                                 {dealIcon}
                             </View>
                         </View>
 
 
-                        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginVertical: 10, backgroundColor: ''}}>
+                        <View style={[styles.isRow, styles.centerItems, {marginVertical: 10}]}>
                             <TouchableOpacity
-                                style={{borderRadius: 5, backgroundColor: 'white', padding: 5, 
-                                marginTop: 0, borderWidth: 1.5,  borderColor: 'orange', marginHorizontal: 5}}
+                                style={styles.whiteBtn}
                                 onPress={() => this.setShowModal(!this.state.showModal)}
                             >
-                                <Text>{this.state.selectedStore}</Text>
+                                <Text style={[styles.shadow, styles.interactable]}>{this.state.selectedStore}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={{borderRadius: 5, backgroundColor: 'white', padding: 5, borderColor: 'orange', borderWidth: 1.5, marginHorizontal: 5}}
+                                disabled={true}
+                                style={styles.whiteBtn}
                             >
-                                <Text>{this.state.price}</Text>
+                                <Text style={styles.shadow}>{this.state.price}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -186,18 +185,27 @@ class Product extends React.Component {
                         visible={this.state.showModal}
                         onRequestClose={() => this.setShowModal(!this.state.showModal)}
                     >
-                        <View style={styles.modalCenter}>
-
-                            {/* <View style={{height: 50, flexGrow: 0, backgroundColor: 'white'}}> */}
+                        <TouchableOpacity 
+                            onPress={() => this.setShowModal(!this.state.showModal)}
+                            activeOpacity={0}
+                            style={[styles.modalCenter, ]}
+                        >
+                            <View>
+                                <View
+                                    style={[styles.orangeBtn, styles.storeModalTitle]}
+                                >
+                                    <Text style={[styles.shadow, styles.boldMediumWhite]}
+                                    >Select a store:</Text>
+                                </View>
                                 <FlatList
                                     data={this.storeData}
                                     renderItem={this.renderStore}
                                     keyExtractor={store => store.store_id}
-                                    style={{flexGrow: 0, backgroundColor: 'white', borderRadius: 5, padding: 10}}
+                                    style={[styles.whiteBtn, styles.selectStoreList]}
                                 >
                                 </FlatList>
-
-                        </View>
+                            </View>
+                        </TouchableOpacity>
                     </Modal>
                 </View>
             </View>
@@ -308,15 +316,15 @@ const CurrentListScreen = ({ route, navigation }) => {
     }, []);
 
     return (
-        <View style={styles.mainContainer}>
-            <View style={styles.productContainer}>
+        <View style={[styles.centerItems, {marginTop: 25}]}>
+            <View style={[styles.centerItems, styles.productContainer]}>
                 <FlatList
                     data={data}
                     renderItem={renderProduct}
                     keyExtractor={item => item.product_id}
                 />
             </View>
-            <View style={styles.checkoutButton}>
+            <View style={[styles.whiteBtn, styles.orangeBtn, styles.centerItems, styles.checkoutButton,]}>
                 <TouchableOpacity
                     // onPress={}      // can navigate to 'checkout' if we want to.
                 >
@@ -380,7 +388,7 @@ const CurrentListScreen = ({ route, navigation }) => {
                 style={{margin: 5}}
                 onPress={() => setShowModal(true)}
             >
-                <Text style={styles.textStyle}>Save for later</Text>
+                <Text style={[styles.boldMediumWhite, styles.interactable]}>Save for later</Text>
             </TouchableOpacity>
         </View>
     );
@@ -389,18 +397,119 @@ const CurrentListScreen = ({ route, navigation }) => {
 export default CurrentListScreen
 
 const styles = StyleSheet.create({
-    mainContainer: {
+    // Text styles
+    boldMediumWhite: {
+        fontSize: 15, 
+        textAlign: 'center', 
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    productName: {
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        flexWrap: 'wrap',
+        fontFamily: 'notoserif',
+    },
+    interactable: {
+        color: 'blue',
+        borderColor: 'blue',
+        borderBottomWidth: 1, 
+    },
+    shadow: {
+        textShadowColor: 'black',
+        textShadowRadius: 2, 
+    },
+
+    // Buttons
+    whiteBtn: {
+        borderRadius: 5,
+        borderWidth: 1, 
+        borderColor: 'orange', 
+        backgroundColor: 'white', 
+        padding: 5,
+        marginHorizontal: 5, 
+    },
+    orangeBtn: { 
+        backgroundColor: 'orange', 
+        margin: 5, 
+    },
+    checkoutButton: {
+        flex: 0,
+        paddingVertical: 10,
+        width: '30%',
+        marginTop: 10,
+    },
+
+    // Positioning
+    centerItems: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 50,
     },
+    isColumn: {
+        flexDirection: 'column', 
+    },
+    isRow: {
+        flexDirection: 'row', 
+    },
+
+    // Miscellaneous
+    qtyBtn: {
+        flexDirection: 'row', 
+        marginRight: 5, 
+        elevation: 2
+    },
+    selectStoreList: {
+        flexGrow: 0, 
+        marginHorizontal: 0,
+        borderTopLeftRadius: 0, 
+        borderTopRightRadius: 0, 
+        borderTopColor: '', 
+        borderTopWidth: 0
+    },
+    storeModalTitle: {
+        margin: 0, 
+        borderBottomWidth: 0, 
+        borderBottomLeftRadius: 0, 
+        borderBottomRightRadius: 0, 
+    },
+    dealsView: {
+        flex: 0,
+        borderRadius: 2, 
+        padding: 5, 
+        marginTop: 15, 
+    },
+
+
+    // Spacing
+    horizontalSpacer: {
+        marginHorizontal: 10,
+    },
+    VerticalSpacer: {
+        marginVertical: 10,
+    },
+
+    storeSpacing: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignContent: 'center'
+    },
+    customSpacing1: {
+        marginRight: 5, 
+        marginLeft: 10,
+    },
+    quantityContainer: {
+        flex: 1, 
+        flexDirection: 'row', 
+    },
+
+
     productContainer: {
         flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%'
+        width: '100%',
     },
+
     productTile: {
         width: '100%',
         height: 250,
@@ -414,56 +523,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    adjustBtns: {
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        borderRadius: 5,
-    },
-    productNameContainer: {
-        flex: 5,
-        justifyContent: 'center', 
-        alignItems: 'center',
-    },
-    productName: {
-        flexWrap: 'wrap',
-        fontWeight: 'bold',
-        fontSize: 20,
-        textAlign: 'center',
-        fontFamily: 'notoserif',
-        textShadowColor: 'black',
-        textShadowRadius: 2, 
-        
-    },
-    buttonContainer:{
-        flexDirection: 'row',  
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flex: 1,
-        backgroundColor: 'orange',
-        width: '80%'
 
-    },
-    checkoutButton: {
-        borderRadius: 10,
-        width: '30%',
-        padding: 10,
-        marginTop: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'orange'
-    },
     productImg: {
         width: 180,
         height: 180,
         marginTop:5 ,
         flex: 5,
-    },
-    otherStuff: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
 
     // Save named list, modal
@@ -492,11 +557,6 @@ const styles = StyleSheet.create({
       },
       submitBtn: {
         backgroundColor: 'orange',
-      },
-      textStyle: {
-        color: 'blue',
-        fontWeight: 'bold',
-        textAlign: 'center'
       },
       modalText: {
         textAlign: 'center'
