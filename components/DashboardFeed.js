@@ -16,20 +16,15 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { Card } from "../components/DashboardCard";
 
-export const DashboardFeed = ({ user, dataSource, refresh, onRefresh }) => {
-  const navigation = useNavigation();
+export const DashboardFeed = ({dataSource, refresh, onRefresh, user }) => {
 
-  const pushCommentScreen = () => {
-    navigation.navigate("CommentScreen");
-  };
-
-  const renderItem = ({ item }) => <Card item={item} />;
+  const renderItem = ({ item }) => <Card item={item} user={user} />;
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={dataSource}
-        renderItem={(item) => renderItem(item)}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         onRefresh={onRefresh}
         refreshing={refresh}

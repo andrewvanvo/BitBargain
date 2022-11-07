@@ -17,7 +17,7 @@ import { StackActions } from '@react-navigation/native';
 // import {Card} from "../components/DashboardCard";  
 
 const CommentScreen = ({route, navigation}) => {
-  const {item} = route.params;
+  const {item, user} = route.params;
 
   const navigateBack = () => {
     navigation.navigate('Home');
@@ -68,7 +68,7 @@ const CommentScreen = ({route, navigation}) => {
             <View style={{width: 40, height: 40, overflow: 'hidden', borderWidth: 2, borderRadius: 25, borderColor: 'white'}}>
               
               <Image
-                source={{uri: item.imageURL}}
+                source={{uri: user.imageURL}}
                 resizeMode="cover"
                 style={{
                 width: 40,

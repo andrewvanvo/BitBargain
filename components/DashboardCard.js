@@ -15,18 +15,17 @@ import {
   import Icon from "react-native-vector-icons/Ionicons";
   import { useNavigation } from "@react-navigation/native";
 
-  export const Card = ({ item }) => {
+  export const Card = (props) => {
     const navigation = useNavigation();
 
     const pushCommentScreen = () => {
-      navigation.navigate('CommentScreen', {item})
+      navigation.navigate('CommentScreen', {item: props.item, user: props.user})
     }
     return (
     <View style={styles.item}>
-        <Text></Text>
         <View style={{width: 50, height: 50, overflow: 'hidden', borderWidth: 2, borderRadius: 25}}>
           <Image
-          source={{uri: item.imageURL}}
+          source={{uri: props.item.imageURL}}
           resizeMode="cover"
           style={{
             width: 50,
@@ -37,8 +36,8 @@ import {
 
         <View style={{flexDirection: "column", marginLeft: 15,}}>
           <View style={{ flexDirection: "row", alignItems: 'flex-start'}}>
-            <Text style={styles.title}>{item.username}</Text>
-            <Text style={{fontSize: 12, marginTop: 3}}> posted a {item.postType}! - {item.postCreated}</Text>
+            <Text style={styles.title}>{props.item.username}</Text>
+            <Text style={{fontSize: 12, marginTop: 3}}> posted a {props.item.postType}! - {props.item.postCreated}</Text>
           </View>
           <View style={{flexDirection: 'row', height: 70, width: 250}}>
             <Text style={{flex: 1, flexWrap: 'wrap', fontSize: 11, marginTop: 5}}>
