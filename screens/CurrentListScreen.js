@@ -5,6 +5,10 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
+import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
+import { auth, db } from '../firebase';
+
+import * as SecureStore from 'expo-secure-store';
 
 
 
@@ -90,9 +94,10 @@ class Product extends React.Component {
 const CurrentListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
     const [data, setData] = useState([]);
+    const [userID, setUserID] = useState (null);
     const [showModal, setShowModal] = useState(false);
     const { storageKey } = route.params;
-    
+
     const renderProduct = ({ item }) => {
         return (
         <Product 
@@ -104,6 +109,26 @@ const CurrentListScreen = ({ route, navigation }) => {
         />
         );
     };
+
+
+    //Form Submission to DB fn
+    const submitToDatabase = (fieldValue) =>{
+        var passingData = {data}
+        var passingUser = {userID}
+        //console.log(passingUser)
+        var formattedProdId = []
+        passingData['data'].forEach((product) => {
+            formattedProdId.push(product['product_id']);
+        });
+        //console.log(formattedProdId)
+        
+        const docRef = addDoc(collection(db,'saved_lists'),{
+            list_name: fieldValue['listName'],
+            product_array: formattedProdId,
+            user_id: passingUser['userID']
+         
+        })
+    }
 
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
@@ -121,6 +146,28 @@ const CurrentListScreen = ({ route, navigation }) => {
         }
         getData();
     }, []);
+
+    useEffect(() => {
+        //uses expo securestore uid saved from DashBoard Screen during auth change
+        const getUserID = async () => {
+            try {
+                const result = await SecureStore.getItemAsync('uid');
+                if (result) {
+                    //console.log(' uid retrieved')
+                    setUserID(result)
+                    
+                } else {
+                    console.log('no key exists')
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }
+        getUserID();
+    }, []);
+
+
+
 
     return (
         <View style={styles.mainContainer}>
@@ -155,9 +202,9 @@ const CurrentListScreen = ({ route, navigation }) => {
                         <Formik
                             initialValues={{listName: ''}}
                             onSubmit={(fieldValue, actions) => {
-                                //
                                 // A function that'll send the named list to DB
-                                // console.log(data);
+                                submitToDatabase(fieldValue)
+
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}

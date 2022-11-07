@@ -8,6 +8,9 @@ import { db } from '../firebase';
 import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
 import { debugErrorMap } from 'firebase/auth';
 
+import Scanner from './ScannerScreen';
+
+
 class List extends React.Component {
     constructor(props) {
         super(props);
