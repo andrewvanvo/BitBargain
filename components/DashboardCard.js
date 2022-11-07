@@ -23,6 +23,7 @@ import {
     }
     return (
     <View style={styles.item}>
+        <Text></Text>
         <View style={{width: 50, height: 50, overflow: 'hidden', borderWidth: 2, borderRadius: 25}}>
           <Image
           source={{uri: item.imageURL}}

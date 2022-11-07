@@ -78,7 +78,7 @@ const DashboardScreen = ({navigation}) => {
   return (
     <View style={styles.mainContainer}>
       <DashboardHeader user={user} />
-      <DashboardFeed dataSource={dataSource} refresh={refresh} onRefresh={getMore} />
+      <DashboardFeed user={user} dataSource={dataSource} refresh={refresh} onRefresh={getMore} />
       
     </View>
   );
