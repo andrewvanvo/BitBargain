@@ -3,15 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { array } from 'yup';
-import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
 
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
 
 // Component for different product categories in the horizontal flatlist
-// https://reactnative.dev/docs/flatlist -- see the selectable example
 const Category = ( props ) => {
     return (
         <TouchableOpacity
@@ -24,7 +22,6 @@ const Category = ( props ) => {
 };
 
 // Component for list of products in the vertical flatlist
-// https://reactjs.org/docs/react-component.html#constructor
 class Product extends React.Component {
     constructor(props) {
         super(props);
@@ -78,7 +75,6 @@ class Product extends React.Component {
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
                                     remove={false}
-
                                 >
                                 </Tags>
                             )
@@ -99,7 +95,6 @@ class Tags extends React.Component {
     }
 
     addTags = () => {
-
         let newProducts = new Set();
         let currProducts = this.props.productList;
 
@@ -108,21 +103,18 @@ class Tags extends React.Component {
         }
 
         currProducts.slice(1).forEach(category => {
-            category['name'].forEach(product => {
-                if(product['tags'].includes(this.props.tag)) {
+            category.name.forEach(product => {
+                if(product.tags.includes(this.props.tag)) {
                     newProducts.add(product);
                 }
             })
         });
-
         let productArray = Array.from(newProducts);
-        currProducts[0]['name'] = productArray;
-
+        currProducts[0].name = productArray;
         this.props.products(currProducts);
     }
 
     removeTags = () => {
-
         let newProducts = new Set();
         let currProducts = this.props.productList;
 
@@ -135,8 +127,8 @@ class Tags extends React.Component {
             this.props.tags.forEach(tag => {
                 if(tag != this.props.tag) {
                     this.props.productList.slice(1).forEach(category => {
-                        category['name'].forEach(product => {
-                            if(product['tags'].includes(tag)) {
+                        category.name.forEach(product => {
+                            if(product.tags.includes(tag)) {
                                 newProducts.add(product);
                             }
                         })
@@ -145,15 +137,12 @@ class Tags extends React.Component {
             });
         } else {
             this.props.productList.slice(1).forEach(category => {
-                category['name'].forEach(product => newProducts.add(product));
+                category.name.forEach(product => newProducts.add(product));
             });
         }
-
         let productArray = Array.from(newProducts);
-        currProducts[0]['name'] = productArray;
-
+        currProducts[0].name = productArray;
         this.props.products(currProducts);
-
     }
 
     render() {
@@ -177,10 +166,8 @@ class Tags extends React.Component {
 }
 
 const CreateListScreen = ({navigation}) => {
-
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [canContinue, setCanContinue] = useState(false);
-
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
@@ -214,9 +201,7 @@ const CreateListScreen = ({navigation}) => {
     
             productSnap.forEach((doc) => {
             var object = doc.data();
-  
-            const rightCategory = product_data_experimental.find(item => item.category === object['categories']['type']);
-
+            const rightCategory = product_data_experimental.find(item => item.category === object.categories.type);
             product_data_experimental[0].name.push(object);
             
             if(rightCategory){
@@ -241,6 +226,7 @@ const CreateListScreen = ({navigation}) => {
         return () => unsubscribe();
     }, []);
 
+
     const renderCategory = ({ item }) => {
         return (
             <Category 
@@ -251,7 +237,7 @@ const CreateListScreen = ({navigation}) => {
         );
     };
 
-    const renderProduct = ({ item }) => {    
+    const renderProduct = ({ item }) => {
         return (
             <Product 
                 item={item}
@@ -295,13 +281,10 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-
-        //console.log(cartItems)
         navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 
     var tagContainer = [];
-
     if(selectedCategory == 0) {
         tagContainer.push(
             tags.map((tag, index) => {
@@ -314,7 +297,6 @@ const CreateListScreen = ({navigation}) => {
                     remove={true}
                     products={setWholeList}
                     productList={wholeList}
-
                 >
                 </Tags>
               )  
@@ -338,14 +320,14 @@ const CreateListScreen = ({navigation}) => {
             </View>
             <View style={styles.productContainer}>
                 <FlatList
-                    data={wholeList[selectedCategory]['name']}
+                    data={wholeList[selectedCategory].name}
                     renderItem={renderProduct}
                     keyExtractor={item => item.product_id}
                 />
             </View>
             <View style={[styles.continueButton, {backgroundColor: canContinue ? 'orange' : 'lightgray'}]}>
                 <TouchableOpacity
-                    onPress={() => navigateToCurrentList()}               // navigate to the 'CurrentListScreen' with user's shopping list
+                    onPress={() => navigateToCurrentList()}
                     disabled={canContinue ? false : true}
                 >
                     <Text>Continue</Text>
