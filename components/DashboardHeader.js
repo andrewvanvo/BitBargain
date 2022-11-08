@@ -36,14 +36,16 @@ export const DashboardHeader = ({ user }) => {
             <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
           </View>
           <View style={{overflow: 'hidden', width: 40, height: 40, borderRadius: 20, marginRight: 15}}>
-            <Image
-              source={require("../assets/sample_images/profile-pic-sample.png")}
-              resizeMode="cover"
-              style={{
-                width: 40,
-                height: 40,
-              }}
-            ></Image>
+            <TouchableOpacity onPress={()=>console.log('click')}>
+              <Image
+                source={require("../assets/sample_images/profile-pic-sample.png")}
+                resizeMode="cover"
+                style={{
+                  width: 40,
+                  height: 40,
+                }}
+              ></Image>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
