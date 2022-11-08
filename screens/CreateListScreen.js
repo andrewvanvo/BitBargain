@@ -65,7 +65,8 @@ class Product extends React.Component {
 
         let reviews;
         if(this.getReviews() > 0) {
-            reviews = <Text>Reviews: {this.getReviews()}</Text>
+            reviews = 
+                <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.getReviews()}</Text>
         } else {
             reviews = null;
         }
@@ -81,11 +82,12 @@ class Product extends React.Component {
                 />
                 <View style={{flex: 1}}>
                     <View>
-                        <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 60}]}>{this.item.product_name}</Text>
+                        <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
+                    </View>
+                    <View style={[{marginVertical: 30}]}>
                         {reviews}
                     </View>
-                    <View style={{flexDirection: 'row', 
-                    justifyContent: 'center', flexWrap: 'wrap',}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
                         {this.item.tags.map((tag, index) => {
                             return (
                                 <Tags 
