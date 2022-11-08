@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
+import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot } from "firebase/firestore";
@@ -13,10 +14,10 @@ const currShoppingList = new Set();
 const Category = ( props ) => {
     return (
         <TouchableOpacity
-        style={[styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'lightcoral' : 'orange'}]}
+        style={[styles.centerItems, styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'lightcoral' : 'orange'}]}
         onPress={() => props.setState(props.item.id)}
         >
-        <Text>{props.item.name}</Text>
+        <Text style={styles.shadow}>{props.item.name}</Text>
         </TouchableOpacity>
     );
 };
@@ -53,16 +54,19 @@ class Product extends React.Component {
     render() {
         return (
             <TouchableOpacity
-                style={[styles.productTile, {backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
+                style={[styles.productTile, {padding: 10, backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
                 onPress={this.toggleProduct}
             >   
                 <Image
                     source={{uri: this.item.image_url}}
-                    style={styles.productImg}
+                    style={[styles.productImg, {flex: 1}]}
                 />
                 <View style={{flex: 1}}>
-                    <Text style={styles.productInfo}>{this.item.product_name}</Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap'}}>
+                    <View>
+                        <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 60}]}>{this.item.product_name}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', 
+                    justifyContent: 'center', flexWrap: 'wrap',}}>
                         {this.item.tags.map((tag, index) => {
                             return (
                                 <Tags 
@@ -305,7 +309,7 @@ const CreateListScreen = ({navigation}) => {
     }
 
     return (
-        <View style={styles.mainContainer}>
+        <View style={[styles.centerItems, {marginTop: 25}]}>
             <View style={styles.categoryContainer}>
                 <FlatList
                     data={categories}
@@ -318,14 +322,14 @@ const CreateListScreen = ({navigation}) => {
             <View style={{flexDirection: 'row'}}>
                 {tagContainer}
             </View>
-            <View style={styles.productContainer}>
+            <View style={[styles.centerItems, styles.productContainer]}>
                 <FlatList
                     data={wholeList[selectedCategory].name}
                     renderItem={renderProduct}
                     keyExtractor={item => item.product_id}
                 />
             </View>
-            <View style={[styles.continueButton, {backgroundColor: canContinue ? 'orange' : 'lightgray'}]}>
+            <View style={[styles.centerItems, styles.continueButton, {backgroundColor: canContinue ? 'orange' : 'lightgray'}]}>
                 <TouchableOpacity
                     onPress={() => navigateToCurrentList()}
                     disabled={canContinue ? false : true}
@@ -338,65 +342,3 @@ const CreateListScreen = ({navigation}) => {
 }
 
 export default CreateListScreen
-
-const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 50,
-    },
-    categoryContainer: {
-        flex: 1,
-    },
-    categoryButton: {
-        width: 120,
-        backgroundColor: 'orange',
-        padding: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        fontWeight: 'bold',
-        color: 'blue',
-
-    },
-    productContainer: {
-        flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%'
-    },
-    productTile: {
-        // backgroundColor: 'green',
-        width: 350,
-        padding: 10,
-        marginVertical: 8,
-        marginHorizontal: 16,
-        borderColor: 'black',
-        borderWidth: 2,
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center'
-    },
-    continueButton: {
-        borderRadius: 10,
-        width: '30%',
-        padding: 10,
-        margin: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    productImg: {
-        flex: 1,
-        width: 150,
-        height: 150,
-        margin: 5,
-    },
-    productInfo: {
-        flex: 1,
-        flexWrap: 'wrap',
-        textAlign: 'center',
-    },
-});

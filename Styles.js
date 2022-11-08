@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
+
         backgroundColor: 'white',
     },
     productImg: {
@@ -139,6 +140,28 @@ const styles = StyleSheet.create({
         width: 60, 
         borderColor: 'orange', 
         borderWidth: 1
+    },
+    categoryContainer: {
+        flex: 1,
+    },
+    categoryButton: {
+        flex: 0,
+        width: 120,
+        padding: 15,
+        backgroundColor: 'orange',
+    },
+    continueButton: {
+        flex: 0,
+        borderRadius: 5,
+        width: '30%',
+        padding: 10,
+        margin: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    productInfo: {
+        flexWrap: 'wrap',
+        textAlign: 'center',
     },
 });
 
