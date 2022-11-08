@@ -151,7 +151,6 @@ class Product extends React.Component {
                     <View>
                         <View style={[styles.centerItems, {flex: 5}]}>
                             <Text style={[styles.productName, styles.shadow]}>{this.item.product_name}</Text>
-                            
                             <View style={[styles.isRow, styles.centerItems, styles.dealsView, 
                                         {backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', width: 120}]}>
                                 {dealIcon}

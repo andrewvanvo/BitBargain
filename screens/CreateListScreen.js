@@ -42,6 +42,16 @@ class Product extends React.Component {
             this.setState({ selected: false });
         }
     }
+
+    // experimental, this function probably not necessary, remove in future
+    getReviews = () => {
+        if(this.props.item.reviews == undefined) {
+            return 0;
+        } else {
+            return this.props.item.reviews.length;
+        }
+    }
+
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
     componentDidUpdate() {
         if(currShoppingList.size > 0) {
@@ -52,6 +62,14 @@ class Product extends React.Component {
     }
 
     render() {
+
+        let reviews;
+        if(this.getReviews() > 0) {
+            reviews = <Text>Reviews: {this.getReviews()}</Text>
+        } else {
+            reviews = null;
+        }
+
         return (
             <TouchableOpacity
                 style={[styles.productTile, {padding: 10, backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
@@ -64,6 +82,7 @@ class Product extends React.Component {
                 <View style={{flex: 1}}>
                     <View>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 60}]}>{this.item.product_name}</Text>
+                        {reviews}
                     </View>
                     <View style={{flexDirection: 'row', 
                     justifyContent: 'center', flexWrap: 'wrap',}}>
@@ -158,7 +177,7 @@ class Tags extends React.Component {
         }
         return(
             <TouchableOpacity 
-                style={{flexDirection: 'row', backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black',}}
+                style={styles.tag}
                 onPress={() => this.remove ? this.removeTags() : this.addTags()}
 
             >
@@ -174,6 +193,10 @@ const CreateListScreen = ({navigation}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
+    // experimental
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
         {id: 0, name: [], category: 'All'},
         {id: 1, name: [], category: 'CPU'},             // I could probably abstrate it more later on 
@@ -213,9 +236,27 @@ const CreateListScreen = ({navigation}) => {
             }
             }); 
             setWholeList(product_data_experimental)
-        })
+        });
         return () => unsubscribe;
     }, []);
+
+    // experimental
+    useEffect(() => {
+        // if(reviews.length > 0) {
+        //     return;
+        // }
+
+        const categoryRef = collection(db, 'reviews');
+        const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
+            const categories = [];
+            categorySnap.forEach((doc) => {
+                categories.push(doc.data());
+            });
+            setReviews(categories);
+        });
+        return () => unsubscribe();
+    }, []);
+
 
     // dynamically update data for the category flatlist 
     useEffect(() => {
@@ -305,6 +346,29 @@ const CreateListScreen = ({navigation}) => {
                 </Tags>
               )  
             })
+        );
+    }
+
+    useEffect(() => {
+        if(reviews.length > 0) {
+            setLoading(false);
+            // console.log(reviews);
+        } else {
+            return;
+        }
+
+        // assigning reviews to each product
+        wholeList.slice(1).forEach(category => {
+            category.name.forEach(product => {
+                let totalReviews = reviews.filter(review => review.product_id === product.product_id);
+                product.reviews = totalReviews;
+            });
+        });
+    }, [reviews]);
+
+    if(loading) {
+        return (
+            <View><Text>Loading...</Text></View>
         );
     }
 
