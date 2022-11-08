@@ -37,7 +37,7 @@ const DashboardScreen = ({navigation}) => {
 
   const getData = async () => {
     try {
-      const first = query(collection(db, 'system_activity'), orderBy('key'), limit(3));
+      const first = query(collection(db, 'system_activity'), limit(3)); //orderBy('postCreated)
       const documentSnapshots = await getDocs(first)
       let documentData = documentSnapshots.docs.map(document => document.data());
       setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
@@ -53,7 +53,7 @@ const DashboardScreen = ({navigation}) => {
     try {
       if (lastDocument != null) {
         console.log('Trying to retrieve more data!')
-        const next = query(collection(db, 'system_activity'), orderBy('key'), startAfter(lastDocument), limit(3))
+        const next = query(collection(db, 'system_activity'), startAfter(lastDocument), limit(3)) //orderBy('postCreated)
         const documentSnapshots = await getDocs(next)
         let documentData = documentSnapshots.docs.map(document => document.data());
         setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])

@@ -15,6 +15,8 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { auth, db } from "../firebase/";
+import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
 
 const CommentScreen = ({ route, navigation }) => {
   const { item, user } = route.params;
@@ -23,26 +25,35 @@ const CommentScreen = ({ route, navigation }) => {
     navigation.navigate("Home");
   };
 
-  const submitComment = () => {
-    console.log("submit click");
-  };
-
-  const onSubmit = () => {
-    console.log("text has been submitted");
-  };
+  const submitData = async (values) => {
+    const newCommentRef = doc(collection(db, 'system_activity'))          
+    await setDoc(newCommentRef, {
+      id: newCommentRef.id,
+      imageURL: values.imageURL,
+      postDescription: values.postDescription,
+      postType: values.postType,
+      username: values.username
+    })
+  }
+  
   return (
     <Formik
       initialValues={{
-        // id: "",
+        id:'',
         imageURL: user.imageURL,
         // key: "",
         // postCreated: "",
         postDescription: "",
-        // postType: "",
-        // username: "",
+        postType: "comment",
+        username: user.fname + ' ' + user.lname,
       }} /* ID = UID */
-      onSubmit={(values) => {            // need to set certain attributes specifically (type, user, etc)
-        console.log(values)             // need to find a way to get post created date
+      onSubmit={(values) => {
+                    // need to set certain attributes specifically (type, user, etc)
+        submitData(values);
+        console.log('comment submitted')
+        
+        
+        // need to find a way to get post created date
       }}
     >
       {(props) => (
@@ -114,11 +125,11 @@ const CommentScreen = ({ route, navigation }) => {
                     marginTop: 5,
                   }}
                 >
-                  {/* {item.postDescription}  */}
+                  {item.postDescription} 
                   {/* 30 word count? */}
-                  orci sagittis eu volutpat odio facilisis mauris sit amet massa
+                  {/* orci sagittis eu volutpat odio facilisis mauris sit amet massa
                   vitae tortor condimentum lacinia quis vel eros donec ac odio
-                  tempor orci dapibus ultrices in iaculis nunc sed augue lacus
+                  tempor orci dapibus ultrices in iaculis nunc sed augue lacus */}
                 </Text>
               </View>
             </View>

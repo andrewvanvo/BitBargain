@@ -41,9 +41,9 @@ import {
           </View>
           <View style={{flexDirection: 'row', height: 70, width: 250}}>
             <Text style={{flex: 1, flexWrap: 'wrap', fontSize: 11, marginTop: 5}}>
-              {/* {item.postDescription}  */}
+              {props.item.postDescription} 
               {/* 30 word count? */}
-              orci sagittis eu volutpat odio facilisis mauris sit amet massa vitae tortor condimentum lacinia quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue lacus
+              {/* orci sagittis eu volutpat odio facilisis mauris sit amet massa vitae tortor condimentum lacinia quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue lacus */}
              </Text>
           </View>
           <View style={{flexDirection: 'row'}}>
