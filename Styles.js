@@ -163,6 +163,15 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         textAlign: 'center',
     },
+    tag: {
+        flexDirection: 'row', 
+        backgroundColor: 'gold', 
+        margin: 2, 
+        padding: 3, 
+        borderRadius: 5, 
+        borderWidth: 1, 
+        borderColor: 'black',
+    }
 });
 
 export default styles;
