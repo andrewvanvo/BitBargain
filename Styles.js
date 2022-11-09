@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         flex: 0,
         borderRadius: 2, 
         padding: 5, 
-        marginTop: 25, 
+        // marginTop: 25, 
     },
     productTile: {
         width: '100%',
@@ -184,6 +184,10 @@ const styles = StyleSheet.create({
         borderRadius: 5, 
         borderWidth: 1, 
         borderColor: 'black',
+    },
+    discount: {
+        fontSize: 20,
+        fontFamily: 'sans-serif-light'
     }
 });
 

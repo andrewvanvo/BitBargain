@@ -51,7 +51,7 @@ class Product extends React.Component {
         this.checkOnSale(store);
 
         this.setState({selectedStore: store.store_name});
-        this.setState({price: '$'+store.price});
+        this.setState({price: '$' + store.price});
         this.setShowModal(!this.state.showModal);
 
         if(store.store_id == this.storeData[0].store_id) {
@@ -65,9 +65,24 @@ class Product extends React.Component {
 
     showPrevPrice = () => {
         if(this.state.onSale) {
-            return <Text style={[styles.shadow, {textDecorationLine: 'line-through', textDecorationStyle: 'solid'}]}>${this.state.prevPrice}</Text>
+            return <Text style={[styles.shadow, {textDecorationLine: 'line-through', textDecorationStyle: 'solid', color: 'gray'}]}>${this.state.prevPrice}</Text>
         }
         return null;
+    }
+
+    showDiscount = () => {
+        if(this.state.onSale) {
+            let discount = ((1 - (this.state.price.slice(1)/this.state.prevPrice)) * 100).toFixed(2);
+            let dollars = this.state.prevPrice - this.state.price.slice(1);
+            return (
+                <View style={{flexDirection: 'column'}}>
+                    <Text style={[styles.shadow, styles.discount, {textAlign: 'center', color: 'green'}]}>On sale!</Text>
+                    <Text style={[styles.shadow, styles.discount, {textAlign: 'center', color: 'green'}]}>Save ${dollars} (-{discount}%) </Text>
+                </View>
+            );
+        }
+        return null;
+        
     }
 
     updateData = async () => {
@@ -168,13 +183,16 @@ class Product extends React.Component {
                 
                 <View style={[styles.isColumn, styles.centerItems, {marginRight: 5}]}>
                     <View>
-                        <View style={[styles.centerItems, {flex: 5}]}>
+                        <View style={[styles.centerItems, {flex: 5}, {flexDirection: 'column', justifyContent: 'space-evenly'}]}>
                             <Text style={[styles.productName, styles.shadow]}>{this.item.product_name}</Text>
                             <View style={[styles.isRow, styles.centerItems, styles.dealsView, 
                                         {backgroundColor: this.state.cheapestPrice == 'Best Deal' ? 'orange' : '', width: 120}]}>
                                 {dealIcon}
                                 <Text style={[styles.boldMediumWhite, styles.horizontalSpacer]}>{this.state.cheapestPrice}</Text>
                                 {dealIcon}
+                            </View>
+                            <View styles={{flex: 1}}>
+                                {this.showDiscount()}
                             </View>
                         </View>
 
