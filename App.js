@@ -14,6 +14,7 @@ import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
 import SavedListsScreen from './screens/SavedListsScreen';
 import NamedListScreen from './screens/NamedListScreen';
+import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -25,7 +26,7 @@ function HomeTabs() {
     initialRouteName='Home'
     screenOptions={
       { headerShown: false}}>
-      <Tab.Screen name="Home" component={DashboardScreen} options={{
+      <Tab.Screen name="Home" component={ViewStoreItemsScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='home' size={20} style={styles.icons}></Icon>

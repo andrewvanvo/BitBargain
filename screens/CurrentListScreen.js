@@ -6,8 +6,6 @@ import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
 
-
-
 class Product extends React.Component {
     constructor(props) {
         super(props);
