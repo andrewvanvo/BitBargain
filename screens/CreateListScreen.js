@@ -45,11 +45,24 @@ class Product extends React.Component {
 
     // experimental, this function probably not necessary, remove in future
     getReviews = () => {
-        if(this.props.item.reviews == undefined) {
-            return 0;
-        } else {
-            return this.props.item.reviews.length;
+        if(this.props.item.reviews == undefined || this.props.item.reviews.length == 0) {
+            return null;
         }
+        return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.props.item.reviews.length}</Text>
+    }
+
+    getItemStocks = () => {
+        let stockStatus;
+        let statusColor;
+
+        if(this.item.stores_carrying.length > 0) {
+            stockStatus = 'In Stock.';
+            statusColor = 'green';
+        } else {
+            stockStatus = 'Out of Stock.';
+            statusColor = 'red';
+        }
+        return <Text style={[styles.shadow, styles.productInfo, {color: statusColor}]}>{stockStatus}</Text>
     }
 
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
@@ -63,13 +76,7 @@ class Product extends React.Component {
 
     render() {
 
-        let reviews;
-        if(this.getReviews() > 0) {
-            reviews = 
-                <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.getReviews()}</Text>
-        } else {
-            reviews = null;
-        }
+
 
         return (
             <TouchableOpacity
@@ -84,8 +91,11 @@ class Product extends React.Component {
                     <View>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
                     </View>
-                    <View style={[{marginVertical: 30}]}>
-                        {reviews}
+                    <View style={[{marginVertical: 12}]}>
+                        {this.getReviews()}
+                    </View>
+                    <View style={[{marginVertical: 12}]}>
+                        {this.getItemStocks()}
                     </View>
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
                         {this.item.tags.map((tag, index) => {
