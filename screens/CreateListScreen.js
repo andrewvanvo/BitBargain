@@ -286,7 +286,6 @@ const CreateListScreen = ({navigation}) => {
         return () => unsubscribe;
     }, []);
 
-    // experimental
     useEffect(() => {
         const categoryRef = collection(db, 'reviews');
         const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
@@ -298,7 +297,6 @@ const CreateListScreen = ({navigation}) => {
         });
         return () => unsubscribe();
     }, []);
-
 
     // dynamically update data for the category flatlist 
     useEffect(() => {

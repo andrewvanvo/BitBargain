@@ -22,7 +22,9 @@ class Product extends React.Component {
             showModal: false,
             selectedStore: 'selectedStore' in props.item ? props.item.selectedStore : 'Select Store',
             price: 'price' in props.item ? props.item.price : '- - -',
+            prevPrice: '',
             cheapestPrice: 'cheapestPrice' in props.item ? props.item.cheapestPrice : '',
+            onSale: false,
         };
     }
 
@@ -35,7 +37,19 @@ class Product extends React.Component {
         this.setState({showModal: show});
       }
 
+    checkOnSale = (store) => {
+        if(store.on_sale) {
+            this.setState({onSale: true});
+            this.setState({prevPrice: store.prev_price});
+
+        } else {
+            this.setState({onSale: false});
+        }
+    }
+
     selectStore = (store) => {
+        this.checkOnSale(store);
+
         this.setState({selectedStore: store.store_name});
         this.setState({price: '$'+store.price});
         this.setShowModal(!this.state.showModal);
@@ -47,6 +61,13 @@ class Product extends React.Component {
         }
 
         this.updateData();
+    }
+
+    showPrevPrice = () => {
+        if(this.state.onSale) {
+            return <Text style={[styles.shadow, {textDecorationLine: 'line-through', textDecorationStyle: 'solid'}]}>${this.state.prevPrice}</Text>
+        }
+        return null;
     }
 
     updateData = async () => {
@@ -99,8 +120,6 @@ class Product extends React.Component {
     }
 
     render() {
-        // when user sets quantity below 0, that indicates to remove from the shopping list
-        // will probably implement an alert/modal for this in the future.
         let dealIcon;
         if(this.state.cheapestPrice == 'Best Deal') {
             dealIcon = <IconA5 name='fire-alt' size={15} style={{color: 'red'}}></IconA5>;
@@ -160,7 +179,7 @@ class Product extends React.Component {
                         </View>
 
 
-                        <View style={[styles.isRow, styles.centerItems, styles.verticalSpacer]}>
+                        <View style={[styles.isRow, styles.centerItems, styles.verticalSpacer,]}>
                             <TouchableOpacity
                                 style={styles.whiteBtn}
                                 onPress={() => this.setShowModal(!this.state.showModal)}
@@ -169,10 +188,13 @@ class Product extends React.Component {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 disabled={true}
-                                style={styles.whiteBtn}
+                                style={[styles.whiteBtn, styles.isRow]}
                             >
-                                <Text style={styles.shadow}>{this.state.price}</Text>
+                                <Text style={[styles.shadow, styles.horizontalSpacer]}>{this.state.price}</Text>
+                                {this.showPrevPrice()}
+
                             </TouchableOpacity>
+
                         </View>
                     </View>
 
