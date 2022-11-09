@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, ActivityIndicator} from 'react-native'
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
@@ -14,10 +15,11 @@ const currShoppingList = new Set();
 const Category = ( props ) => {
     return (
         <TouchableOpacity
-        style={[styles.centerItems, styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'lightcoral' : 'orange'}]}
+        style={[styles.centerItems, styles.categoryButton, {backgroundColor: props.item.id === props.state ? 'orange' : '#202020', }]}
         onPress={() => props.setState(props.item.id)}
+        activeOpacity={1}
         >
-        <Text style={styles.shadow}>{props.item.name}</Text>
+        <Text style={[styles.shadow, styles.lightText, props.item.id === props.state ? styles.darkText : styles.lightText]}>{props.item.name}</Text>
         </TouchableOpacity>
     );
 };
@@ -30,6 +32,7 @@ class Product extends React.Component {
         this.item = props.item;
         this.state = {
             selected: false,
+            showModal: false,
         };
     }
     // update whether the product has been selected by the user
@@ -75,18 +78,47 @@ class Product extends React.Component {
     }
 
     render() {
-
-
-
         return (
             <TouchableOpacity
                 style={[styles.productTile, {padding: 10, backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
                 onPress={this.toggleProduct}
             >   
-                <Image
+                <ImageBackground
                     source={{uri: this.item.image_url}}
-                    style={[styles.productImg, {flex: 1}]}
-                />
+                    style={[styles.productImg, {flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end'}]}
+                >
+                    <TouchableOpacity
+                        onPress={() => this.setState({showModal: !this.state.showModal})}
+                    >
+                        <MCIcon 
+                            name='magnify' 
+                            size={20} 
+                            style={{color: '#202020',}}
+                        >
+                        </MCIcon>
+                        <View>
+                            <Modal
+                                animationType='fade'
+                                transparent={true}              // we can set this to 'false', and it'll seem like a new screen
+                                visible={this.state.showModal}
+                                onRequestClose={() => this.setState({showModal: !this.state.showModal})}
+                            >
+                                <TouchableOpacity 
+                                    onPress={() => this.setState({showModal: !this.state.showModal})}
+                                    activeOpacity={0}
+                                    style={[styles.centerItems, ]}
+                                >
+                                <View style={{borderWidth: 3, borderColor: 'orange', borderRadius: 20, padding: 5, backgroundColor: 'white'}}>
+                                    <Image
+                                        source={{uri: this.item.image_url}}
+                                        style={[styles.productImgLg]}
+                                    />
+                                </View>
+                                </TouchableOpacity>
+                            </Modal>
+                        </View>
+                    </TouchableOpacity>
+                </ImageBackground>
                 <View style={{flex: 1}}>
                     <View>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
@@ -110,6 +142,7 @@ class Product extends React.Component {
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
                                     remove={false}
+                                    setSelectedCategory={this.props.setSelectedCategory}
                                 >
                                 </Tags>
                             )
@@ -147,6 +180,7 @@ class Tags extends React.Component {
         let productArray = Array.from(newProducts);
         currProducts[0].name = productArray;
         this.props.products(currProducts);
+        this.props.setSelectedCategory(0);
     }
 
     removeTags = () => {
@@ -254,10 +288,6 @@ const CreateListScreen = ({navigation}) => {
 
     // experimental
     useEffect(() => {
-        // if(reviews.length > 0) {
-        //     return;
-        // }
-
         const categoryRef = collection(db, 'reviews');
         const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
             const categories = [];
@@ -283,7 +313,6 @@ const CreateListScreen = ({navigation}) => {
         return () => unsubscribe();
     }, []);
 
-
     const renderCategory = ({ item }) => {
         return (
             <Category 
@@ -304,6 +333,7 @@ const CreateListScreen = ({navigation}) => {
                 products={setWholeList}
                 tags={tags}
                 setTags={setTags}
+                setSelectedCategory={setSelectedCategory}
             />
         );
     };
@@ -364,7 +394,6 @@ const CreateListScreen = ({navigation}) => {
     useEffect(() => {
         if(reviews.length > 0) {
             setLoading(false);
-            // console.log(reviews);
         } else {
             return;
         }
@@ -380,12 +409,14 @@ const CreateListScreen = ({navigation}) => {
 
     if(loading) {
         return (
-            <View><Text>Loading...</Text></View>
+            <View style={styles.centerItems}>
+                <ActivityIndicator size={'large'} color='orange'/>
+            </View>
         );
     }
 
     return (
-        <View style={[styles.centerItems, {marginTop: 25}]}>
+        <View style={[styles.centerItems, {marginTop: 40}]}>
             <View style={styles.categoryContainer}>
                 <FlatList
                     data={categories}

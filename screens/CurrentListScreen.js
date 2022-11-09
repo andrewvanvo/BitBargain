@@ -309,7 +309,7 @@ const CurrentListScreen = ({ route, navigation }) => {
     }, []);
 
     return (
-        <View style={[styles.centerItems, {marginTop: 25}]}>
+        <View style={[styles.centerItems, {marginTop: 40}]}>
             <View style={[styles.centerItems, styles.productContainer]}>
                 <FlatList
                     data={data}
@@ -380,7 +380,10 @@ const CurrentListScreen = ({ route, navigation }) => {
                 style={styles.allAroundSpacer}
                 onPress={() => setShowModal(true)}
             >
-                <Text style={[styles.boldMediumWhite, styles.interactable]}>Save for later</Text>
+                <View style={styles.isRow}>
+                    <Ionicons name='bookmark' size={20} style={{color: 'blue'}}></Ionicons>
+                    <Text style={[styles.boldMediumWhite, styles.interactable]}>Save for later</Text>
+                </View>
             </TouchableOpacity>
         </View>
     );

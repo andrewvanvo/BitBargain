@@ -31,6 +31,14 @@ const styles = StyleSheet.create({
         textShadowColor: 'black',
         textShadowRadius: 2, 
     },
+    lightText: {
+        color: 'burlywood',
+        fontWeight: 'bold'
+    },
+    darkText: {
+        color: 'black',
+        fontWeight: 'bold'
+    },
 
     // Buttons
     whiteBtn: {
@@ -130,6 +138,11 @@ const styles = StyleSheet.create({
         width: 180,
         height: 180,
         marginTop: 5,
+    },
+    productImgLg: {
+        width: 350,
+        height: 350,
+        padding: 30,
     },
     customQtyBtn: {
         marginRight: 5, 
