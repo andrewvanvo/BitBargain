@@ -9,7 +9,7 @@ import { db } from '../firebase';
 const UpdatePriceOnlyScreen = ({navigation}) => {
     return (
 
-        <View>
+        <View style ={styles.mainContainer}>
             <Text>Update Price Only Placeholder</Text>
         </View>
     );
@@ -18,5 +18,9 @@ const UpdatePriceOnlyScreen = ({navigation}) => {
 export default UpdatePriceOnlyScreen;
 
 const styles = StyleSheet.create({
-   
+    mainContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
 }); 

@@ -17,7 +17,7 @@ class List extends React.Component {
       //console.log(this.item)
       return (
           <Pressable style={styles.listTile}
-            //onPress={()=>}
+            onPress={()=>this.navigateToUpdatePrice(this.item)}
           >
               <Text style={styles.storeName}>{this.item.name}</Text>
               <Text style={styles.storeAddress}>{this.item.vicinity}</Text>
@@ -25,7 +25,36 @@ class List extends React.Component {
       );
   }
 
+  //on press
+  navigateToUpdatePrice = async(item)=>{
+    var cartItems = [];
+    try {
+        //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
+        //this.item.product_array.forEach((product) =>{
+        //    //productList.push(product)
+        //    //console.log(product)
+        //    this.props.dbProducts.forEach((dbproduct)=>{
+        //        //CAN CHANGE WHEN DB STRUC CHANGES: USING PRODUCT DOC ID TO CHECK AGAINST
+        //        //console.log(dbproduct)
+        //        if (product == dbproduct['product_id']){
+        //            cartItems.push(dbproduct)
+        //        }
+        //    })
+        //})
+        //console.log(this.props.dbProducts)
+        //console.log(cartItems)
+
+        //await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+        //console.log(test)
+        //console.log(cartItems);
+    } catch (error){
+        console.log(error);
+    }
+    //this.navigation.navigate('CurrentList', {storageKey: '@storage_Key'});
+    this.navigation.navigate('UpdatePriceOnly')
+  };
 }
+
 
 const UpdateSelectStoreScreen = ({navigation}) => {
   //public gmaps api key and variables
@@ -36,31 +65,33 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   const storeList = ['Micro Center', 'Walmart', 'Target', "Gamestop", 'The Source',
    'Memory Express', 'Canada Computers & Electronics', 'Best Buy', 'Staples', 'Computer Elite']
 
+   //initial placeholder location on load
+  let lat = '44.5666670'
+  let long = '-123.2833330'
+
   const [location, setLocation] = useState(null);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true)
-  const [isFilter, setFilter] = useState(false)
+  const [isFilter, setFilter] = useState([])
 
   useEffect(()=>{
-    let runHook = true
+    //let runHook = true
     const fetchLocation = async ()=>{
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      let {status} = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
           return;
         }
       let location = await Location.getCurrentPositionAsync({});
-      if(runHook){
+      //if(runHook){
         setLocation(location);
-      }
+        console.log('setlocation')
+      //}
     }
     fetchLocation()
-    return () => runHook = false
+    //return () => runHook = false
   }, [])
 
-  //initial placeholder location on load
-  let lat = '44.5666670'
-  let long = '-123.2833330'
   //location data populated from api
   if (location){
     lat = location['coords']['latitude']
@@ -76,29 +107,31 @@ const UpdateSelectStoreScreen = ({navigation}) => {
       .catch((error) => console.error(error))
     }
     fetchGoogle();
-    if(data !== []){
+    //if(data !== []){
       setLoading(false)
-    }
+      console.log('setloading false')
+    //}
   }, [location]);
   
-  useEffect(()=>{
-    var filteredList = []
-    const filterList = () =>{
-      if(data.length !== 0){
-        const sliced = data['results'].slice(0,9)
-        sliced.forEach((element)=>{
-          if(storeList.includes(element.name)){
-            filteredList.push(element)
-            console.log(element)
-          }
-        }) 
-      }
-    }
-    if (data !== []){
-      filterList()
-      setFilter(filteredList)
-    }  
-  }, [data])
+  //useEffect(()=>{
+  //  var filteredList = []
+  //  const filterList = () =>{
+  //    if(data.length !== 0){
+  //      const sliced = data['results'].slice(0,9)
+  //      sliced.forEach((element)=>{
+  //        if(storeList.includes(element.name)){
+  //          filteredList.push(element)
+  //          //console.log(element)
+  //        }
+  //      }) 
+  //    }
+  //  }
+  //  if (data !== []){
+  //    filterList()
+  //    setFilter(filteredList)
+  //    console.log('setFilter')
+  //  }  
+  //}, [data])
   
 
   const renderList = ({ item }) => {
@@ -114,16 +147,16 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   return (
 
     <View style={styles.mainContainer}>
-      
+
         {isLoading? 
           <View style={styles.textContainer}>
-            <Text>Loading...</Text>
+            <Text>LOADING</Text>
           </View>
           :
           <View style={styles.listContainer}>
             <FlatList
-                //data={data['results']}
-                data ={isFilter}
+                data={data['results']}
+                //data ={isFilter}
                 //extraData = {savedProducts}
                 renderItem={renderList}
                 //keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving li
