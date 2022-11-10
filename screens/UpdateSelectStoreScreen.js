@@ -27,30 +27,14 @@ class List extends React.Component {
 
   //on press
   navigateToUpdatePrice = async(item)=>{
-    var cartItems = [];
     try {
-        //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
-        //this.item.product_array.forEach((product) =>{
-        //    //productList.push(product)
-        //    //console.log(product)
-        //    this.props.dbProducts.forEach((dbproduct)=>{
-        //        //CAN CHANGE WHEN DB STRUC CHANGES: USING PRODUCT DOC ID TO CHECK AGAINST
-        //        //console.log(dbproduct)
-        //        if (product == dbproduct['product_id']){
-        //            cartItems.push(dbproduct)
-        //        }
-        //    })
-        //})
-        //console.log(this.props.dbProducts)
-        //console.log(cartItems)
-
-        //await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
-        //console.log(test)
-        //console.log(cartItems);
+       console.log(this.item)
+        
+      //await AsyncStorage.setItem('@storage_Key');
+        
     } catch (error){
-        console.log(error);
+      console.log(error);
     }
-    //this.navigation.navigate('CurrentList', {storageKey: '@storage_Key'});
     this.navigation.navigate('UpdatePriceOnly')
   };
 }
@@ -85,7 +69,6 @@ const UpdateSelectStoreScreen = ({navigation}) => {
       let location = await Location.getCurrentPositionAsync({});
       //if(runHook){
         setLocation(location);
-        console.log('setlocation')
       //}
     }
     fetchLocation()
@@ -109,7 +92,6 @@ const UpdateSelectStoreScreen = ({navigation}) => {
     fetchGoogle();
     //if(data !== []){
       setLoading(false)
-      console.log('setloading false')
     //}
   }, [location]);
   
