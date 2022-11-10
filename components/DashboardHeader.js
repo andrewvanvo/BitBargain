@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import {React, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,8 +10,70 @@ import {
   Alert,
   Image,
 } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
+import { auth, db, } from "../firebase/";
+import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
 
-export const DashboardHeader = ({ user }) => {
+
+export const DashboardHeader = ({ user, userObj, setUser }) => {
+
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false)
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4,3],
+    })
+
+    // console.log(result)
+
+    handleImagePicked(result)
+
+  };
+  
+  const handleImagePicked = async (result) => {
+    try {
+      setUploading(true)
+      
+      if (!result.cancelled){
+        const uploadUrl = await uploadImageAsync(result.uri)
+
+      }
+    }
+    catch (e) {
+      console.log(e);
+      alert("Upload failed...");
+    }
+    finally {
+      setUploading(false)
+
+    }
+  };
+
+  const uploadImageAsync = async (uri) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, 'profile/my-image.jpg')
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const uploadTask =  await uploadBytes(storageRef, blob).then(()=>{
+      getDownloadURL(storageRef).then((url) => {
+        submitImage(url)
+      })
+    })
+  }
+
+  const submitImage = async (url) => {
+    await updateDoc(doc(db, 'Users', userObj.uid),{
+      profileImage: url
+    })
+    setUser({...user, profileImage: url})
+  }
+  // useEffect(() => {
+  //   setImage(user.profileImage)
+  // },[])
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar
@@ -36,9 +98,9 @@ export const DashboardHeader = ({ user }) => {
             <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
           </View>
           <View style={{overflow: 'hidden', width: 40, height: 40, borderRadius: 20, marginRight: 15}}>
-            <TouchableOpacity onPress={()=>console.log('click')}>
+            <TouchableOpacity onPress={pickImage}>
               <Image
-                source={require("../assets/sample_images/profile-pic-sample.png")}
+                source={{uri: user.profileImage}}
                 resizeMode="cover"
                 style={{
                   width: 40,

@@ -19,7 +19,11 @@ import { Card } from "../components/DashboardCard";
 export const DashboardFeed = ({dataSource, refresh, onRefresh, user }) => {
 
   const renderItem = ({ item }) => <Card item={item} user={user} />;
+  const navigation = useNavigation();
 
+  const pushCommentScreen = () => {
+    navigation.navigate('CommentScreen', {user: user})
+  }
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -29,6 +33,9 @@ export const DashboardFeed = ({dataSource, refresh, onRefresh, user }) => {
         onRefresh={onRefresh}
         refreshing={refresh}
       />
+      <TouchableOpacity onPress={() => pushCommentScreen()} style={styles.fab}>
+        <Icon name='add' style={{color: 'white', fontSize: 30}}></Icon>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -50,4 +57,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
   },
+  fab: { 
+    position: 'absolute', 
+    width: 50, 
+    height: 50, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    right: 20, 
+    bottom: 20, 
+    backgroundColor: 'orange', 
+    borderRadius: 30, 
+    elevation: 8 
+    }, 
 });

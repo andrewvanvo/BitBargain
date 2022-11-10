@@ -1,4 +1,4 @@
-import React from "react";
+import {React, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,7 +16,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { auth, db } from "../firebase/";
-import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
+import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc, Timestamp } from "firebase/firestore";
 
 const CommentScreen = ({ route, navigation }) => {
   const { item, user } = route.params;
@@ -26,30 +26,33 @@ const CommentScreen = ({ route, navigation }) => {
   };
 
   const submitData = async (values) => {
-    const newCommentRef = doc(collection(db, 'system_activity'))          
+    const newCommentRef = doc(collection(db, 'system_activity'))
+    
     await setDoc(newCommentRef, {
       id: newCommentRef.id,
-      imageURL: values.imageURL,
+      imageURL: user.profileImage,
       postDescription: values.postDescription,
-      postType: values.postType,
-      username: values.username
+      postCreated: Timestamp.now(),
+      postType: 'comment',
+      username: user.fname + ' ' + user.lname
     })
   }
   
   return (
     <Formik
       initialValues={{
-        id:'',
+        // id:'',
         imageURL: user.imageURL,
         // key: "",
         // postCreated: "",
         postDescription: "",
-        postType: "comment",
-        username: user.fname + ' ' + user.lname,
+        // postType: "comment",
+        // username: user.fname + ' ' + user.lname,
       }} /* ID = UID */
       onSubmit={(values) => {
                     // need to set certain attributes specifically (type, user, etc)
         submitData(values);
+        navigation.navigate('Home')
         console.log('comment submitted')
         
         
@@ -89,7 +92,7 @@ const CommentScreen = ({ route, navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.item}>
+          {/* <View style={styles.item}>
             <View
               style={{
                 width: 50,
@@ -113,10 +116,11 @@ const CommentScreen = ({ route, navigation }) => {
                 <Text style={styles.title}>{item.username}</Text>
                 <Text style={{ fontSize: 12, marginTop: 3 }}>
                   {" "}
-                  posted a {item.postType}! - {item.postCreated}
-                </Text>
-              </View>
-              <View style={{ flexDirection: "row", height: 70, width: 250 }}>
+                  posted a {item.postType}! - 
+                </Text> */}
+                {/* {item.postCreated} */}
+              {/* </View> */}
+              {/* <View style={{ flexDirection: "row", height: 70, width: 250 }}>
                 <Text
                   style={{
                     flex: 1,
@@ -125,21 +129,21 @@ const CommentScreen = ({ route, navigation }) => {
                     marginTop: 5,
                   }}
                 >
-                  {item.postDescription} 
+                  {item.postDescription}  */}
                   {/* 30 word count? */}
                   {/* orci sagittis eu volutpat odio facilisis mauris sit amet massa
                   vitae tortor condimentum lacinia quis vel eros donec ac odio
                   tempor orci dapibus ultrices in iaculis nunc sed augue lacus */}
-                </Text>
-              </View>
-            </View>
-          </View>
+                {/* </Text> */}
+              {/* </View>
+            </View> */}
+          {/* </View> */}
           <View style={{ marginLeft: 5 }}>
-            <View>
+            {/* <View>
               <Text style={{ fontSize: 11, color: "white", marginLeft: 5 }}>
                 Replying to {item.username}
               </Text>
-            </View>
+            </View> */}
             <View style={{ flexDirection: "row", marginTop: 10 }}>
               <View
                 style={{
@@ -152,7 +156,7 @@ const CommentScreen = ({ route, navigation }) => {
                 }}
               >
                 <Image
-                  source={{ uri: user.imageURL }}
+                  source={{ uri: user.profileImage }}
                   resizeMode="cover"
                   style={{
                     width: 40,
@@ -164,7 +168,7 @@ const CommentScreen = ({ route, navigation }) => {
                 style={{ flex: 1, marginLeft: 5, color: "white" }}
                 autoFocus={true}
                 placeholderTextColor="white"
-                placeholder="Comment your reply"
+                placeholder="Post your comment!"
                 underlineColorAndroid="transparent"
                 multiline={true}
                 maxLength={180}

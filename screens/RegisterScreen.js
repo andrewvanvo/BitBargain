@@ -47,6 +47,7 @@ const RegisterScreen = ( {navigation} ) => {
             const {userCredential} = 
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             await setDoc(doc(db, 'Users', auth.currentUser.uid), {
+            profileImage: 'https://png.pngitem.com/pimgs/s/274-2748514_profile-icon-material-design-hd-png-download.png',
             fname: values.fname,
             lname: values.lname,
             email: values.email,
