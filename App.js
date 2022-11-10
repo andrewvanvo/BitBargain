@@ -15,6 +15,7 @@ import SelectStoreScreen  from './screens/SelectStoreScreen';
 import SavedListsScreen from './screens/SavedListsScreen';
 import NamedListScreen from './screens/NamedListScreen';
 import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
+import UpdateItemPriceScreen from './screens/UpdateItemPriceScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -72,6 +73,7 @@ export default function App() {
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
         <Stack.Screen name="SavedLists" component={SavedListsScreen} />
         <Stack.Screen name="NamedList" component={NamedListScreen} />
+        <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

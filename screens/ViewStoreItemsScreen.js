@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
+import { useNavigation } from '@react-navigation/native';
 
 class Product extends React.Component {
     constructor(props) {
@@ -13,6 +14,13 @@ class Product extends React.Component {
         return (
             <TouchableOpacity
             style={[styles.productTile, {backgroundColor: 'white'}]}
+            onPress={()=>{this.props.navigation.navigate('UpdatePrice', {
+                "store_id": this.item.store_id, 
+                "product_id": this.item.product_id,
+                "image_url": this.item.image_url,
+                "product_name": this.item.product_name,
+                "price": this.item.store_price
+            })}}
             >
                 <View style={styles.productImg}>
                     <Image
@@ -30,7 +38,6 @@ class Product extends React.Component {
             </TouchableOpacity>
         );
     }
-
 }
 
 const ViewStoreItemsScreen = ({navigation}) => {
@@ -39,8 +46,9 @@ const ViewStoreItemsScreen = ({navigation}) => {
 
     const renderProduct = ({ item }) => {
         return (
-        <Product 
+        <Product
             item={item}
+            navigation={navigation}
         />
         );
     };
@@ -56,8 +64,10 @@ const ViewStoreItemsScreen = ({navigation}) => {
                     if (eachStore.store_id === 112233) {
                         storeList.push({
                             "image_url": object.image_url,
+                            "product_id": object.product_id,
                             "product_name": object.product_name,
-                            "store_price": eachStore.price
+                            "store_price": eachStore.price,
+                            "store_id": eachStore.store_id
                         })
                     }
                 })
@@ -69,7 +79,7 @@ const ViewStoreItemsScreen = ({navigation}) => {
     }, []);
 
     return (
-        <View >
+        <View style={styles.mainContainer}>
             <View >
                 <FlatList
                     data={data}
