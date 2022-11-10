@@ -27,7 +27,7 @@ function HomeTabs() {
     initialRouteName='Home'
     screenOptions={
       { headerShown: false}}>
-      <Tab.Screen name="Home" component={ViewStoreItemsScreen} options={{
+      <Tab.Screen name="Home" component={DashboardScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='home' size={20} style={styles.icons}></Icon>
