@@ -14,7 +14,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
 import { auth, db, } from "../firebase/";
 import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
-
+import 'react-native-get-random-values';
+import {v4 as uuidv4 } from 'uuid';
 
 export const DashboardHeader = ({ user, userObj, setUser }) => {
 
@@ -26,8 +27,6 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
       allowsEditing: true,
       aspect: [4,3],
     })
-
-    // console.log(result)
 
     handleImagePicked(result)
 
@@ -53,8 +52,9 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   };
 
   const uploadImageAsync = async (uri) => {
+    const filename = 'profile/' + uuidv4();
     const storage = getStorage();
-    const storageRef = ref(storage, 'profile/my-image.jpg')
+    const storageRef = ref(storage, filename)
     const response = await fetch(uri);
     const blob = await response.blob();
     const uploadTask =  await uploadBytes(storageRef, blob).then(()=>{
