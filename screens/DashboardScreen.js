@@ -10,6 +10,7 @@ import {
 import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { DashboardHeader } from "../components/DashboardHeader";
+
 import { DashboardFeed } from "../components/DashboardFeed";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -74,13 +75,21 @@ const DashboardScreen = ({navigation}) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
+        var key = 'uid';
         const getUser = async () => {
           const userCollection = doc(db, "users", uid);
           const userSnapshot = await getDoc(userCollection);
           setUser(userSnapshot.data());
           setUserObj(user)
+
         };
+        //key/value
+        const storeUser = async (key, value)=>{
+          await SecureStore.setItemAsync(key, value)
+        }
+
         getUser();
+
       } else {
         setUser({});
       }

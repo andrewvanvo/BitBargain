@@ -10,7 +10,7 @@ const SelectStore = () => {
 
   // CREATE - add products, based on user's input later on...
   setProducts = async () => {
-    const productRef = collection(firestore, 'products');
+    const productRef = collection(db, 'products');
     await setDoc(doc(productRef, 'some_document_id'), {
       categories: {type: "CPU", brand: "Intel"},
       product_id: 987165,

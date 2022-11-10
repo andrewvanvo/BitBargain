@@ -7,35 +7,6 @@ import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "fire
 import { db } from '../firebase';
 
 
-// MOCK DATA: different type of products under a specific category 
-// we add 'quantity' here, so later we can adjust them in the 'CurrentList' screen (e.g., if user want to buy 1 of this, or 3, etc.)
-// we might be able to implement 'quantity' somewhere upstream, but tentatively, it looks ok under products
-// const CPU_DATA = [
-//     {id: 0, name: 'AMD Ryzen 5 5600X'}, 
-//     {id: 1, name: 'AMD Ryzen 9 5900X'}, 
-//     {id: 2, name: 'AMD Ryzen 5 3600'}, 
-//     {id: 3, name: 'AMD Ryzen 9 5950X'}, 
-//     {id: 4, name: 'AMD Ryzen 7 5800X'}, 
-//     {id: 5, name: 'Intel Core i7-12700K'}, 
-//     {id: 6, name: 'Intel Core i9-12900K'}, 
-//     {id: 7, name: 'AMD Ryzen 5 5600G'},];
-  
-// const GPU_DATA = [
-//     {id: 8, name: 'ASUS TUF Gaming GeForce RTX 3070 Ti'}, 
-//     {id: 9, name: 'GIGABYTE GeForce RTX 3050'}, 
-//     {id: 10, name: 'GIGABYTE GAMING OC Radeon RX 6500 XT'}, 
-//     {id: 11, name: 'MSI Mech Radeon RX 6500 XT'}, 
-//     {id: 12, name: 'ASRock OC Formula Radeon RX 6900 XT'}, 
-//     {id: 13, name: 'GIGABYTE Radeon RX 6700 XT'}, 
-//     {id: 14, name: 'EVGA GeForce RTX 3080 FTW3'}, 
-//     {id: 15, name: 'EVGA GeForce RTX 3080 Ti FTW3'},];
-  
-// const PRODUCT_DATA = [
-//     {id: 0, name: CPU_DATA}, {id: 1, name: GPU_DATA}, {id: 2, name: []}, {id: 3, name: []}, 
-//     {id: 4, name: []}, {id: 5, name: []}, {id: 6, name: []}, {id: 7, name: []},
-// ]
-
-
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
 
@@ -92,26 +63,129 @@ class Product extends React.Component {
                     source={{uri: this.item.image_url}}
                     style={styles.productImg}
                 />
-                <Text style={styles.productInfo}>{this.item.product_name}</Text>
+                <View style={{flex: 1}}>
+                    <Text style={styles.productInfo}>{this.item.product_name}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap'}}>
+                        {this.item.tags.map((tag, index) => {
+                            return (
+                                <Tags 
+                                    item={this.item} 
+                                    category={this.props.category} 
+                                    products={this.props.products}
+                                    productList={this.props.productList}
+                                    tag={this.props.item.tags[index]}
+                                    tags={this.props.tags}
+                                    setTags={this.props.setTags}
+                                    key={`${this.item.product_id}`+index}
+                                    remove={false}
+
+                                >
+                                </Tags>
+                            )
+                        })}
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+}
+
+class Tags extends React.Component {
+    constructor(props) {
+        super(props);
+        this.item = props.item
+        this.remove = props.remove
+        this.productCopy = props.copy;
+    }
+
+    addTags = () => {
+
+        let newProducts = new Set();
+        let currProducts = this.props.productList;
+
+        if(!(this.props.tags.includes(this.props.tag))) {
+            this.props.setTags(prevState => [...prevState, this.props.tag]);
+        }
+
+        currProducts.slice(1).forEach(category => {
+            category['name'].forEach(product => {
+                if(product['tags'].includes(this.props.tag)) {
+                    newProducts.add(product);
+                }
+            })
+        });
+
+        let productArray = Array.from(newProducts);
+        currProducts[0]['name'] = productArray;
+
+        this.props.products(currProducts);
+    }
+
+    removeTags = () => {
+
+        let newProducts = new Set();
+        let currProducts = this.props.productList;
+
+        if(this.props.tags.includes(this.props.tag)) {
+            let newTags = this.props.tags.filter(tag => tag != this.props.tag);
+            this.props.setTags(newTags);
+        }
+
+        if(this.props.tags.length > 1) {
+            this.props.tags.forEach(tag => {
+                if(tag != this.props.tag) {
+                    this.props.productList.slice(1).forEach(category => {
+                        category['name'].forEach(product => {
+                            if(product['tags'].includes(tag)) {
+                                newProducts.add(product);
+                            }
+                        })
+                    })
+                }
+            });
+        } else {
+            this.props.productList.slice(1).forEach(category => {
+                category['name'].forEach(product => newProducts.add(product));
+            });
+        }
+
+        let productArray = Array.from(newProducts);
+        currProducts[0]['name'] = productArray;
+
+        this.props.products(currProducts);
+
+    }
+
+    render() {
+        return(
+            <TouchableOpacity 
+                style={{backgroundColor: 'gold', margin: 2, padding: 3, borderRadius: 5, borderWidth: 1, borderColor: 'black'}}
+                onPress={() => this.remove ? this.removeTags() : this.addTags()}
+
+            >
+                <Text>{this.props.tag}</Text>
             </TouchableOpacity>
         );
     }
 }
 
 const CreateListScreen = ({navigation}) => {
+
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [canContinue, setCanContinue] = useState(false);
 
     const [categories, setCategories] = useState([]);
+    const [tags, setTags] = useState([]);
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
-        {id: 0, name: [], category: 'CPU'},             // I could probably abstrate it more later on 
-        {id: 1, name: [], category: 'GPU'}, 
-        {id: 2, name: [], category: 'Motherboard'}, 
-        {id: 3, name: [], category: 'PSU'}, 
-        {id: 4, name: [], category: 'PC Cooling'}, 
-        {id: 5, name: [], category: 'Memory'}, 
-        {id: 6, name: [], category: 'Storage'}, 
-        {id: 7, name: [], category: 'Monitor'},
+        {id: 0, name: [], category: 'All'},
+        {id: 1, name: [], category: 'CPU'},             // I could probably abstrate it more later on 
+        {id: 2, name: [], category: 'GPU'}, 
+        {id: 3, name: [], category: 'Motherboard'}, 
+        {id: 4, name: [], category: 'PSU'}, 
+        {id: 5, name: [], category: 'PC Cooling'}, 
+        {id: 6, name: [], category: 'Memory'}, 
+        {id: 7, name: [], category: 'Storage'}, 
+        {id: 8, name: [], category: 'Monitor'},
     ]
 );
 
@@ -120,19 +194,23 @@ const CreateListScreen = ({navigation}) => {
         const productRef = collection(db, 'products');
         const unsubscribe = onSnapshot(productRef, (productSnap) => {
             var product_data_experimental = [
-                {id: 0, name: [], category: 'CPU'}, 
-                {id: 1, name: [], category: 'GPU'}, 
-                {id: 2, name: [], category: 'Motherboard'}, 
-                {id: 3, name: [], category: 'PSU'}, 
-                {id: 4, name: [], category: 'PC Cooling'}, 
-                {id: 5, name: [], category: 'Memory'}, 
-                {id: 6, name: [], category: 'Storage'}, 
-                {id: 7, name: [], category: 'Monitor'},
+                {id: 0, name: [], category: 'All'},
+                {id: 1, name: [], category: 'CPU'}, 
+                {id: 2, name: [], category: 'GPU'}, 
+                {id: 3, name: [], category: 'Motherboard'}, 
+                {id: 4, name: [], category: 'PSU'}, 
+                {id: 5, name: [], category: 'PC Cooling'}, 
+                {id: 6, name: [], category: 'Memory'}, 
+                {id: 7, name: [], category: 'Storage'}, 
+                {id: 8, name: [], category: 'Monitor'},
             ]
     
             productSnap.forEach((doc) => {
             var object = doc.data();
+  
             const rightCategory = product_data_experimental.find(item => item.category === object['categories']['type']);
+
+            product_data_experimental[0].name.push(object);
             
             if(rightCategory){
                 rightCategory.name.push(object);
@@ -171,6 +249,11 @@ const CreateListScreen = ({navigation}) => {
             <Product 
                 item={item}
                 continue={setCanContinue}
+                category={setCategories}
+                productList={wholeList}
+                products={setWholeList}
+                tags={tags}
+                setTags={setTags}
             />
         );
     };
@@ -180,9 +263,10 @@ const CreateListScreen = ({navigation}) => {
 
         // get shopping cart items
         try {
-            const data = await AsyncStorage.getItem('@storage_Key');
+            const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
+
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
                 });
@@ -201,13 +285,36 @@ const CreateListScreen = ({navigation}) => {
                 }
             });
 
-            await AsyncStorage.setItem('@storage_Key', JSON.stringify(cartItems));
+            await AsyncStorage.setItem('@storage_Key1', JSON.stringify(cartItems));
         } catch (error) {
             console.log(error);
         }
-        
-        navigation.navigate('CurrentList');
+
+        //console.log(cartItems)
+        navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
+
+    var tagContainer = [];
+
+    if(selectedCategory == 0) {
+        tagContainer.push(
+            tags.map((tag, index) => {
+              return (
+                <Tags 
+                    tag={tags[index]}
+                    tags={tags}
+                    setTags={setTags} 
+                    key={index}
+                    remove={true}
+                    products={setWholeList}
+                    productList={wholeList}
+
+                >
+                </Tags>
+              )  
+            })
+        );
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -219,6 +326,9 @@ const CreateListScreen = ({navigation}) => {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                 />
+            </View>
+            <View style={{flexDirection: 'row'}}>
+                {tagContainer}
             </View>
             <View style={styles.productContainer}>
                 <FlatList
@@ -291,12 +401,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     productImg: {
+        flex: 1,
         width: 150,
         height: 150,
+        margin: 5,
     },
     productInfo: {
-        flexWrap: 'wrap',
         flex: 1,
-        textAlign: 'center'
+        flexWrap: 'wrap',
+        textAlign: 'center',
     },
 });
