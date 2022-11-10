@@ -5,10 +5,6 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 
-import { collection, query, where, getDocs, setDoc, doc, onSnapshot, addDoc } from "firebase/firestore";
-import { auth, db } from '../firebase';
-
-import * as SecureStore from 'expo-secure-store';
 
 
 
@@ -18,7 +14,7 @@ class Product extends React.Component {
         this.item = props.item;
         this.storageKey = props.storageKey;
         this.state = {
-            quantity: props.item.quantity,
+            quantity: 1,
         };
     }
     addProduct = () => {
@@ -41,7 +37,7 @@ class Product extends React.Component {
                 json = JSON.parse(data);
 
                 var item = json.find(item => item.product_id === this.item.product_id);
-                item.quantity = this.state.quantity;
+                item.quantity = 1;
                 
                 if(item.quantity < 1) {
                     const index = json.indexOf(item);
@@ -91,13 +87,12 @@ class Product extends React.Component {
     }
 }
 
-const CurrentListScreen = ({ route, navigation }) => {
+const NamedListScreen = ({ route, navigation }) => {
     // product list from async storage (e.g., products the user selected from previous screen)
     const [data, setData] = useState([]);
-    const [userID, setUserID] = useState (null);
     const [showModal, setShowModal] = useState(false);
     const { storageKey } = route.params;
-
+    
     const renderProduct = ({ item }) => {
         return (
         <Product 
@@ -109,26 +104,6 @@ const CurrentListScreen = ({ route, navigation }) => {
         />
         );
     };
-
-
-    //Form Submission to DB fn
-    const submitToDatabase = (fieldValue) =>{
-        var passingData = {data}
-        var passingUser = {userID}
-        //console.log(passingUser)
-        var formattedProdId = []
-        passingData['data'].forEach((product) => {
-            formattedProdId.push(product['product_id']);
-        });
-        //console.log(formattedProdId)
-        
-        const docRef = addDoc(collection(db,'saved_lists'),{
-            list_name: fieldValue['listName'],
-            product_array: formattedProdId,
-            user_id: passingUser['userID']
-         
-        })
-    }
 
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
@@ -147,28 +122,6 @@ const CurrentListScreen = ({ route, navigation }) => {
         getData();
     }, []);
 
-    useEffect(() => {
-        //uses expo securestore uid saved from DashBoard Screen during auth change
-        const getUserID = async () => {
-            try {
-                const result = await SecureStore.getItemAsync('uid');
-                if (result) {
-                    //console.log(' uid retrieved')
-                    setUserID(result)
-                    
-                } else {
-                    console.log('no key exists')
-                }
-            } catch(error) {
-                console.log(error);
-            }
-        }
-        getUserID();
-    }, []);
-
-
-
-
     return (
         <View style={styles.mainContainer}>
             <View style={styles.productContainer}>
@@ -180,7 +133,7 @@ const CurrentListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate(storageKey)}  
+                    onPress={() => navigation.navigate('SelectStore')}  
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
@@ -202,9 +155,9 @@ const CurrentListScreen = ({ route, navigation }) => {
                         <Formik
                             initialValues={{listName: ''}}
                             onSubmit={(fieldValue, actions) => {
+                                //
                                 // A function that'll send the named list to DB
-                                submitToDatabase(fieldValue)
-
+                                // console.log(data);
                                 setShowModal(!showModal)
                                 actions.resetForm();
                             }}
@@ -238,17 +191,11 @@ const CurrentListScreen = ({ route, navigation }) => {
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity
-                style={{margin: 5}}
-                onPress={() => setShowModal(true)}
-            >
-                <Text style={styles.textStyle}>Save for later</Text>
-            </TouchableOpacity>
         </View>
     );
 }
 
-export default CurrentListScreen
+export default NamedListScreen
 
 const styles = StyleSheet.create({
     mainContainer: {

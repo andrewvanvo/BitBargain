@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
 import SavedListsScreen from './screens/SavedListsScreen';
+import NamedListScreen from './screens/NamedListScreen';
 
 
 //TEST
@@ -85,13 +86,15 @@ export default function App() {
         <Stack.Screen name="CurrentList" component={CurrentListScreen} />
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
         <Stack.Screen name="SavedLists" component={SavedListsScreen} />
-
+        <Stack.Screen name="NamedList" component={NamedListScreen} />
         {/*TEST SCREENs*/}
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
+
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
         <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
         
+
       </Stack.Navigator>
     </NavigationContainer>
   );
