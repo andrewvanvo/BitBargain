@@ -27,7 +27,6 @@ import { Timestamp } from "firebase/firestore";
       const min = Math.floor((ms / 1000 / 60) % 60)
       const sec = Math.floor((ms / 1000) % 60)
       
-      // console.log(hours, min, sec)
       if (hours != 0){
         setTime(hours + 'h')
       }
@@ -38,9 +37,6 @@ import { Timestamp } from "firebase/firestore";
         setTime(sec + 's')
       }
 
-
-      
-      
     }
 
     useEffect(() => {

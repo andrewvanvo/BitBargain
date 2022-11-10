@@ -70,7 +70,7 @@ const DashboardScreen = ({navigation}) => {
       if (user) {
         const uid = user.uid;
         const getUser = async () => {
-          const userCollection = doc(db, "Users", uid);
+          const userCollection = doc(db, "users", uid);
           const userSnapshot = await getDoc(userCollection);
           setUser(userSnapshot.data());
           setUserObj(user)

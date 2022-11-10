@@ -52,7 +52,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   };
 
   const uploadImageAsync = async (uri) => {
-    const filename = 'profile/' + uuidv4();
+    const filename = 'profile/' + userObj.uid;
     const storage = getStorage();
     const storageRef = ref(storage, filename)
     const response = await fetch(uri);
@@ -65,14 +65,12 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   }
 
   const submitImage = async (url) => {
-    await updateDoc(doc(db, 'Users', userObj.uid),{
+    await updateDoc(doc(db, 'users', userObj.uid),{
       profileImage: url
     })
     setUser({...user, profileImage: url})
   }
-  // useEffect(() => {
-  //   setImage(user.profileImage)
-  // },[])
+
 
   return (
     <View style={{ flex: 1 }}>
