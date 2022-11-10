@@ -92,58 +92,8 @@ const CommentScreen = ({ route, navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-          {/* <View style={styles.item}>
-            <View
-              style={{
-                width: 50,
-                height: 50,
-                overflow: "hidden",
-                borderWidth: 2,
-                borderRadius: 25,
-              }}
-            >
-              <Image
-                source={{ uri: item.imageURL }}
-                resizeMode="cover"
-                style={{
-                  width: 50,
-                  height: 50,
-                }}
-              ></Image>
-            </View>
-            <View style={{ flexDirection: "column", marginLeft: 15 }}>
-              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                <Text style={styles.title}>{item.username}</Text>
-                <Text style={{ fontSize: 12, marginTop: 3 }}>
-                  {" "}
-                  posted a {item.postType}! - 
-                </Text> */}
-                {/* {item.postCreated} */}
-              {/* </View> */}
-              {/* <View style={{ flexDirection: "row", height: 70, width: 250 }}>
-                <Text
-                  style={{
-                    flex: 1,
-                    flexWrap: "wrap",
-                    fontSize: 11,
-                    marginTop: 5,
-                  }}
-                >
-                  {item.postDescription}  */}
-                  {/* 30 word count? */}
-                  {/* orci sagittis eu volutpat odio facilisis mauris sit amet massa
-                  vitae tortor condimentum lacinia quis vel eros donec ac odio
-                  tempor orci dapibus ultrices in iaculis nunc sed augue lacus */}
-                {/* </Text> */}
-              {/* </View>
-            </View> */}
-          {/* </View> */}
+         
           <View style={{ marginLeft: 5 }}>
-            {/* <View>
-              <Text style={{ fontSize: 11, color: "white", marginLeft: 5 }}>
-                Replying to {item.username}
-              </Text>
-            </View> */}
             <View style={{ flexDirection: "row", marginTop: 10 }}>
               <View
                 style={{

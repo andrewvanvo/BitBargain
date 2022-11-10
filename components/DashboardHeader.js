@@ -14,8 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
 import { auth, db, } from "../firebase/";
 import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
-import 'react-native-get-random-values';
-import {v4 as uuidv4 } from 'uuid';
+
 
 export const DashboardHeader = ({ user, userObj, setUser }) => {
 

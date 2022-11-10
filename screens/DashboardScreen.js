@@ -8,7 +8,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter } from "firebase/firestore";
-
+import { Timestamp } from "firebase/firestore";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardFeed } from "../components/DashboardFeed";
 
@@ -25,7 +25,12 @@ const DashboardScreen = ({navigation}) => {
 
   const getData = async () => {
     try {
-      const first = query(collection(db, 'system_activity'), orderBy('postCreated') ); //orderBy('postCreated)
+      
+      var d = new Date();
+      d.setDate(d.getDate() - 1)
+      const dayRange = Timestamp.fromDate(d)
+
+      const first = query(collection(db, 'system_activity'), where('postCreated', '>', dayRange ), orderBy('postCreated') ); //orderBy('postCreated)
       const unsubscribe = onSnapshot(first, (querySnapshot) => {
         const posts = [];
         querySnapshot.forEach((doc) => {
