@@ -4,9 +4,11 @@ import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, 
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconA5 from 'react-native-vector-icons/Fontisto';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
@@ -52,6 +54,38 @@ class Product extends React.Component {
             return null;
         }
         return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.props.item.reviews.length}</Text>
+    }
+
+    getRatings = () => {
+        var totalRating = 0;
+
+        if(this.props.item.reviews == undefined) {
+            return null;
+        }
+
+        this.props.item.reviews.forEach(review => {
+            totalRating += review.rating;
+        });
+
+        if(totalRating > 0) {
+            let stars = [];
+            let averageRating = totalRating / this.props.item.reviews.length;
+            
+            for(let i=0; i < Math.floor(averageRating); i++) {
+                stars.push(
+                    <IconA5 name='star' size={13} style={{color: 'gold',}}></IconA5>
+                );
+            }
+
+            if(5 % averageRating > 0) {
+                stars.push(
+                    <IconA5 name='star-half' size={13} style={{color: 'gold'}}></IconA5>
+                );
+            }
+
+
+            return stars;
+        }
     }
 
     getItemStocks = () => {
@@ -120,8 +154,9 @@ class Product extends React.Component {
                     </TouchableOpacity>
                 </ImageBackground>
                 <View style={{flex: 1}}>
-                    <View>
+                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
+                        <View style={styles.isRow}>{this.getRatings()}</View>
                     </View>
                     <View style={[{marginVertical: 12}]}>
                         {this.getReviews()}
@@ -400,6 +435,9 @@ const CreateListScreen = ({navigation}) => {
         wholeList.slice(1).forEach(category => {
             category.name.forEach(product => {
                 let totalReviews = reviews.filter(review => review.product_id === product.product_id);
+                if(totalReviews === undefined) {
+                    totalReviews = [];
+                }
                 product.reviews = totalReviews;
             });
         });
