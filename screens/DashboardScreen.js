@@ -11,6 +11,8 @@ import {
 } from "firebase/auth";
 import { collection, getDoc, doc, where, query } from "firebase/firestore";
 
+import * as SecureStore from 'expo-secure-store';
+
 
 import { DashboardHeader } from '../components/DashboardHeader'
 import { DashboardFeed } from "../components/DashboardFeed";
@@ -22,13 +24,22 @@ const DashboardScreen = ({}) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
+        var key = 'uid';
         const getUser = async () => {
           const userCollection = doc(db, "Users", uid);
           const userSnapshot = await getDoc(userCollection);
           setUser(userSnapshot.data());
           console.log("useEffect success");
+          storeUser(key, uid)
+          
         };
+        //key/value
+        const storeUser = async (key, value)=>{
+          await SecureStore.setItemAsync(key, value)
+        }
+
         getUser();
+
       } else {
         setUser({});
       }
