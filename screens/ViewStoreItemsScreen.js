@@ -44,6 +44,8 @@ const ViewStoreItemsScreen = ({navigation}) => {
 
     const [data, setData] = useState([]);
 
+    const store_name = '112233';
+
     const renderProduct = ({ item }) => {
         return (
         <Product
@@ -80,6 +82,11 @@ const ViewStoreItemsScreen = ({navigation}) => {
 
     return (
         <View style={styles.mainContainer}>
+            <View>
+                <Text style={{fontSize:20, marginTop: 10}}>
+                    Update Store {store_name} Products
+                </Text>
+            </View>
             <View >
                 <FlatList
                     data={data}
