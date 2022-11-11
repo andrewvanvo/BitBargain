@@ -11,8 +11,7 @@ import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
-import { auth, db } from '../firebase';
-import * as SecureStore from 'expo-secure-store';
+import { auth } from '../firebase';
 
 class Product extends React.Component {
     constructor(props) {

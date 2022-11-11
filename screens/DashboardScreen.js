@@ -11,7 +11,6 @@ import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnaps
 import { Timestamp } from "firebase/firestore";
 import { DashboardHeader } from "../components/DashboardHeader";
 import * as SecureStore from 'expo-secure-store';
-import { DashboardHeader } from '../components/DashboardHeader'
 import { DashboardFeed } from "../components/DashboardFeed";
 import Icon from "react-native-vector-icons/Ionicons";
 

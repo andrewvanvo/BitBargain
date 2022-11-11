@@ -74,7 +74,7 @@ class Product extends React.Component {
             
             for(let i=0; i < Math.floor(averageRating); i++) {
                 stars.push(
-                    <IconA5 name='star' size={13} style={{color: 'gold',}}></IconA5>
+                    <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
                 );
             }
 
