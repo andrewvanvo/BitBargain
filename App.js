@@ -17,9 +17,12 @@ import NamedListScreen from './screens/NamedListScreen';
 import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
 import UpdateItemPriceScreen from './screens/UpdateItemPriceScreen';
 
+
 //TEST
 import ScannerScreen from './screens/ScannerScreen';
 import TestingScreen from './screens/TestingScreen';
+import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
+import UpdatePriceOnlyScreen from './screens/UpdatePriceOnlyScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -43,7 +46,7 @@ function HomeTabs() {
           <Icon name='list-outline' size={20} style={styles.icons}></Icon>
         </View>
       )}}/>
-      <Tab.Screen name="Update" component={CreateListScreen} options={{
+      <Tab.Screen name="Update" component={UpdateSelectStoreScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='barcode-outline' size={20} style={styles.icons}></Icon>
@@ -89,6 +92,11 @@ export default function App() {
         <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
+
+        <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
+        <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );
