@@ -10,9 +10,8 @@ import {
 import { collection, getDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { DashboardHeader } from "../components/DashboardHeader";
-
+import * as SecureStore from 'expo-secure-store';
 import { DashboardFeed } from "../components/DashboardFeed";
-
 import Icon from "react-native-vector-icons/Ionicons";
 
 const DashboardScreen = ({navigation}) => {
@@ -81,11 +80,9 @@ const DashboardScreen = ({navigation}) => {
           const userSnapshot = await getDoc(userCollection);
           setUser(userSnapshot.data());
           setUserObj(user)
-
           //console.log("useEffect success");
           //Uses Secure Store
           storeUser(key, uid)
-
         };
         //key/value
         const storeUser = async (key, value)=>{
