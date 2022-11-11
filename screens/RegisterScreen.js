@@ -1,16 +1,19 @@
-import React from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native'
-import { Formik } from 'formik';
+import React, {useState} from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, TouchableNativeFeedback } from 'react-native'
+import { Formik  } from 'formik';
 import * as Yup from 'yup';
 
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword  } from 'firebase/auth';
+import { createUserWithEmailAndPassword , fetchSignInMethodsForEmail  } from 'firebase/auth';
 import { setDoc, doc, } from 'firebase/firestore';
 
 
 const RegisterScreen = ( {navigation} ) => {
+
+    const [emailError, setEmailError] = useState("")
+
     const loginValues = {
         fname: '',
         lname: '',
@@ -37,6 +40,8 @@ const RegisterScreen = ( {navigation} ) => {
         .required('Required'),
     });
 
+    
+
     // with the user's email/pw input, if valid, will submit to firebase auth to make an account.
     const handleUserRegisteration = async (values) => {
 
@@ -46,7 +51,8 @@ const RegisterScreen = ( {navigation} ) => {
         try {
             const {userCredential} = 
             await createUserWithEmailAndPassword(auth, values.email, values.password);
-            await setDoc(doc(db, 'Users', auth.currentUser.uid), {
+            await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            profileImage: 'https://png.pngitem.com/pimgs/s/274-2748514_profile-icon-material-design-hd-png-download.png',
             fname: values.fname,
             lname: values.lname,
             email: values.email,
@@ -55,8 +61,28 @@ const RegisterScreen = ( {navigation} ) => {
         console.log('New user created: ', values.email, values.password)
         } catch (error) {
             console.log('Registration has an error!', error.code)
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                  setEmailError(`Email address ${values.email} already in use.`);
+                  break;
+                case 'auth/invalid-email':
+                  setEmailError(`Email address ${values.email} is invalid.`);
+                  break;
+                case 'auth/operation-not-allowed':
+                  setEmailError(`Error during sign up.`);
+                  break;
+                case 'auth/weak-password':
+                  setEmailError('Password is not strong enough. Add additional characters including special characters and numbers.');
+                  break;
+                default:
+                  setEmailError(error.message);
+                  break;
+              }
+            return error.code;
         }
     };
+    
+
     return (
         <View style={styles.formikContainer}>
             <Formik
@@ -64,16 +90,16 @@ const RegisterScreen = ( {navigation} ) => {
                 validationSchema={signUpSchema}
                 validateOnChange={false}
                 validateOnBlur={false}
-                onSubmit={(credentials, actions) => {
+                onSubmit={async (credentials, actions) => {
                     console.log('User trying to make a new acc: ');
-                    handleUserRegisteration(credentials);
-                    actions.resetForm();
+                    const error = await handleUserRegisteration(credentials);
+                    if (!error) {
+                        actions.resetForm();
+                    }
                 }}
             >
                 {(formikProps) => (
-                    <View>
-                        <Text>THIS IS THE REGISTER SCREEN</Text>
-                        
+                    <View>                        
                         <Text>Create New Account</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
@@ -96,6 +122,11 @@ const RegisterScreen = ( {navigation} ) => {
                                 onChangeText={formikProps.handleChange('email')}
                                 style={styles.inputField}                             
                             />
+                            </View>
+                                {emailError.length > 0 &&
+                                <Text>{emailError}</Text>
+                                }
+                            <View>
                             <Text style={styles.errorMsg}>{formikProps.errors.email}</Text>
                             <TextInput
                                 placeholder='Password...'

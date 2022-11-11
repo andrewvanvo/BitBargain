@@ -10,6 +10,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
 

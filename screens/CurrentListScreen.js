@@ -6,10 +6,13 @@ import { Formik } from 'formik';
 import ModalDropdown from 'react-native-modal-dropdown';
 import IconA5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
 import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
-
+import * as Yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import { auth, db } from '../firebase';
+import * as SecureStore from 'expo-secure-store';
 
 class Product extends React.Component {
     constructor(props) {
@@ -295,6 +298,7 @@ const CurrentListScreen = ({ route, navigation }) => {
         );
     };
 
+
     //Form Submission to DB fn
     const submitToDatabase = (fieldValue) =>{
         var passingData = {data}
@@ -339,7 +343,8 @@ const CurrentListScreen = ({ route, navigation }) => {
                     setUserID(result)
                     
                 } else {
-                    // console.log('no key exists')
+
+                    console.log('no key exists')
                 }
             } catch(error) {
                 console.log(error);
