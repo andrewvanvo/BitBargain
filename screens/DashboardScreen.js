@@ -82,6 +82,10 @@ const DashboardScreen = ({navigation}) => {
           setUser(userSnapshot.data());
           setUserObj(user)
 
+          //console.log("useEffect success");
+          //Uses Secure Store
+          storeUser(key, uid)
+
         };
         //key/value
         const storeUser = async (key, value)=>{

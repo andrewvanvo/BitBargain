@@ -10,8 +10,6 @@ import { auth, db } from '../firebase';
 
 import * as SecureStore from 'expo-secure-store';
 
-
-
 class Product extends React.Component {
     constructor(props) {
         super(props);
