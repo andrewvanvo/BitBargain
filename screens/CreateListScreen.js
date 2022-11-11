@@ -83,8 +83,6 @@ class Product extends React.Component {
                     <IconA5 name='star-half' size={13} style={{color: 'gold'}}></IconA5>
                 );
             }
-
-
             return stars;
         }
     }
