@@ -291,18 +291,6 @@ const CreateListScreen = ({navigation}) => {
         {id: 8, name: [], category: 'Monitor'},
     ]
 );
-
-    // const assignStore = async (product) => {
-    //     let storesCarrying = [];
-    //     let targetProductId = product.product_id;
-
-    //     const productRef = collection(db, 'products', targetProductId, 'stores_carrying');
-    //     const querySnapshot = await getDocs(productRef);
-    //     querySnapshot.forEach((doc) => {
-    //     storesCarrying.push(doc.data());
-    //     });
-    //     product.stores_carrying = storesCarrying;
-    // }
     // dynamically update data for the product flatlist
     useEffect(() => {
         const productRef = collection(db, 'products');
@@ -391,8 +379,8 @@ const CreateListScreen = ({navigation}) => {
             const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
-                console.log('Things received from CurrentList----------------\n', jsonObject);
-                console.log('currentShoppingCart: \n', currShoppingList);
+                // console.log('Things received from CurrentList----------------\n', jsonObject);
+                // console.log('currentShoppingCart: \n', currShoppingList);
 
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
@@ -415,7 +403,7 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-        console.log('things sent to CurrentList ----------------- \n', cartItems);
+        // console.log('things sent to CurrentList ----------------- \n', cartItems);
         navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 

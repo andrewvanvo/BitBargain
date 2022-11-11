@@ -6,7 +6,7 @@ import { Formik } from 'formik';
 import ModalDropdown from 'react-native-modal-dropdown';
 import IconA5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 import * as Yup from 'yup';
@@ -24,10 +24,27 @@ class Product extends React.Component {
             showModal: false,
             selectedStore: 'selectedStore' in props.item ? props.item.selectedStore : 'Select Store',
             price: 'price' in props.item ? props.item.price : '- - -',
-            prevPrice: '',
+            prevPrice: 'prevPrice' in props.item ? props.item.prevPrice : '',
             cheapestPrice: 'cheapestPrice' in props.item ? props.item.cheapestPrice : '',
-            onSale: false,
+            onSale: 'onSale' in props.item ? props.item.onSale : false,
+            storeData: 'storeData' in props.item ? props.item.storeData : [],
         };
+    }
+
+    assignStores = async () => {
+        if(this.state.storeData.length == 0) {
+            let targetProductId = this.item.product_id;
+            let stores = [];
+
+            const productRef = collection(db, 'products', targetProductId, 'stores_carrying');
+            const querySnapshot = await getDocs(productRef);
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.data());
+                stores.push(doc.data());
+            });
+
+            this.setState({storeData: stores.sort((store1, store2) => store1.price - store2.price)});
+        }
     }
 
     updateQuantity = (quantity) => {
@@ -50,13 +67,12 @@ class Product extends React.Component {
     }
 
     selectStore = (store) => {
-        console.log(store.store_name);
         this.checkOnSale(store);
         this.setState({selectedStore: store.store_name});
         this.setState({price: '$' + store.price});
         this.setShowModal(!this.state.showModal);
 
-        if(store.store_id == this.storeData[0].store_id) {
+        if(store.store_id == this.state.storeData[0].store_id) {
             this.setState({cheapestPrice: 'Best Deal'});
         } else {
             this.setState({cheapestPrice: 'Fair Price'});
@@ -101,14 +117,20 @@ class Product extends React.Component {
                 item.quantity = this.state.quantity;
                 item.selectedStore = this.state.selectedStore;
                 item.price = this.state.price;
+                item.prevPrice = this.state.prevPrice;
                 item.cheapestPrice = this.state.cheapestPrice;
+                item.onSale = this.state.onSale;
+                item.storeData = this.state.storeData;
                 
                 if(item.quantity < 1) {
                     const index = json.indexOf(item);
-                    json.splice(index, 1);
+                    if(index > -1){
+                        json.splice(index, 1);
+                    }
                 }
             }
             // replace previous states with updated states
+            // console.log('sent to createList -------------- \n', json);
             await AsyncStorage.setItem(this.storageKey, JSON.stringify(json));
             
         } catch(error) {
@@ -134,6 +156,10 @@ class Product extends React.Component {
                 </TouchableOpacity>
             </View>
         );
+    }
+
+    componentDidMount() {
+        this.assignStores();
     }
 
     render() {
@@ -237,7 +263,7 @@ class Product extends React.Component {
                                     >Select a store:</Text>
                                 </View>
                                 <FlatList
-                                    data={this.storeData}
+                                    data={this.state.storeData}
                                     renderItem={this.renderStore}
                                     keyExtractor={store => store.store_id}
                                     style={[styles.whiteBtn, styles.selectStoreList]}
