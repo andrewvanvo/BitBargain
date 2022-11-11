@@ -74,7 +74,7 @@ class Product extends React.Component {
             
             for(let i=0; i < Math.floor(averageRating); i++) {
                 stars.push(
-                    <IconA5 name='star' size={13} style={{color: 'gold',}}></IconA5>
+                    <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
                 );
             }
 
@@ -162,9 +162,9 @@ class Product extends React.Component {
                     <View style={[{marginVertical: 12}]}>
                         {this.getReviews()}
                     </View>
-                    <View style={[{marginVertical: 12}]}>
+                    {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}
-                    </View>
+                    </View> */}
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
                         {this.item.tags.map((tag, index) => {
                             return (
@@ -292,6 +292,17 @@ const CreateListScreen = ({navigation}) => {
     ]
 );
 
+    // const assignStore = async (product) => {
+    //     let storesCarrying = [];
+    //     let targetProductId = product.product_id;
+
+    //     const productRef = collection(db, 'products', targetProductId, 'stores_carrying');
+    //     const querySnapshot = await getDocs(productRef);
+    //     querySnapshot.forEach((doc) => {
+    //     storesCarrying.push(doc.data());
+    //     });
+    //     product.stores_carrying = storesCarrying;
+    // }
     // dynamically update data for the product flatlist
     useEffect(() => {
         const productRef = collection(db, 'products');
@@ -380,6 +391,8 @@ const CreateListScreen = ({navigation}) => {
             const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
+                console.log('Things received from CurrentList----------------\n', jsonObject);
+                console.log('currentShoppingCart: \n', currShoppingList);
 
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
@@ -402,6 +415,7 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
+        console.log('things sent to CurrentList ----------------- \n', cartItems);
         navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 

@@ -11,15 +11,14 @@ import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
-import { auth, db } from '../firebase';
-import * as SecureStore from 'expo-secure-store';
+import { auth } from '../firebase';
 
 class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
         this.storageKey = props.storageKey;
-        this.storeData = props.item.stores_carrying.sort((store1, store2) => store1.price - store2.price)
+        // this.storeData = props.item.stores_carrying.sort((store1, store2) => store1.price - store2.price)
         this.state = {
             quantity: props.item.quantity,
             showModal: false,
@@ -51,8 +50,8 @@ class Product extends React.Component {
     }
 
     selectStore = (store) => {
+        console.log(store.store_name);
         this.checkOnSale(store);
-
         this.setState({selectedStore: store.store_name});
         this.setState({price: '$' + store.price});
         this.setShowModal(!this.state.showModal);
@@ -275,21 +274,22 @@ const CurrentListScreen = ({ route, navigation }) => {
         return () => unsubscribe();
       }, []);
 
-    const findStores = (product) => {
-        product.stores_carrying.forEach(store => {
-            allStores.forEach(storeAll => {
-                if(store.store_id === storeAll.store_id) {
-                    store.store_name = storeAll.store_name;
-                }
-            });
-        })
-        return product;
-    }
+    // const findStores = (product) => {
+    //     product.stores_carrying.forEach(store => {
+    //         allStores.forEach(storeAll => {
+    //             if(store.store_id === storeAll.store_id) {
+    //                 store.store_name = storeAll.store_name;
+    //             }
+    //         });
+    //     })
+    //     return product;
+    // }
    
     const renderProduct = ({ item }) => {
         return (
         <Product 
-            item={findStores(item)}
+            // item={findStores(item)}
+            item={item}
             storageKey={storageKey}
             data={data}
             setData={setData}
@@ -342,9 +342,6 @@ const CurrentListScreen = ({ route, navigation }) => {
                     //console.log(' uid retrieved')
                     setUserID(result)
                     
-                } else {
-
-                    console.log('no key exists')
                 }
             } catch(error) {
                 console.log(error);
