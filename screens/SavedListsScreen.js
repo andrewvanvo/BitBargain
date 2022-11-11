@@ -33,17 +33,17 @@ class List extends React.Component {
             //iterate over SavedLists productArray to get product id, then compare product id against dbProducts to see if match, if so, push onto cart
             this.item.product_array.forEach((product) =>{
                 //productList.push(product)
-                //console.log(product)
+                // console.log(product)
                 this.props.dbProducts.forEach((dbproduct)=>{
                     //CAN CHANGE WHEN DB STRUC CHANGES: USING PRODUCT DOC ID TO CHECK AGAINST
-                    //console.log(dbproduct)
+                    // console.log(dbproduct)
                     if (product == dbproduct['product_id']){
                         cartItems.push(dbproduct)
                     }
                 })
             })
             //console.log(this.props.dbProducts)
-            //console.log(cartItems)
+            // console.log(cartItems)
 
             await AsyncStorage.setItem('@named_list', JSON.stringify(cartItems));
             //console.log(test)
@@ -67,7 +67,7 @@ const SavedListsScreen = ({navigation}) => {
                 savedLists.push(doc.data());
             });
             setSavedLists(savedLists);
-            
+            // console.log(savedLists);
         })
         return () => unsubscribe;
     }, []);
