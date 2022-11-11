@@ -51,7 +51,8 @@ const RegisterScreen = ( {navigation} ) => {
         try {
             const {userCredential} = 
             await createUserWithEmailAndPassword(auth, values.email, values.password);
-            await setDoc(doc(db, 'Users', auth.currentUser.uid), {
+            await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            profileImage: 'https://png.pngitem.com/pimgs/s/274-2748514_profile-icon-material-design-hd-png-download.png',
             fname: values.fname,
             lname: values.lname,
             email: values.email,
@@ -98,9 +99,7 @@ const RegisterScreen = ( {navigation} ) => {
                 }}
             >
                 {(formikProps) => (
-                    <View>
-                        <Text>THIS IS THE REGISTER SCREEN</Text>
-                        
+                    <View>                        
                         <Text>Create New Account</Text>
                         <View style={styles.inputContainer}>
                             <TextInput

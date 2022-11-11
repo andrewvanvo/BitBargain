@@ -12,6 +12,9 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/Ionicons";
 import CurrentListScreen from './screens/CurrentListScreen';
 import SelectStoreScreen  from './screens/SelectStoreScreen';
+import UpdateScreen from './screens/UpdateScreen';
+import CommentScreen from './screens/CommentScreen';
+
 import SavedListsScreen from './screens/SavedListsScreen';
 import NamedListScreen from './screens/NamedListScreen';
 import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
@@ -23,6 +26,7 @@ import ScannerScreen from './screens/ScannerScreen';
 import TestingScreen from './screens/TestingScreen';
 import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
 import UpdatePriceOnlyScreen from './screens/UpdatePriceOnlyScreen';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -87,6 +91,7 @@ export default function App() {
         <Stack.Screen name="CreateList" component={CreateListScreen} />
         <Stack.Screen name="CurrentList" component={CurrentListScreen} />
         <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
+        <Stack.Screen name="CommentScreen" component={CommentScreen} />
         <Stack.Screen name="SavedLists" component={SavedListsScreen} />
         <Stack.Screen name="NamedList" component={NamedListScreen} />
         <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />

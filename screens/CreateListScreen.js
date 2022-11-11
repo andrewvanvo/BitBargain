@@ -6,6 +6,7 @@ import { array } from 'yup';
 import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
 
+
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
 
