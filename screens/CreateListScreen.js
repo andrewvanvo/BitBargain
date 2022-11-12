@@ -71,19 +71,20 @@ class Product extends React.Component {
     }
 
     getRatings = () => {
+        
         var totalRating = 0;
 
-        if(this.props.item.reviews == undefined) {
+        if(this.state.reviews == undefined) {
             return null;
         }
 
-        this.props.item.reviews.forEach(review => {
+        this.state.reviews.forEach(review => {
             totalRating += review.rating;
         });
 
         if(totalRating > 0) {
             let stars = [];
-            let averageRating = totalRating / this.props.item.reviews.length;
+            let averageRating = totalRating / this.state.reviews.length;
             
             for(let i=0; i < Math.floor(averageRating); i++) {
                 stars.push(
