@@ -55,7 +55,8 @@ class Product extends React.Component {
         if(this.state.reviews == undefined || this.state.reviews.length == 0) {
             return null;
         }
-        return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.state.reviews.length}</Text>
+        return <Text style={[styles.shadow, styles.productInfo, 
+            {color: 'mediumblue', fontSize: 14}]}> ({this.state.reviews.length})</Text>
     }
 
     assignReviews = async () => {
@@ -171,12 +172,9 @@ class Product extends React.Component {
                     </TouchableOpacity>
                 </ImageBackground>
                 <View style={{flex: 1}}>
-                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: 50}}>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
-                        <View style={styles.isRow}>{this.getRatings()}</View>
-                    </View>
-                    <View style={[{marginVertical: 12}]}>
-                        {this.getReviews()}
+                        <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>{this.getRatings()}{this.getReviews()}</View>
                     </View>
                     {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}
