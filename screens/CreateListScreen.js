@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -36,6 +36,7 @@ class Product extends React.Component {
         this.state = {
             selected: false,
             showModal: false,
+            reviews: 'reviews' in props.item ? props.item.reviews : [],
         };
     }
     // update whether the product has been selected by the user
@@ -51,10 +52,22 @@ class Product extends React.Component {
 
     // experimental, this function probably not necessary, remove in future
     getReviews = () => {
-        if(this.props.item.reviews == undefined || this.props.item.reviews.length == 0) {
+        if(this.state.reviews == undefined || this.state.reviews.length == 0) {
             return null;
         }
-        return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.props.item.reviews.length}</Text>
+        return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.state.reviews.length}</Text>
+    }
+
+    assignReviews = async () => {
+        let reviews = [];
+        const reviewsRef = collection(db, 'reviews');
+        const querySnapshot = await getDocs(reviewsRef);
+        querySnapshot.forEach((doc) => {
+            if(doc.data().product_id === this.item.product_id){
+                reviews.push(doc.data());
+            }
+        });
+        this.setState({reviews: reviews});
     }
 
     getRatings = () => {
@@ -110,6 +123,10 @@ class Product extends React.Component {
         } else {
             this.continue(false);
         }
+    }
+
+    componentDidMount() {
+        this.assignReviews();
     }
 
     render() {
@@ -275,9 +292,6 @@ const CreateListScreen = ({navigation}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
-    // experimental
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
         {id: 0, name: [], category: 'All'},
@@ -321,18 +335,6 @@ const CreateListScreen = ({navigation}) => {
         return () => unsubscribe;
     }, []);
 
-    useEffect(() => {
-        const categoryRef = collection(db, 'reviews');
-        const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
-            const categories = [];
-            categorySnap.forEach((doc) => {
-                categories.push(doc.data());
-            });
-            setReviews(categories);
-        });
-        return () => unsubscribe();
-    }, []);
-
     // dynamically update data for the category flatlist 
     useEffect(() => {
         const categoryRef = collection(db, 'categories');
@@ -373,15 +375,11 @@ const CreateListScreen = ({navigation}) => {
 
     const navigateToCurrentList = async () => {
         var cartItems = [];
-
         // get shopping cart items
         try {
             const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
-                // console.log('Things received from CurrentList----------------\n', jsonObject);
-                // console.log('currentShoppingCart: \n', currShoppingList);
-
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
                 });
@@ -389,7 +387,6 @@ const CreateListScreen = ({navigation}) => {
         } catch(error) {
             console.log(error);
         }
-
         // add new items to shopping cart
         try {
             currShoppingList.forEach(async function(product) {
@@ -403,7 +400,6 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-        // console.log('things sent to CurrentList ----------------- \n', cartItems);
         navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
     };
 
@@ -424,33 +420,6 @@ const CreateListScreen = ({navigation}) => {
                 </Tags>
               )  
             })
-        );
-    }
-
-    useEffect(() => {
-        if(reviews.length > 0) {
-            setLoading(false);
-        } else {
-            return;
-        }
-
-        // assigning reviews to each product
-        wholeList.slice(1).forEach(category => {
-            category.name.forEach(product => {
-                let totalReviews = reviews.filter(review => review.product_id === product.product_id);
-                if(totalReviews === undefined) {
-                    totalReviews = [];
-                }
-                product.reviews = totalReviews;
-            });
-        });
-    }, [reviews]);
-
-    if(loading) {
-        return (
-            <View style={styles.centerItems}>
-                <ActivityIndicator size={'large'} color='orange'/>
-            </View>
         );
     }
 
