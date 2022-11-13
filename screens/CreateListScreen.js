@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, ActivityIndicator} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput} from 'react-native'
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
+import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
@@ -27,6 +28,97 @@ const Category = ( props ) => {
     );
 };
 
+class Review extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showModal: false,
+        }
+    }
+
+    setShowModal = (show) => {
+        this.setState({showModal: show});
+      }
+
+    render() {
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => this.setShowModal(!this.state.showModal)}
+                >
+                    <Text style={[styles.shadow, styles.interactable, styles.horizontalSpacer]}>
+                        Write a review
+                    </Text>
+                </TouchableOpacity>
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.showModal}
+                    onRequestClose={() => {
+                        this.setShowModal(!this.state.showModal);
+                    }}
+                >
+                    <View style={styles.centerItems}>
+                        <View style={[styles.whiteBtn, styles.mediumPadding]}>
+                            <Text style={styles.boldMediumBlack}>Write a review</Text>
+                            
+                            <Formik
+                                initialValues={{
+                                    title: '',
+                                    rating: '',
+                                    review: '',
+                                }}
+                                onSubmit={(fieldValue, actions) => {
+                                    this.setShowModal(!this.state.showModal)
+                                    actions.resetForm();
+                                }}
+                            >
+                                {(formikProps) => (
+                                    <View>
+                                        <TextInput
+                                            placeholder='Enter a title...'
+                                            value={formikProps.values.title}
+                                            onChangeText={formikProps.handleChange('title')}
+                                            style={[styles.whiteBtn, styles.verticalSpacer]}
+                                        />
+                                        <TextInput
+                                            placeholder='Rate this Product'
+                                            value={formikProps.values.rating}
+                                            onChangeText={formikProps.handleChange('rating')}
+                                            style={[styles.whiteBtn, styles.verticalSpacer]}
+                                        />
+                                        <TextInput
+                                            placeholder='Tell us your thoughts...'
+                                            value={formikProps.values.review}
+                                            onChangeText={formikProps.handleChange('review')}
+                                            style={[styles.whiteBtn, styles.verticalSpacer]}
+                                        />
+
+                                        <View style={styles.isRow}>
+                                            <TouchableOpacity
+                                                style={[styles.whiteBtn, styles.grayBtn,]}
+                                                onPress={() => this.setShowModal(!this.state.showModal)}
+                                            >
+                                                <Text>Cancel</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.whiteBtn, styles.orangeBtn,]}
+                                                onPress={formikProps.handleSubmit}
+                                            >
+                                                <Text>Submit</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )}
+
+                            </Formik>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        );
+    }
+}
 // Component for list of products in the vertical flatlist
 class Product extends React.Component {
     constructor(props) {
@@ -116,6 +208,10 @@ class Product extends React.Component {
         return <Text style={[styles.shadow, styles.productInfo, {color: statusColor}]}>{stockStatus}</Text>
     }
 
+    writeReview = () => {
+        return <Review></Review>
+    }
+
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
     componentDidUpdate() {
         if(currShoppingList.size > 0) {
@@ -174,7 +270,8 @@ class Product extends React.Component {
                 <View style={{flex: 1}}>
                     <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: 50}}>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
-                        <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>{this.getRatings()}{this.getReviews()}</View>
+                        <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>
+                            {this.getRatings()}{this.getReviews()}{this.writeReview()}</View>
                     </View>
                     {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}
