@@ -6,19 +6,14 @@ import { Formik } from 'formik';
 import ModalDropdown from 'react-native-modal-dropdown';
 import IconA5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
-import * as SecureStore from 'expo-secure-store';
-import * as Yup from 'yup';
-import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
 
 class Product extends React.Component {
     constructor(props) {
         super(props);
         this.item = props.item;
         this.storageKey = props.storageKey;
-        // this.storeData = props.item.stores_carrying.sort((store1, store2) => store1.price - store2.price)
         this.state = {
             quantity: props.item.quantity,
             showModal: false,
@@ -39,7 +34,6 @@ class Product extends React.Component {
             const productRef = collection(db, 'products', targetProductId, 'stores_carrying');
             const querySnapshot = await getDocs(productRef);
             querySnapshot.forEach((doc) => {
-                // console.log(doc.data());
                 stores.push(doc.data());
             });
 
@@ -110,7 +104,6 @@ class Product extends React.Component {
         try {
             // save current state to an array
             const data = await AsyncStorage.getItem(this.storageKey);
-
             if(data !== null) {
                 json = JSON.parse(data);
 
@@ -131,9 +124,7 @@ class Product extends React.Component {
                 }
             }
             // replace previous states with updated states
-            // console.log('sent to createList -------------- \n', json);
             await AsyncStorage.setItem(this.storageKey, JSON.stringify(json));
-            
         } catch(error) {
             console.log(error);
         }
@@ -208,8 +199,6 @@ class Product extends React.Component {
                         </View>
                     </View>
                 </View>
-
-                
                 <View style={[styles.isColumn, styles.centerItems, {marginRight: 5}]}>
                     <View>
                         <View style={[styles.centerItems, {flex: 5}, {flexDirection: 'column', justifyContent: 'space-evenly'}]}>
@@ -224,8 +213,6 @@ class Product extends React.Component {
                                 {this.showDiscount()}
                             </View>
                         </View>
-
-
                         <View style={[styles.isRow, styles.centerItems, styles.verticalSpacer,]}>
                             <TouchableOpacity
                                 style={styles.whiteBtn}
@@ -244,7 +231,6 @@ class Product extends React.Component {
 
                         </View>
                     </View>
-
                     <Modal
                         animationType='fade'
                         transparent={true}
@@ -279,12 +265,11 @@ class Product extends React.Component {
     }
 }
 
-const CurrentListScreen = ({ route, navigation }) => {
-    // product list from async storage (e.g., products the user selected from previous screen)
+const CurrentListScreen = ({ route }) => {
     const [data, setData] = useState([]);
-    const [userID, setUserID] = useState (null);
     const [showModal, setShowModal] = useState(false);
     const {storageKey} = route.params;
+    const {userId} = route.params;
     const [allStores, setAllStores] = useState([]);
 
     // get all existing stores from db
@@ -296,26 +281,13 @@ const CurrentListScreen = ({ route, navigation }) => {
               stores.push(doc.data());
             });
             setAllStores(stores);
-            // console.log(stores);
         });
         return () => unsubscribe();
       }, []);
 
-    // const findStores = (product) => {
-    //     product.stores_carrying.forEach(store => {
-    //         allStores.forEach(storeAll => {
-    //             if(store.store_id === storeAll.store_id) {
-    //                 store.store_name = storeAll.store_name;
-    //             }
-    //         });
-    //     })
-    //     return product;
-    // }
-   
     const renderProduct = ({ item }) => {
         return (
         <Product 
-            // item={findStores(item)}
             item={item}
             storageKey={storageKey}
             data={data}
@@ -324,24 +296,18 @@ const CurrentListScreen = ({ route, navigation }) => {
         />
         );
     };
-
-
     //Form Submission to DB fn
     const submitToDatabase = (fieldValue) =>{
-        var passingData = {data}
-        var passingUser = {userID}
-        //console.log(passingUser)
-        var formattedProdId = []
+        var passingData = {data};
+        var formattedProdId = [];
         passingData['data'].forEach((product) => {
             formattedProdId.push(product['product_id']);
         });
-        //console.log(formattedProdId)
-        
+        // console.log(formattedProdId)
         const docRef = addDoc(collection(db,'saved_lists'),{
             list_name: fieldValue['listName'],
             product_array: formattedProdId,
-            user_id: passingUser['userID']
-         
+            user_id: userId,
         })
     }
     // update product list (data), whenever it is ready from async storage
@@ -358,23 +324,6 @@ const CurrentListScreen = ({ route, navigation }) => {
             }
         }
         getData();
-    }, []);
-
-    useEffect(() => {
-        //uses expo securestore uid saved from DashBoard Screen during auth change
-        const getUserID = async () => {
-            try {
-                const result = await SecureStore.getItemAsync('uid');
-                if (result) {
-                    //console.log(' uid retrieved')
-                    setUserID(result)
-                    
-                }
-            } catch(error) {
-                console.log(error);
-            }
-        }
-        getUserID();
     }, []);
 
     return (

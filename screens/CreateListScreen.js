@@ -10,9 +10,7 @@ import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
-
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import * as SecureStore from 'expo-secure-store';
 
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
@@ -33,6 +31,7 @@ const Category = ( props ) => {
 class Review extends React.Component {
     constructor(props) {
         super(props);
+        // console.log('user id in reviews:', props);
         this.state = {
             showModal: false,
         }
@@ -74,6 +73,7 @@ class Review extends React.Component {
                         }}
                         onSubmit={async (values, actions) => {
                             // Will create a function that submits the form values to 'reviews' in Firebase
+                            // this.submitToDatabase();
                             actions.resetForm();
                             this.setShowModal(!this.state.showModal)
                         }}
@@ -138,6 +138,7 @@ class Review extends React.Component {
 class Product extends React.Component {
     constructor(props) {
         super(props);
+        // console.log('user ID in Products: ', props.userID);
         this.continue = props.continue
         this.item = props.item;
         this.state = {
@@ -146,6 +147,7 @@ class Product extends React.Component {
             reviews: 'reviews' in props.item ? props.item.reviews : [],
         };
     }
+
     // update whether the product has been selected by the user
     toggleProduct = () => {
         if(!currShoppingList.has(this.item)) {
@@ -179,9 +181,7 @@ class Product extends React.Component {
     }
 
     getRatings = () => {
-        
         var totalRating = 0;
-
         if(this.state.reviews == undefined) {
             return null;
         }
@@ -224,11 +224,11 @@ class Product extends React.Component {
     }
 
     writeReview = () => {
-        return <Review></Review>
+        return <Review userID={this.props.userID}></Review>
     }
 
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
-    componentDidUpdate() {
+    async componentDidUpdate() {
         if(currShoppingList.size > 0) {
             this.continue(true);
         } else {
@@ -403,6 +403,7 @@ const CreateListScreen = ({navigation}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
+    const [userID, setUserID] = useState (null);
 
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
         {id: 0, name: [], category: 'All'},
@@ -446,6 +447,21 @@ const CreateListScreen = ({navigation}) => {
         return () => unsubscribe;
     }, []);
 
+    useEffect(() => {
+        //uses expo securestore uid saved from DashBoard Screen during auth change
+        const getUserID = async () => {
+            try {
+                const result = await SecureStore.getItemAsync('uid');
+                if (result) {
+                    setUserID(result)
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }
+        getUserID();
+    }, []);
+
     // dynamically update data for the category flatlist 
     useEffect(() => {
         const categoryRef = collection(db, 'categories');
@@ -480,6 +496,7 @@ const CreateListScreen = ({navigation}) => {
                 tags={tags}
                 setTags={setTags}
                 setSelectedCategory={setSelectedCategory}
+                userID={userID}
             />
         );
     };
@@ -511,7 +528,7 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-        navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
+        navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
     };
 
     var tagContainer = [];
