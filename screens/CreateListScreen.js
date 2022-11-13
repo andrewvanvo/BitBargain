@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput, SafeAreaView} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput, } from 'react-native'
 import Stars from 'react-native-stars';
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,7 +8,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, getDocs, addDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 
@@ -34,6 +34,7 @@ class Review extends React.Component {
         // console.log('user id in reviews:', props);
         this.state = {
             showModal: false,
+            rating: 4,
         }
     }
 
@@ -47,6 +48,19 @@ class Review extends React.Component {
                 style={styles.shadow}
             >{label}</Text>
         );
+    }
+
+    submitToDatabase = (values) => {
+        addDoc(collection(db,'reviews'),{
+            content: values.review,
+            date: new Date(),
+            product_id: this.props.productID,
+            rating: this.state.rating,
+            store_id: 'working/thinking on it!',
+            title: values.title,
+            upvotes: 'working/thinking on it!',
+            user_id: this.props.userID,
+        })
     }
 
     render() {
@@ -68,12 +82,11 @@ class Review extends React.Component {
                     <Formik
                         initialValues={{
                             title: '',
-                            rating: '',
                             review: '',
                         }}
                         onSubmit={async (values, actions) => {
                             // Will create a function that submits the form values to 'reviews' in Firebase
-                            // this.submitToDatabase();
+                            this.submitToDatabase(values);
                             actions.resetForm();
                             this.setShowModal(!this.state.showModal)
                         }}
@@ -90,6 +103,7 @@ class Review extends React.Component {
                                             default={4}
                                             count={5}
                                             half={false}
+                                            update={(val) => this.setState({rating: val})}
                                             emptyStar={<IconA5 name={'star'} size={26}  style={[styles.stars, styles.emptyStar]}></IconA5>}
                                             halfStar={<IconA5 name={'star-half'} size={26}  style={[styles.stars]}></IconA5>}
                                             fullStar={<IconA5 name={'star'} size={26} style={[styles.stars,]}></IconA5>}
@@ -193,8 +207,9 @@ class Product extends React.Component {
         if(totalRating > 0) {
             let stars = [];
             let averageRating = totalRating / this.state.reviews.length;
+            let rounding = Math.floor(averageRating);
             
-            for(let i=0; i < Math.floor(averageRating); i++) {
+            for(let i=0; i < rounding; i++) {
                 stars.push(
                     <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
                 );
@@ -202,7 +217,7 @@ class Product extends React.Component {
 
             if(5 % averageRating > 0) {
                 stars.push(
-                    <IconA5 name='star-half' size={13} style={{color: 'gold'}}></IconA5>
+                    <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.item.product_id+rounding}></IconA5>
                 );
             }
             return stars;
@@ -224,7 +239,7 @@ class Product extends React.Component {
     }
 
     writeReview = () => {
-        return <Review userID={this.props.userID}></Review>
+        return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
     }
 
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
