@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput,} from 'react-native'
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -52,67 +52,63 @@ class Review extends React.Component {
                 </TouchableOpacity>
                 <Modal
                     animationType='fade'
-                    transparent={true}
+                    transparent={false}
                     visible={this.state.showModal}
-                    onRequestClose={() => {
-                        this.setShowModal(!this.state.showModal);
-                    }}
                 >
-                    <View style={styles.centerItems}>
-                        <View style={[styles.whiteBtn, styles.mediumPadding]}>
-                            <Text style={styles.boldMediumBlack}>Write a review</Text>
-                            
-                            <Formik
-                                initialValues={{
-                                    title: '',
-                                    rating: '',
-                                    review: '',
-                                }}
-                                onSubmit={(fieldValue, actions) => {
-                                    this.setShowModal(!this.state.showModal)
-                                    actions.resetForm();
-                                }}
-                            >
-                                {(formikProps) => (
-                                    <View>
-                                        <TextInput
-                                            placeholder='Enter a title...'
-                                            value={formikProps.values.title}
-                                            onChangeText={formikProps.handleChange('title')}
-                                            style={[styles.whiteBtn, styles.verticalSpacer]}
-                                        />
-                                        <TextInput
-                                            placeholder='Rate this Product'
-                                            value={formikProps.values.rating}
-                                            onChangeText={formikProps.handleChange('rating')}
-                                            style={[styles.whiteBtn, styles.verticalSpacer]}
-                                        />
-                                        <TextInput
-                                            placeholder='Tell us your thoughts...'
-                                            value={formikProps.values.review}
-                                            onChangeText={formikProps.handleChange('review')}
-                                            style={[styles.whiteBtn, styles.verticalSpacer]}
-                                        />
-
-                                        <View style={styles.isRow}>
-                                            <TouchableOpacity
-                                                style={[styles.whiteBtn, styles.grayBtn,]}
-                                                onPress={() => this.setShowModal(!this.state.showModal)}
-                                            >
-                                                <Text>Cancel</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={[styles.whiteBtn, styles.orangeBtn,]}
-                                                onPress={formikProps.handleSubmit}
-                                            >
-                                                <Text>Submit</Text>
-                                            </TouchableOpacity>
-                                        </View>
+                    <View style={[styles.centerItems, {flex: 1, backgroundColor: ''}]}>
+                        <Formik
+                            initialValues={{
+                                title: '',
+                                rating: '',
+                                review: '',
+                            }}
+                            onSubmit={(fieldValue, actions) => {
+                                this.setShowModal(!this.state.showModal)
+                                actions.resetForm();
+                            }}
+                        >
+                            {(formikProps) => (
+                                <View style={[styles.isColumn, styles.centerItems]}>
+                                    <View style={styles.centerItems}>
+                                        <Text style={[styles.boldMediumBlack,]}>Write a review</Text>
                                     </View>
-                                )}
+                                    <TextInput
+                                        placeholder='Enter a title...'
+                                        value={formikProps.values.title}
+                                        onChangeText={formikProps.handleChange('title')}
+                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 1}]}
+                                    />
+                                    <TextInput
+                                        placeholder='Rate this Product'
+                                        value={formikProps.values.rating}
+                                        onChangeText={formikProps.handleChange('rating')}
+                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 1}]}
+                                    />
+                                    <TextInput
+                                        placeholder='Tell us your thoughts...'
+                                        multiline
+                                        value={formikProps.values.review}
+                                        onChangeText={formikProps.handleChange('review')}
+                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 4}]}
+                                    />
 
-                            </Formik>
-                        </View>
+                                    <View style={styles.isRow}>
+                                        <TouchableOpacity
+                                            style={[styles.whiteBtn, styles.grayBtn,]}
+                                            onPress={() => this.setShowModal(!this.state.showModal)}
+                                        >
+                                            <Text>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.whiteBtn, styles.orangeBtn,]}
+                                            onPress={formikProps.handleSubmit}
+                                        >
+                                            <Text>Submit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+                        </Formik>
                     </View>
                 </Modal>
             </View>

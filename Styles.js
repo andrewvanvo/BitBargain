@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 // Styles for the 'CurrentList' screen. Will merge with CreateList screen's styles soon. (Daniel)
 const styles = StyleSheet.create({
@@ -97,6 +97,12 @@ const styles = StyleSheet.create({
     },
     mediumPadding: {
         padding: 20,
+    },
+    windowsWidth: {
+        width: Dimensions.get('window').width,
+    },
+    windowsheight: {
+        height: Dimensions.get('window').height,
     },
 
     // Customized stuff
