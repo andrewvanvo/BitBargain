@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput,} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput, SafeAreaView} from 'react-native'
+import Stars from 'react-native-stars';
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,7 +10,8 @@ import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
-import Icon from 'react-native-vector-icons/Ionicons';
+
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 // User's added items. Can be used for later screens.
@@ -40,6 +42,14 @@ class Review extends React.Component {
         this.setState({showModal: show});
       }
 
+    reviewText = (label) => {
+        return (
+            <Text
+                style={styles.shadow}
+            >{label}</Text>
+        );
+    }
+
     render() {
         return (
             <View>
@@ -55,61 +65,70 @@ class Review extends React.Component {
                     transparent={false}
                     visible={this.state.showModal}
                 >
-                    <View style={[styles.centerItems, {flex: 1, backgroundColor: ''}]}>
-                        <Formik
-                            initialValues={{
-                                title: '',
-                                rating: '',
-                                review: '',
-                            }}
-                            onSubmit={(fieldValue, actions) => {
-                                this.setShowModal(!this.state.showModal)
-                                actions.resetForm();
-                            }}
-                        >
-                            {(formikProps) => (
-                                <View style={[styles.isColumn, styles.centerItems]}>
-                                    <View style={styles.centerItems}>
-                                        <Text style={[styles.boldMediumBlack,]}>Write a review</Text>
+                <View style={styles.centerItems}>
+                    <Formik
+                        initialValues={{
+                            title: '',
+                            rating: '',
+                            review: '',
+                        }}
+                        onSubmit={async (values, actions) => {
+                            // Will create a function that submits the form values to 'reviews' in Firebase
+                            actions.resetForm();
+                            this.setShowModal(!this.state.showModal)
+                        }}
+                    >
+                        {(formikProps) => (
+                            <View style={[styles.centerItems, {flexDirection: 'column',}]}>                        
+                                <View style={styles.verticalSpacer}>
+                                    <Text style={[styles.shadow, styles.largeText]}>Write a Review</Text>
+                                </View>
+                                <View style={{alignItems: 'flex-start'}}>
+                                    {this.reviewText('Rating')}
+                                    <View style={styles.verticalSpacer}>
+                                        <Stars
+                                            default={4}
+                                            count={5}
+                                            half={false}
+                                            emptyStar={<IconA5 name={'star'} size={26}  style={[styles.stars, styles.emptyStar]}></IconA5>}
+                                            halfStar={<IconA5 name={'star-half'} size={26}  style={[styles.stars]}></IconA5>}
+                                            fullStar={<IconA5 name={'star'} size={26} style={[styles.stars,]}></IconA5>}
+                                        />
                                     </View>
+                                    {this.reviewText('Title')}
                                     <TextInput
                                         placeholder='Enter a title...'
                                         value={formikProps.values.title}
                                         onChangeText={formikProps.handleChange('title')}
-                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 1}]}
+                                        style={styles.inputField}
                                     />
-                                    <TextInput
-                                        placeholder='Rate this Product'
-                                        value={formikProps.values.rating}
-                                        onChangeText={formikProps.handleChange('rating')}
-                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 1}]}
-                                    />
+                                    {this.reviewText('Your Review')}
                                     <TextInput
                                         placeholder='Tell us your thoughts...'
-                                        multiline
                                         value={formikProps.values.review}
                                         onChangeText={formikProps.handleChange('review')}
-                                        style={[styles.whiteBtn, styles.verticalSpacer, styles.windowsWidth, {flex: 4}]}
+                                        style={[styles.inputField, {height: 300}]}
+                                        multiline={true}                          
                                     />
-
-                                    <View style={styles.isRow}>
-                                        <TouchableOpacity
-                                            style={[styles.whiteBtn, styles.grayBtn,]}
-                                            onPress={() => this.setShowModal(!this.state.showModal)}
-                                        >
-                                            <Text>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.whiteBtn, styles.orangeBtn,]}
-                                            onPress={formikProps.handleSubmit}
-                                        >
-                                            <Text>Submit</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                </View >
+                                <View style={styles.isRow}>
+                                    <TouchableOpacity
+                                        style={[styles.whiteBtn, styles.grayBtn,]}
+                                        onPress={() => this.setShowModal(!this.state.showModal)}
+                                    >
+                                        <Text>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.whiteBtn, styles.orangeBtn,]}
+                                        onPress={formikProps.handleSubmit}
+                                    >
+                                        <Text>Submit</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            )}
-                        </Formik>
-                    </View>
+                            </View>
+                        )}
+                    </Formik>
+                </View>
                 </Modal>
             </View>
         );
@@ -267,7 +286,9 @@ class Product extends React.Component {
                     <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: 50}}>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
                         <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>
-                            {this.getRatings()}{this.getReviews()}{this.writeReview()}</View>
+                            {this.getRatings()}{this.getReviews()}
+                        </View>
+                        {this.writeReview()}
                     </View>
                     {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}

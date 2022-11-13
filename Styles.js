@@ -15,6 +15,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
+    largeText: {
+        fontSize: 25,
+    },
     productName: {
         fontSize: 20,
         textAlign: 'center',
@@ -68,8 +71,8 @@ const styles = StyleSheet.create({
     // Positioning & Spacing
     centerItems: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     isColumn: {
         flexDirection: 'column', 
@@ -194,6 +197,26 @@ const styles = StyleSheet.create({
     discount: {
         fontSize: 20,
         fontFamily: 'sans-serif-light'
+    },
+    inputField: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'orange',
+        borderWidth: 1,
+        marginTop: 4,
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        width: Dimensions.get('window').width * 0.9
+    },
+    stars: {
+        color: 'orange',
+        backgroundColor: 'transparent',
+        textShadowColor: 'black',
+        textShadowRadius: 2,
+    },
+    emptyStar: {
+        color: 'white',
     }
 });
 
