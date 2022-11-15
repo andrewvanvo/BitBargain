@@ -61,7 +61,6 @@ class Product extends React.Component {
     }
 
     selectStore = (store) => {
-        console.log(store.store_name);
         this.checkOnSale(store);
         this.setState({selectedStore: store.store_name});
         this.setState({price: '$' + store.price});

@@ -8,7 +8,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot, getDocs, addDoc } from "firebase/firestore";
+import { collection, onSnapshot, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 
@@ -51,7 +51,8 @@ class Review extends React.Component {
     }
 
     submitToDatabase = (values) => {
-        addDoc(collection(db,'reviews'),{
+        const reviewRef = doc(collection(db, 'reviews'));
+        setDoc(reviewRef, {
             content: values.review,
             date: new Date(),
             product_id: this.props.productID,
@@ -60,7 +61,8 @@ class Review extends React.Component {
             title: values.title,
             upvotes: 'working/thinking on it!',
             user_id: this.props.userID,
-        })
+            review_id: reviewRef.id,
+        });
     }
 
     render() {
@@ -148,16 +150,18 @@ class Review extends React.Component {
         );
     }
 }
+
 // Component for list of products in the vertical flatlist
 class Product extends React.Component {
     constructor(props) {
         super(props);
-        // console.log('user ID in Products: ', props.userID);
+        // console.log('user ID in Products: ', props);
         this.continue = props.continue
         this.item = props.item;
         this.state = {
             selected: false,
             showModal: false,
+            showReviews: false,
             reviews: 'reviews' in props.item ? props.item.reviews : [],
         };
     }
@@ -173,13 +177,86 @@ class Product extends React.Component {
         }
     }
 
+    renderReviews = ({ item }) => {
+        let stars = [];
+        let rounding = Math.floor(item.rating);
+        let date = item.date.toDate();
+
+        console.log(date.toDateString());
+        let year = date.getFullYear()
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+            
+        for(let i=0; i < rounding; i++) {
+            stars.push(
+                <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
+            );
+        }
+
+        if(item.rating - rounding > 0) {
+            stars.push(
+                <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.item.product_id+rounding}></IconA5>
+            );
+        }
+
+        return (
+            <View style={[styles.isColumn, styles.windowsWidth, {padding: 20, backgroundColor: '',}]}>
+
+                <View style={[styles.isRow, styles.verticalSpacer, {flex: 1, justifyContent: 'space-between'}]}>
+                    <View style={[styles.isRow,]}>
+                        {stars}
+                        <Text style={[styles.horizontalSpacer, styles.boldMediumBlack,]}>{item.title}</Text>
+                    </View>
+                    <View>
+                        <Text style={[styles.shadow, ]}>{month}/{day}/{year}</Text>
+                    </View>
+                </View>
+                <View style={[styles.centerItems, {flex: 9}]}>
+                    <Text>{item.content}</Text>
+                </View>
+            </View>
+          );
+    }
+
+
     // experimental, this function probably not necessary, remove in future
     getReviews = () => {
         if(this.state.reviews == undefined || this.state.reviews.length == 0) {
             return null;
         }
-        return <Text style={[styles.shadow, styles.productInfo, 
-            {color: 'mediumblue', fontSize: 14}]}> ({this.state.reviews.length})</Text>
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => this.setState({showReviews: !this.state.showReviews})}
+                >
+                    <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue', fontSize: 14}]}>({this.state.reviews.length})</Text>
+                </TouchableOpacity>
+                <Modal
+                    animationType='fade'
+                    transparent={false}
+                    visible={this.state.showReviews}
+                >
+                    <View style={styles.centerItems}>
+                        <View style={[styles.centerItems, {width: '100%'}]}>
+                            <FlatList
+                                data={this.state.reviews}
+                                renderItem={this.renderReviews}
+                                keyExtractor={(item) => item.review_id}
+                                vertical={true}
+                                showsHorizontalScrollIndicator={false}
+                            />
+                            <TouchableOpacity
+                                style={[styles.whiteBtn, styles.grayBtn,]}
+                                onPress={() => this.setState({showReviews: !this.state.showReviews})}
+                            >
+                                <Text>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                
+                </Modal>
+            </View>
+        );
     }
 
     assignReviews = async () => {
