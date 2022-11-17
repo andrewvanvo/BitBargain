@@ -6,6 +6,7 @@ import { db } from '../firebase';
 
 const UpdateItemPriceScreen = ({route, navigation}) => {
 
+
     const store_id = route.params.store_id;
     const product_id = route.params.product_id;
     const image_url = route.params.image_url;
@@ -37,7 +38,9 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                 <Text style={styles.title}>    New Price:</Text>
                 <TextInput 
                     placeholder='New Price'
+                    keyboardType='numeric'
                     style={styles.inputField}
+                    maxLength={10}
                 />
             </View>
             <View style={styles.buttonContainer}>
@@ -45,6 +48,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                     <Text>Update</Text>
                 </TouchableOpacity>
             </View>
+
         </View>
     );
 }

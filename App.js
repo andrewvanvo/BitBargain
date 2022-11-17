@@ -19,7 +19,7 @@ import SavedListsScreen from './screens/SavedListsScreen';
 import NamedListScreen from './screens/NamedListScreen';
 import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
 import UpdateItemPriceScreen from './screens/UpdateItemPriceScreen';
-
+import AddProductScreen from './screens/AddProductScreen';
 
 //TEST
 import ScannerScreen from './screens/ScannerScreen';
@@ -38,7 +38,7 @@ function HomeTabs() {
     initialRouteName='Home'
     screenOptions={
       { headerShown: false}}>
-      <Tab.Screen name="Home" component={DashboardScreen} options={{
+      <Tab.Screen name="Home" component={AddProductScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='home' size={20} style={styles.icons}></Icon>
@@ -97,7 +97,7 @@ export default function App() {
         <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
-
+        <Stack.Screen name="ViewStoreItems" component={ViewStoreItemsScreen} />
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
         <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
         

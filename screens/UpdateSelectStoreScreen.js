@@ -35,7 +35,7 @@ class List extends React.Component {
     } catch (error){
       console.log(error);
     }
-    this.navigation.navigate('UpdatePriceOnly')
+    this.navigation.navigate('ViewStoreItems')
   };
 }
 
