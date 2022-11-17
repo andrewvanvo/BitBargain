@@ -151,6 +151,102 @@ class Review extends React.Component {
     }
 }
 
+class ExistingReview extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            liked: false,
+            disliked: false,
+        }
+    }
+
+    likeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = -1;
+
+
+        if(this.state.liked === false) {
+            value = 1;
+        }
+
+        if(this.state.disliked !== true) {
+            await updateDoc(productRef, {
+                likes: increment(value)
+            });
+            this.setState({ liked: !this.state.liked })
+        }
+    }
+
+    dislikeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = 1;
+
+
+        if(this.state.disliked === false) {
+            value = -1;
+        }
+
+        if(this.state.liked !== true) {
+            await updateDoc(productRef, {
+                dislikes: increment(value)
+            });
+            this.setState({ disliked: !this.state.disliked })
+        }
+    }
+
+    render() {
+        let stars = [];
+        let rounding = Math.floor(this.props.item.rating);
+        let date = this.props.item.date.toDate();
+
+        let year = date.getFullYear()
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+            
+        for(let i=0; i < rounding; i++) {
+            stars.push(
+                <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.props.item.product_id+i}></IconA5>
+            );
+        }
+
+        if(this.props.item.rating - rounding > 0) {
+            stars.push(
+                <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.props.item.product_id+rounding}></IconA5>
+            );
+        }
+
+        return (
+            <View style={[styles.isColumn, styles.windowsWidth, {padding: 20, backgroundColor: '',}]}>
+
+                <View style={[styles.isRow, styles.verticalSpacer, {flex: 1, justifyContent: 'space-between'}]}>
+                    <View style={[styles.isRow,]}>
+                        {stars}
+                        <Text style={[styles.horizontalSpacer, styles.boldMediumBlack,]}>{this.props.item.title}</Text>
+                    </View>
+                    <View>
+                        <Text style={[styles.shadow, ]}>{month}/{day}/{year}</Text>
+                    </View>
+                </View>
+                <View style={[styles.centerItems, {flex: 9}]}>
+                    <Text>{this.props.item.content}</Text>
+                </View>
+                <View style={[styles.isRow, styles.horizontalSpacer, {justifyContent: 'flex-end'}]}>
+                    <TouchableOpacity style={styles.isRow} onPress={() => this.likeProduct(this.props.item)}>
+                        <Text style={[styles.shadow, {color: this.state.liked ? 'blue' : 'black'}]}>{this.props.item.likes}</Text>
+                        <Ionicons name={'heart'} size={20} style={{color: this.state.liked ? 'red' : 'lightgray'}}></Ionicons>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.isRow, styles.horizontalSpacer]} onPress={() => this.dislikeProduct(this.props.item)}>
+                        <Text style={[styles.shadow, {color: this.state.disliked ? 'blue' : 'black'}]}>{this.props.item.dislikes}</Text>
+                        <Ionicons name={'heart-dislike'} size={20} style={{color: this.state.disliked ? 'red' : 'lightgray'}}></Ionicons>
+                    </TouchableOpacity>
+                </View>
+            </View>
+          );
+    }
+}
+
 // Component for list of products in the vertical flatlist
 class Product extends React.Component {
     constructor(props) {
@@ -216,55 +312,10 @@ class Product extends React.Component {
     }
 
     renderReviews = ({ item }) => {
-        let stars = [];
-        let rounding = Math.floor(item.rating);
-        let date = item.date.toDate();
-
-        let year = date.getFullYear()
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-            
-        for(let i=0; i < rounding; i++) {
-            stars.push(
-                <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
-            );
-        }
-
-        if(item.rating - rounding > 0) {
-            stars.push(
-                <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.item.product_id+rounding}></IconA5>
-            );
-        }
-
         return (
-            <View style={[styles.isColumn, styles.windowsWidth, {padding: 20, backgroundColor: '',}]}>
-
-                <View style={[styles.isRow, styles.verticalSpacer, {flex: 1, justifyContent: 'space-between'}]}>
-                    <View style={[styles.isRow,]}>
-                        {stars}
-                        <Text style={[styles.horizontalSpacer, styles.boldMediumBlack,]}>{item.title}</Text>
-                    </View>
-                    <View>
-                        <Text style={[styles.shadow, ]}>{month}/{day}/{year}</Text>
-                    </View>
-                </View>
-                <View style={[styles.centerItems, {flex: 9}]}>
-                    <Text>{item.content}</Text>
-                </View>
-                <View style={[styles.isRow, styles.horizontalSpacer, {justifyContent: 'flex-end'}]}>
-                    <TouchableOpacity style={styles.isRow} onPress={() => this.likeProduct(item)}>
-                        <Text style={[styles.shadow, {color: this.state.liked ? 'blue' : 'black'}]}>{item.likes}</Text>
-                        <Ionicons name={'heart'} size={20} style={{color: this.state.liked ? 'red' : 'lightgray'}}></Ionicons>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.isRow, styles.horizontalSpacer]} onPress={() => this.dislikeProduct(item)}>
-                        <Text style={[styles.shadow, {color: this.state.disliked ? 'blue' : 'black'}]}>{item.dislikes}</Text>
-                        <Ionicons name={'heart-dislike'} size={20} style={{color: this.state.disliked ? 'red' : 'lightgray'}}></Ionicons>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <ExistingReview item={item}></ExistingReview>
           );
     }
-
 
     // experimental, this function probably not necessary, remove in future
     getReviews = () => {
@@ -307,16 +358,6 @@ class Product extends React.Component {
     }
 
     assignReviews = async () => {
-        // let reviews = [];
-        // const reviewsRef = collection(db, 'reviews');
-        // const querySnapshot = await getDocs(reviewsRef);
-        // querySnapshot.forEach((doc) => {
-        //     if(doc.data().product_id === this.item.product_id){
-        //         reviews.push(doc.data());
-        //     }
-        // });
-        // this.setState({reviews: reviews});
-
         let reviews = [];
         const reviewsQuery = query(collection(db, 'reviews'), where('product_id', '==', this.item.product_id));
         const unsubscribe = onSnapshot(reviewsQuery, (querySnapshot) => {
