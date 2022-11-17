@@ -8,7 +8,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
+import { collection, onSnapshot, getDocs, doc, setDoc, updateDoc, increment, where, query } from "firebase/firestore";
 import { db } from '../firebase';
 import * as SecureStore from 'expo-secure-store';
 
@@ -163,6 +163,8 @@ class Product extends React.Component {
             showModal: false,
             showReviews: false,
             reviews: 'reviews' in props.item ? props.item.reviews : [],
+            liked: false,
+            disliked: false,
         };
     }
 
@@ -177,12 +179,47 @@ class Product extends React.Component {
         }
     }
 
+    likeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = -1;
+
+
+        if(this.state.liked === false) {
+            value = 1;
+        }
+
+        if(this.state.disliked !== true) {
+            await updateDoc(productRef, {
+                likes: increment(value)
+            });
+            this.setState({ liked: !this.state.liked })
+        }
+    }
+
+    dislikeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = 1;
+
+
+        if(this.state.disliked === false) {
+            value = -1;
+        }
+
+        if(this.state.liked !== true) {
+            await updateDoc(productRef, {
+                dislikes: increment(value)
+            });
+            this.setState({ disliked: !this.state.disliked })
+        }
+    }
+
     renderReviews = ({ item }) => {
         let stars = [];
         let rounding = Math.floor(item.rating);
         let date = item.date.toDate();
 
-        console.log(date.toDateString());
         let year = date.getFullYear()
         let month = date.getMonth() + 1;
         let day = date.getDate();
@@ -213,6 +250,16 @@ class Product extends React.Component {
                 </View>
                 <View style={[styles.centerItems, {flex: 9}]}>
                     <Text>{item.content}</Text>
+                </View>
+                <View style={[styles.isRow, styles.horizontalSpacer, {justifyContent: 'flex-end'}]}>
+                    <TouchableOpacity style={styles.isRow} onPress={() => this.likeProduct(item)}>
+                        <Text style={[styles.shadow, {color: this.state.liked ? 'blue' : 'black'}]}>{item.likes}</Text>
+                        <Ionicons name={'heart'} size={20} style={{color: 'red'}}></Ionicons>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.isRow, styles.horizontalSpacer]} onPress={() => this.dislikeProduct(item)}>
+                        <Text style={[styles.shadow, {color: this.state.disliked ? 'blue' : 'black'}]}>{item.dislikes}</Text>
+                        <Ionicons name={'heart-dislike'} size={20}></Ionicons>
+                    </TouchableOpacity>
                 </View>
             </View>
           );
@@ -260,15 +307,27 @@ class Product extends React.Component {
     }
 
     assignReviews = async () => {
+        // let reviews = [];
+        // const reviewsRef = collection(db, 'reviews');
+        // const querySnapshot = await getDocs(reviewsRef);
+        // querySnapshot.forEach((doc) => {
+        //     if(doc.data().product_id === this.item.product_id){
+        //         reviews.push(doc.data());
+        //     }
+        // });
+        // this.setState({reviews: reviews});
+
         let reviews = [];
-        const reviewsRef = collection(db, 'reviews');
-        const querySnapshot = await getDocs(reviewsRef);
-        querySnapshot.forEach((doc) => {
-            if(doc.data().product_id === this.item.product_id){
-                reviews.push(doc.data());
-            }
+        const reviewsQuery = query(collection(db, 'reviews'), where('product_id', '==', this.item.product_id));
+        const unsubscribe = onSnapshot(reviewsQuery, (querySnapshot) => {
+            const reviews = [];
+            querySnapshot.forEach((doc) => {
+                if(doc.data().product_id === this.item.product_id){
+                    reviews.push(doc.data());
+                }
+            });
+            this.setState({reviews: reviews});
         });
-        this.setState({reviews: reviews});
     }
 
     getRatings = () => {
