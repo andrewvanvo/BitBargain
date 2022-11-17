@@ -254,11 +254,11 @@ class Product extends React.Component {
                 <View style={[styles.isRow, styles.horizontalSpacer, {justifyContent: 'flex-end'}]}>
                     <TouchableOpacity style={styles.isRow} onPress={() => this.likeProduct(item)}>
                         <Text style={[styles.shadow, {color: this.state.liked ? 'blue' : 'black'}]}>{item.likes}</Text>
-                        <Ionicons name={'heart'} size={20} style={{color: 'red'}}></Ionicons>
+                        <Ionicons name={'heart'} size={20} style={{color: this.state.liked ? 'red' : 'lightgray'}}></Ionicons>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.isRow, styles.horizontalSpacer]} onPress={() => this.dislikeProduct(item)}>
                         <Text style={[styles.shadow, {color: this.state.disliked ? 'blue' : 'black'}]}>{item.dislikes}</Text>
-                        <Ionicons name={'heart-dislike'} size={20}></Ionicons>
+                        <Ionicons name={'heart-dislike'} size={20} style={{color: this.state.disliked ? 'red' : 'lightgray'}}></Ionicons>
                     </TouchableOpacity>
                 </View>
             </View>
