@@ -43,7 +43,6 @@ const AddProductScreen = ( {navigation} ) => {
             const productRef = collection(db, "products");
             const data = {
                 image_url: 'https://png.pngitem.com/pimgs/s/274-2748514_profile-icon-material-design-hd-png-download.png',
-                // categories: values.categories,
                 categories: {
                     brand: Brand,
                     type: Type

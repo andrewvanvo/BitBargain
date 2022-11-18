@@ -38,7 +38,7 @@ function HomeTabs() {
     initialRouteName='Home'
     screenOptions={
       { headerShown: false}}>
-      <Tab.Screen name="Home" component={AddProductScreen} options={{
+      <Tab.Screen name="Home" component={DashboardScreen} options={{
       tabBarIcon: ({focused}) => (
         <View>
           <Icon name='home' size={20} style={styles.icons}></Icon>
@@ -100,7 +100,7 @@ export default function App() {
         <Stack.Screen name="ViewStoreItems" component={ViewStoreItemsScreen} />
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
         <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
-        
+        <Stack.Screen name ="AddProduct" component={AddProductScreen}/>
 
       </Stack.Navigator>
     </NavigationContainer>

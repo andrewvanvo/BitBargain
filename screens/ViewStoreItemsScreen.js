@@ -43,20 +43,21 @@ class Product extends React.Component {
 const ViewStoreItemsScreen = ({navigation}) => {
 
     const [data, setData] = useState([]);
+    const [store_name, setStore_name] = useState("");
 
-    const store_name = 'AC6Y6Rb7dSrscb2FBhPO';
+    const store_id = 'AC6Y6Rb7dSrscb2FBhPO';
 
     const actions = [
         {
             text: "Scan to Add",
             icon: require("../assets/scan-icon.png"),
-            name: "bt_scan",
+            name: "Scanning",
             position: 1
         },
         {
             text: "Enter New Product",
             icon: require("../assets/add-icon.png"),
-            name: "bt_add_product",
+            name: "AddProduct",
             position: 2
         }
     ];
@@ -76,21 +77,20 @@ const ViewStoreItemsScreen = ({navigation}) => {
             var storeList = [];
             productSnap.forEach((doc) => {
                 var object = doc.data();
-                object.stores_carrying.forEach((eachStore) => {
-                    // The 112233 can be replaced by the store id passed in
-                    if (eachStore.store_id === store_name) {
+                for (var eachStore in object.stores_carrying) {
+                    if (eachStore === store_id) {
                         storeList.push({
                             "image_url": object.image_url,
                             "product_id": object.product_id,
                             "product_name": object.product_name,
-                            "store_price": eachStore.price,
-                            "store_id": eachStore.store_id
+                            "store_price": object.stores_carrying[eachStore].price,
+                            "store_id": object.stores_carrying[eachStore].store_id,
                         })
+                        setStore_name(object.stores_carrying[eachStore].store_name);
                     }
-                })
+                }
             });
             setData(storeList);
-            
         })
         return () => unsubscribe;
     }, []);
@@ -112,7 +112,7 @@ const ViewStoreItemsScreen = ({navigation}) => {
                 <FloatingAction
                     actions={actions}
                     onPressItem={name => {
-                        console.log(`selected button: ${name}`)
+                        navigation.navigate(name)
                     }}
                 />
             </View>
