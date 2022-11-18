@@ -9,12 +9,30 @@ import {
   Button,
   Alert,
   Image,
+  Platform,
+  ImageBackground,
 } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
 import { auth, db, } from "../firebase/";
 import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, startAt, onSnapshot, getDocs, QuerySnapshot, startAfter, setDoc } from "firebase/firestore";
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { HorizontalCarousel } from "./DashboardCarousel";
 
+const DATA = [ //TODO 
+  {
+    id: '1',
+    number: 2,
+  },
+  {
+    id: '2',
+    number: 4
+  },
+  {
+    id: '3',
+    number: 20
+  }
+]
 
 export const DashboardHeader = ({ user, userObj, setUser }) => {
 
@@ -111,21 +129,52 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
 
       <View style={styles.headerContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Image
-                source={require("../assets/sample_images/rank-unranked-img.png")}
+          {/* <Image
+                source={require("../assets/rank-gold-img.png")}
                 resizeMode="cover"
                 style={{
                   width: 150,
                   height: 150,
                 }}
-              ></Image>
+          ></Image> */}
+          <AnimatedCircularProgress
+            size={150} 
+            width={15}
+            fill={70}
+            tintColor="orange"
+            onAnimationComplete={() => console.log('onAnimationComplete')}
+            backgroundColor="#3d5875">
+              {
+                (fill) => (
+                  // <Image
+                  //       source={require("../assets/Untitled.png")}
+                  //       resizeMode="cover"
+                  //       style={{
+                  //         height: 100, 
+                  //         width: 100}}
+                  // ></Image>
+                  <Text style={{color: 'white'}}>
+                    Rank: {user.rank}
+                  </Text>
+                )
+              }
+          </AnimatedCircularProgress>
         </View>
-        <View style={{ flex: 1, fontSize: 20, marginTop: 10, justifyContent:'center'}}>
-          <Text style={{color: 'white'}}>Current Rank: {user.rank} </Text>
-          <Text style={{color: 'white'}}>Upvotes: 200</Text>
-          <Text style={{color: 'white'}}>Number of Submissions: 20 </Text>
-          <Text style={{color: 'white'}}>Progress till next Rank: 20</Text>
+        <View style={{ 
+          flex: 1, 
+          margin: 10, 
+          // backgroundColor: 'white',
+          padding: 5,
+          justifyContent: 'center', alignItems: 'center'
+          
+          }}>
+          {/* <Text style={{fontSize: 80}}>22</Text>
+          <Text style={{fontSize: 20}}>Submissions</Text> */}
+          
+          <HorizontalCarousel w={200} h={200} data={DATA}></HorizontalCarousel>
+
         </View>
+        
         
       </View>
     </View>

@@ -32,6 +32,8 @@ export const DashboardFeed = ({dataSource, refresh, onRefresh, user }) => {
         keyExtractor={(item) => item.id}
         onRefresh={onRefresh}
         refreshing={refresh}
+        ListHeaderComponent={
+        <Text style={{color: 'white', fontSize: 17, marginLeft: 10, }}>User Activity</Text>}
       />
       <TouchableOpacity onPress={() => pushCommentScreen()} style={styles.fab}>
         <Icon name='add' style={{color: 'white', fontSize: 30}}></Icon>
