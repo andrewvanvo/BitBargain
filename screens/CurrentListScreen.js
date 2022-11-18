@@ -231,7 +231,7 @@ class Product extends React.Component {
                                     >Select a store:</Text>
                                 </View>
                                 <FlatList
-                                    data={this.state.storeData}
+                                    data={this.state.storeData.sort((storeA, storeB) => storeA.price - storeB.price)}
                                     renderItem={this.renderStore}
                                     keyExtractor={store => store.store_id}
                                     style={[styles.whiteBtn, styles.selectStoreList]}
