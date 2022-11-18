@@ -28,129 +28,6 @@ const Category = ( props ) => {
     );
 };
 
-class Review extends React.Component {
-    constructor(props) {
-        super(props);
-        // console.log('user id in reviews:', props);
-        this.state = {
-            showModal: false,
-            rating: 4,
-        }
-    }
-
-    setShowModal = (show) => {
-        this.setState({showModal: show});
-      }
-
-    reviewText = (label) => {
-        return (
-            <Text
-                style={styles.shadow}
-            >{label}</Text>
-        );
-    }
-
-    submitToDatabase = (values) => {
-        const reviewRef = doc(collection(db, 'reviews'));
-        setDoc(reviewRef, {
-            content: values.review,
-            date: new Date(),
-            product_id: this.props.productID,
-            rating: this.state.rating,
-            store_id: 'working/thinking on it!',
-            title: values.title,
-            upvotes: 'working/thinking on it!',
-            user_id: this.props.userID,
-            review_id: reviewRef.id,
-        });
-    }
-
-    render() {
-        return (
-            <View>
-                <TouchableOpacity
-                    onPress={() => this.setShowModal(!this.state.showModal)}
-                >
-                    <Text style={[styles.shadow, styles.interactable, styles.horizontalSpacer]}>
-                        Write a review
-                    </Text>
-                </TouchableOpacity>
-                <Modal
-                    animationType='fade'
-                    transparent={false}
-                    visible={this.state.showModal}
-                >
-                <View style={styles.centerItems}>
-                    <Formik
-                        initialValues={{
-                            title: '',
-                            review: '',
-                        }}
-                        onSubmit={async (values, actions) => {
-                            // Will create a function that submits the form values to 'reviews' in Firebase
-                            this.submitToDatabase(values);
-                            actions.resetForm();
-                            this.setShowModal(!this.state.showModal)
-                        }}
-                    >
-                        {(formikProps) => (
-                            <View style={[styles.centerItems, {flexDirection: 'column',}]}>                        
-                                <View style={styles.verticalSpacer}>
-                                    <Text style={[styles.shadow, styles.largeText]}>Write a Review</Text>
-                                </View>
-                                <View style={{alignItems: 'flex-start'}}>
-                                    {this.reviewText('Rating')}
-                                    <View style={styles.verticalSpacer}>
-                                        <Stars
-                                            default={4}
-                                            count={5}
-                                            half={false}
-                                            update={(val) => this.setState({rating: val})}
-                                            emptyStar={<IconA5 name={'star'} size={26}  style={[styles.stars, styles.emptyStar]}></IconA5>}
-                                            halfStar={<IconA5 name={'star-half'} size={26}  style={[styles.stars]}></IconA5>}
-                                            fullStar={<IconA5 name={'star'} size={26} style={[styles.stars,]}></IconA5>}
-                                        />
-                                    </View>
-                                    {this.reviewText('Title')}
-                                    <TextInput
-                                        placeholder='Enter a title...'
-                                        value={formikProps.values.title}
-                                        onChangeText={formikProps.handleChange('title')}
-                                        style={styles.inputField}
-                                    />
-                                    {this.reviewText('Your Review')}
-                                    <TextInput
-                                        placeholder='Tell us your thoughts...'
-                                        value={formikProps.values.review}
-                                        onChangeText={formikProps.handleChange('review')}
-                                        style={[styles.inputField, {height: 300}]}
-                                        multiline={true}                          
-                                    />
-                                </View >
-                                <View style={styles.isRow}>
-                                    <TouchableOpacity
-                                        style={[styles.whiteBtn, styles.grayBtn,]}
-                                        onPress={() => this.setShowModal(!this.state.showModal)}
-                                    >
-                                        <Text>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={[styles.whiteBtn, styles.orangeBtn,]}
-                                        onPress={formikProps.handleSubmit}
-                                    >
-                                        <Text>Submit</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                    </Formik>
-                </View>
-                </Modal>
-            </View>
-        );
-    }
-}
-
 class ExistingReview extends React.Component {
     constructor(props) {
         super(props);
@@ -183,8 +60,7 @@ class ExistingReview extends React.Component {
         const productRef = doc(db, 'reviews', reviewId);
         let value = 1;
 
-
-        if(this.state.disliked === false) {
+        if(this.state.disliked === true) {
             value = -1;
         }
 
@@ -415,7 +291,9 @@ class Product extends React.Component {
     }
 
     writeReview = () => {
-        return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
+        // return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
+        // navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
+        this.props.navigation.navigate('Review', {userID: this.props.userID, productID: this.item.product_id});
     }
 
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
@@ -479,7 +357,13 @@ class Product extends React.Component {
                         <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>
                             {this.getRatings()}{this.getReviews()}
                         </View>
-                        {this.writeReview()}
+                        <TouchableOpacity
+                            onPress={() => this.writeReview()}
+                        >
+                            <Text style={[styles.shadow, styles.interactable, styles.horizontalSpacer]}>
+                                Write a review
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                     {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}
@@ -688,6 +572,7 @@ const CreateListScreen = ({navigation}) => {
                 setTags={setTags}
                 setSelectedCategory={setSelectedCategory}
                 userID={userID}
+                navigation={navigation}
             />
         );
     };
