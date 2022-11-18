@@ -6,8 +6,11 @@ import { Formik } from 'formik';
 import ModalDropdown from 'react-native-modal-dropdown';
 import IconA5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { collection, onSnapshot, addDoc, getDocs } from "firebase/firestore";
-import { db } from '../firebase';
+import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+import * as SecureStore from 'expo-secure-store';
+import * as Yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import { auth, db } from '../firebase';
 
 class Product extends React.Component {
     constructor(props) {
