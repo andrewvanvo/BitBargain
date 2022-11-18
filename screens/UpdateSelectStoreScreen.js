@@ -70,7 +70,7 @@ class List extends React.Component {
       console.log(error);
     }
     //Navigates to updateItemPriceScreen and passes storeID as route param
-    this.navigation.navigate('UpdatePrice', {storeID: storeID})
+    this.navigation.navigate('UpdatePrice', {store_id: storeID})
   };
 }
 
