@@ -69,9 +69,9 @@ class List extends React.Component {
           })
         })      
       }
-      console.log(storeID)
-      this.navigation.navigate('UpdatePrice', {storeID: storeID})
-      
+      //console.log(storeID)
+      this.navigation.navigate('UpdatePrice', {store_id: storeID})
+
     } catch (error){
       console.log(error);
     }

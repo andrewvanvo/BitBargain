@@ -24,8 +24,6 @@ import TestingScreen from './screens/TestingScreen';
 import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
 
 
-
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
