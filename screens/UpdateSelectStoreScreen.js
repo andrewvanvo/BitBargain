@@ -30,9 +30,7 @@ class List extends React.Component {
   navigateToUpdatePrice = async(item)=>{
     storeExists = false
     try {
-      //console.log(this.item)
       const curGeometry = {'latitude':this.item['geometry']['location']['lat'], 'longitude':this.item['geometry']['location']['lng'] }
-      //console.log(curGeometry)
       let storeID = null
       const querySnapshot = await getDocs(collection(db, "stores"));
       querySnapshot.forEach((doc) => {
@@ -59,7 +57,6 @@ class List extends React.Component {
         const productSnapshot = await getDocs(collection(db, 'products'))
         productSnapshot.forEach((product)=>{
           let prodID = product.data().product_id
-          //console.log(prodID)
           const prodRef = doc(db, 'products', prodID)
           updateDoc(prodRef,{
             [`stores_carrying.${storeID}.on_sale`]: false,
@@ -72,6 +69,7 @@ class List extends React.Component {
     } catch (error){
       console.log(error);
     }
+    //Navigates to updateItemPriceScreen and passes storeID as route param
     this.navigation.navigate('UpdatePrice', {storeID: storeID})
   };
 }
@@ -91,7 +89,6 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true)
   const [allStores, setAllStores] = useState([]);
-  //const [storeExists, setStoreExists] = useState(false)
 
   useEffect(()=>{
     let runHook = true
@@ -125,7 +122,6 @@ const UpdateSelectStoreScreen = ({navigation}) => {
               reducedList['results'].push(json['results'][i])
             }
           }
-          //console.log(reducedList)
           setData(reducedList)
         })
         .catch((error) => console.error(error))
@@ -144,7 +140,6 @@ const UpdateSelectStoreScreen = ({navigation}) => {
         const stores = [];
         storeSnap.forEach((doc) => {
           stores.push(doc.data());
-          //console.log(doc.data())
         });
         setAllStores(stores);
         });
