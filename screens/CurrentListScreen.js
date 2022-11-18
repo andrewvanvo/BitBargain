@@ -255,6 +255,7 @@ const CurrentListScreen = ({ route }) => {
     const findStores = (product) => {
         var stores = [];
         for (const [storeId, storeObj] of Object.entries(product.stores_carrying)) {
+            storeObj.store_id = storeId;
             stores.push(storeObj)
         }
         product.stores_carrying = stores;

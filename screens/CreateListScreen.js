@@ -369,14 +369,14 @@ class Product extends React.Component {
                         {this.getItemStocks()}
                     </View> */}
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
-                        {this.item.tags.map((tag, index) => {
+                        {this.item.tag.map((tag, index) => {
                             return (
                                 <Tags 
                                     item={this.item} 
                                     category={this.props.category} 
                                     products={this.props.products}
                                     productList={this.props.productList}
-                                    tag={this.props.item.tags[index]}
+                                    tag={this.props.item.tag[index]}
                                     tags={this.props.tags}
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
@@ -411,7 +411,7 @@ class Tags extends React.Component {
 
         currProducts.slice(1).forEach(category => {
             category.name.forEach(product => {
-                if(product.tags.includes(this.props.tag)) {
+                if(product.tag.includes(this.props.tag)) {
                     newProducts.add(product);
                 }
             })
