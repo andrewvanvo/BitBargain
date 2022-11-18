@@ -97,7 +97,6 @@ export default function App() {
         <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
-
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
         <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
         
