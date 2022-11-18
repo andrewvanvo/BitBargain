@@ -251,7 +251,6 @@ class ExistingReview extends React.Component {
 class Product extends React.Component {
     constructor(props) {
         super(props);
-        // console.log('user ID in Products: ', props);
         this.continue = props.continue
         this.item = props.item;
         this.state = {

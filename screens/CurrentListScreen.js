@@ -22,23 +22,8 @@ class Product extends React.Component {
             prevPrice: 'prevPrice' in props.item ? props.item.prevPrice : '',
             cheapestPrice: 'cheapestPrice' in props.item ? props.item.cheapestPrice : '',
             onSale: 'onSale' in props.item ? props.item.onSale : false,
-            storeData: 'storeData' in props.item ? props.item.storeData : [],
+            storeData: props.item.stores_carrying,
         };
-    }
-
-    assignStores = async () => {
-        if(this.state.storeData.length == 0) {
-            let targetProductId = this.item.product_id;
-            let stores = [];
-
-            const productRef = collection(db, 'products', targetProductId, 'stores_carrying');
-            const querySnapshot = await getDocs(productRef);
-            querySnapshot.forEach((doc) => {
-                stores.push(doc.data());
-            });
-
-            this.setState({storeData: stores.sort((store1, store2) => store1.price - store2.price)});
-        }
     }
 
     updateQuantity = (quantity) => {
@@ -149,10 +134,6 @@ class Product extends React.Component {
         );
     }
 
-    componentDidMount() {
-        this.assignStores();
-    }
-
     render() {
         let dealIcon;
         if(this.state.cheapestPrice == 'Best Deal') {
@@ -160,6 +141,7 @@ class Product extends React.Component {
         } else {
             dealIcon = <View></View>
         }
+
 
         return this.state.quantity < 1 ? null : (
             <View style={[styles.productTile, ]}>
@@ -269,29 +251,23 @@ const CurrentListScreen = ({ route }) => {
     const [showModal, setShowModal] = useState(false);
     const {storageKey} = route.params;
     const {userId} = route.params;
-    const [allStores, setAllStores] = useState([]);
 
-    // get all existing stores from db
-    useEffect(() => {
-        const storeRef = collection(db, 'stores');
-        const unsubscribe = onSnapshot(storeRef, (storeSnap) => {
-            const stores = [];
-            storeSnap.forEach((doc) => {
-              stores.push(doc.data());
-            });
-            setAllStores(stores);
-        });
-        return () => unsubscribe();
-      }, []);
+    const findStores = (product) => {
+        var stores = [];
+        for (const [storeId, storeObj] of Object.entries(product.stores_carrying)) {
+            stores.push(storeObj)
+        }
+        product.stores_carrying = stores;
+        return product;
+    }
 
     const renderProduct = ({ item }) => {
         return (
         <Product 
-            item={item}
+            item={findStores(item)}
             storageKey={storageKey}
             data={data}
             setData={setData}
-            stores={allStores}
         />
         );
     };
@@ -302,7 +278,6 @@ const CurrentListScreen = ({ route }) => {
         passingData['data'].forEach((product) => {
             formattedProdId.push(product['product_id']);
         });
-        // console.log(formattedProdId)
         const docRef = addDoc(collection(db,'saved_lists'),{
             list_name: fieldValue['listName'],
             product_array: formattedProdId,
