@@ -19,6 +19,9 @@ import SavedListsScreen from './screens/SavedListsScreen';
 import NamedListScreen from './screens/NamedListScreen';
 import ViewStoreItemsScreen from './screens/ViewStoreItemsScreen';
 import UpdateItemPriceScreen from './screens/UpdateItemPriceScreen';
+
+import ReviewScreen from './screens/ReviewScreen';
+
 import ScannerScreen from './screens/ScannerScreen';
 import TestingScreen from './screens/TestingScreen';
 import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
@@ -92,6 +95,7 @@ export default function App() {
         <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
         <Stack.Screen name="Scanning" component={ScannerScreen} />
         <Stack.Screen name="Testing" component={TestingScreen} />
+        <Stack.Screen name="Review" component={ReviewScreen} />
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
         
       </Stack.Navigator>

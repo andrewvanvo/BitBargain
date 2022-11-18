@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 // Styles for the 'CurrentList' screen. Will merge with CreateList screen's styles soon. (Daniel)
 const styles = StyleSheet.create({
@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
         textAlign: 'center', 
         fontWeight: 'bold',
         color: 'black',
+    },
+    largeText: {
+        fontSize: 25,
     },
     productName: {
         fontSize: 20,
@@ -68,8 +71,8 @@ const styles = StyleSheet.create({
     // Positioning & Spacing
     centerItems: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     isColumn: {
         flexDirection: 'column', 
@@ -97,6 +100,12 @@ const styles = StyleSheet.create({
     },
     mediumPadding: {
         padding: 20,
+    },
+    windowsWidth: {
+        width: Dimensions.get('window').width,
+    },
+    windowsheight: {
+        height: Dimensions.get('window').height,
     },
 
     // Customized stuff
@@ -188,6 +197,26 @@ const styles = StyleSheet.create({
     discount: {
         fontSize: 20,
         fontFamily: 'sans-serif-light'
+    },
+    inputField: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'orange',
+        borderWidth: 1,
+        marginTop: 4,
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        width: Dimensions.get('window').width * 0.9
+    },
+    stars: {
+        color: 'orange',
+        backgroundColor: 'transparent',
+        textShadowColor: 'black',
+        textShadowRadius: 2,
+    },
+    emptyStar: {
+        color: 'white',
     }
 });
 
