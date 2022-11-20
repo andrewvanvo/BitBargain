@@ -21,17 +21,14 @@ import { HorizontalCarousel } from "./DashboardCarousel";
 
 const DATA = [ //TODO 
   { 
-    key: '1',
     id: '1',
     number: 2,
   },
   {
-    key: '2',
     id: '2',
     number: 4
   },
   {
-    key: '3',
     id: '3',
     number: 20
   }

@@ -5,12 +5,11 @@ import {SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar, ImageBackgrou
 
 export const HorizontalCarousel = ({w, h, data}) => {
     const [active, setActive] = useState(0);
-
     const _onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
         setActive(viewableItems[0].index)
     }, []);
 
-    const renderItem = ({ item, index }) => (
+    const renderItem = ({ item }) => (
         <ImageBackground imageStyle={{ width: w, height: h, borderRadius: 20, opacity: 0.5}}source={{uri: 'https://www.pcworld.com/wp-content/uploads/2022/11/best-graphics-cards-banner-100815257-orig-1.jpg?quality=50&strip=all&w=1024'}}>
             <View style={{width: w, height: h, justifyContent: 'center', alignItems: 'center', }}>
                 <Text style={{fontSize: 70, color: 'white'}}>{item.number}</Text>
@@ -29,7 +28,7 @@ export const HorizontalCarousel = ({w, h, data}) => {
                 <FlatList
                 data={data}
                 horizontal={true}
-                keyExtractor={(item) => item.id}
+                keyExtractor={item =>  item.id}
                 renderItem={renderItem}
                 showsHorizontalScrollIndicator={false}
                 snapToAlignment={'start'}
@@ -42,10 +41,10 @@ export const HorizontalCarousel = ({w, h, data}) => {
                 <View style={{flexDirection: 'row', justifyContent: 'center' }}>
                     {items.map((i) => {
                         if (i === active) {
-                            return <View style={styles.active}></View>
+                            return <View  key={i.toString()} style={styles.active}></View>
                         }
                         else{
-                            return <View style={styles.indicator}></View>
+                            return <View key={i.toString()} style={styles.indicator}></View>
                         }
                     })}
                 </View>
