@@ -29,7 +29,7 @@ export const HorizontalCarousel = ({w, h, data}) => {
                 <FlatList
                 data={data}
                 horizontal={true}
-                keyExtractor={item => item.id}
+                keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 showsHorizontalScrollIndicator={false}
                 snapToAlignment={'start'}
