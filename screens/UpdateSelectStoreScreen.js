@@ -5,7 +5,7 @@ import { Platform, Text, View, StyleSheet, FlatList, Button, Pressable } from 'r
 import * as Location from 'expo-location';
 import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc, Firestore, updateDoc } from "firebase/firestore";
 import { db } from '../firebase';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+// import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 
 class List extends React.Component {
