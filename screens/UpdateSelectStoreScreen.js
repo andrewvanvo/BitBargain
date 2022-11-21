@@ -70,12 +70,11 @@ class List extends React.Component {
         })      
       }
       //console.log(storeID)
-      this.navigation.navigate('UpdatePrice', {store_id: storeID})
+      this.navigation.navigate('ViewStoreItems', {store_id: storeID})
 
     } catch (error){
       console.log(error);
     }
-    this.navigation.navigate('ViewStoreItems')
   };
 }
 
