@@ -100,7 +100,6 @@ const NamedListScreen = ({ route, navigation }) => {
             storageKey={storageKey}
             data={data}
             setData={setData}
-
         />
         );
     };

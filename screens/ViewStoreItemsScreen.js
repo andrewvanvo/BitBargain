@@ -84,7 +84,7 @@ const ViewStoreItemsScreen = ({navigation}) => {
                             "product_id": object.product_id,
                             "product_name": object.product_name,
                             "store_price": object.stores_carrying[eachStore].price,
-                            "store_id": object.stores_carrying[eachStore].store_id,
+                            "store_id": eachStore,
                         })
                         setStore_name(object.stores_carrying[eachStore].store_name);
                     }
