@@ -101,18 +101,18 @@ const SavedListsScreen = ({navigation}) => {
         return () => unsubscribe;
     }, [result]);
 
-    useEffect(() => {
-        const productsRef = collection(db, 'products'); //name of collection
-        const unsubscribe = onSnapshot(productsRef, (productsSnap) => {
-            const savedProducts= []
-            productsSnap.forEach((doc) => {
-                savedProducts.push(doc.data());
-            });
-            setSavedProducts(savedProducts);
-            //console.log(savedProducts)
-        })
-        return () => unsubscribe;
-    }, []);
+    //useEffect(() => {
+    //    const productsRef = collection(db, 'products'); //name of collection
+    //    const unsubscribe = onSnapshot(productsRef, (productsSnap) => {
+    //        const savedProducts= []
+    //        productsSnap.forEach((doc) => {
+    //            savedProducts.push(doc.data());
+    //        });
+    //        setSavedProducts(savedProducts);
+    //        //console.log(savedProducts)
+    //    })
+    //    return () => unsubscribe;
+    //}, []);
 
 
     const renderList = ({ item }) => {
