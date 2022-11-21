@@ -98,10 +98,9 @@ export default function App() {
         <Stack.Screen name="Testing" component={TestingScreen} />
         <Stack.Screen name="ViewStoreItems" component={ViewStoreItemsScreen} />
         <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
-        <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/>
+        {/* <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/> */}
         <Stack.Screen name ="AddProduct" component={AddProductScreen}/>
         <Stack.Screen name="Review" component={ReviewScreen} />
-        <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
