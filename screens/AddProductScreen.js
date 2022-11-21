@@ -1,16 +1,17 @@
-import React, {useState, useEffect} from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import React, {useState, useEffect} from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Image} from 'react-native';
 import Tags from "react-native-tags";
+import Checkbox from 'expo-checkbox';
 import { collection } from "firebase/firestore";
 
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
-import { auth, db } from '../firebase';
-import {  doc, addDoc, getDoc } from 'firebase/firestore';
+import { app, auth, db } from '../firebase';
+import {  doc, addDoc, getDoc, updateDoc } from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
 
-
-const AddProductScreen = ( {navigation} ) => {
-
+const AddProductScreen = ( {route, navigation} ) => {
 
     const [tags, settags] = useState("");
     const [Product_name, setProduct_name] = useState("");
@@ -18,8 +19,12 @@ const AddProductScreen = ( {navigation} ) => {
     const [Brand, setBrand] = useState("");
     const [Type, setType] = useState("");
     const [Store, setStore] = useState("");
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false)
+    const [isSelected, setSelection] = useState(false);
 
-    const store_id = 'AC6Y6Rb7dSrscb2FBhPO';
+    // const store_id = route.params.store_id;
+    const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
     useEffect(()=>{
         const fetchData = async () => {
@@ -33,6 +38,52 @@ const AddProductScreen = ( {navigation} ) => {
         }
         fetchData().catch(console.error);
     })
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [4,3],
+        });
+    
+        handleImagePicked(result);
+      };
+      
+    const handleImagePicked = async (result) => {
+        try {
+            setUploading(true);
+            if (!result.cancelled){
+                setImage(result);
+            }
+        }
+        catch (e) {
+            console.log(e);
+            alert("Upload failed...");
+        }
+        finally {
+            setUploading(false);
+        }
+    };
+
+    const uploadImageAsync = async (uri) => {
+        const filename = 'productPic/' + Product_name + store_id.toString();
+        const storage = getStorage(app, "gs://final-capstone-db.appspot.com/");
+        const storageRef = ref(storage, filename)
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const uploadTask =  await uploadBytes(storageRef, blob)
+            .then( async ()=>{
+                return await getDownloadURL(storageRef)
+                .then((url) => {
+                    console.log(url);
+                    return url;
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        })
+        return uploadTask
+    }
+    
     // with the user's email/pw input, if valid, will submit to firebase auth to make an account.
     const handleAddProduct = async () => {
 
@@ -40,26 +91,27 @@ const AddProductScreen = ( {navigation} ) => {
         // (auth: Auth, email: string, password: string)
         // for fname and lname, I think we can add those to the actual db later?
         try {
+            const uploadUrl = await uploadImageAsync(image.uri);
             const productRef = collection(db, "products");
+            
             const data = {
-                image_url: 'https://png.pngitem.com/pimgs/s/274-2748514_profile-icon-material-design-hd-png-download.png',
+                image_url: uploadUrl,
                 categories: {
                     brand: Brand,
                     type: Type
                 },
                 product_name: Product_name,
-                product_id: productRef.id,
                 // tags: values.tags,
                 tag: tags,
                 stores_carrying: { [store_id]: {
-                    on_sale: true,
+                    on_sale: isSelected,
                     prev_price: Product_price,
                     price: Product_price,
                 }}
         }
-        // setDoc(doc(db, 'users', auth.currentUser.uid)   
-            await addDoc(productRef, data)
-            navigation.goBack();
+            const res = await addDoc(productRef, data);
+            await updateDoc(res, {prdocut_id: res.id});
+            // navigation.goBack();
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;
@@ -70,8 +122,17 @@ const AddProductScreen = ( {navigation} ) => {
     return (
         <View style={styles.mainContainer}>
             <View>                        
-                <Text>Add a new product to {Store}</Text>
-                <View>
+                <Text style={{fontSize:16}}>Add a new product to {Store}</Text>
+
+                <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
+                    <View style={styles.imageContainer}>
+                        {image !== null ? (
+                        <Image style={styles.image} source={{ uri: image.uri}} />
+                        ) : (<Text style={styles.noImageText}> Pick A Image</Text>)}
+                    </View>
+                </TouchableOpacity>
+                
+                <View style={styles.textContainer}>
                     <TextInput
                         placeholder='Brand...'
                         onChangeText={(brand) => setBrand(brand)}
@@ -93,11 +154,20 @@ const AddProductScreen = ( {navigation} ) => {
                         onChangeText={(pPrice) => setProduct_price(pPrice)}
                         style={styles.inputField}                           
                     />
+                    <View style={styles.checkboxContainer} >
+                        <Checkbox 
+                            value={isSelected}
+                            onValueChange={(newValue) => setSelection(newValue)}
+                            style={styles.checkbox}
+                        />
+                        <Text style={{fontSize: 16}}> On sale ?</Text>
+                    </View>
+                    
                     <View>
                         <Tags
                             initialText=""
                             textInputProps={{
-                                placeholder: "Tags..."
+                                placeholder: "Add Tags Here..."
                             }}
                             initialTags={[]}
                             onChangeTags={tags => settags(tags)}
@@ -123,7 +193,7 @@ const AddProductScreen = ( {navigation} ) => {
                         style={[styles.button, styles.submitButton]}
                         onPress={()=>{handleAddProduct()}}
                     >
-                        <Text>Submit</Text>
+                        <Text>Add</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -147,6 +217,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         justifyContent: 'flex-start',
     },
+    textContainer: {
+        flex: 1.5
+    },
     tag: {
         backgroundColor: '#2A5353',
         borderRadius: 10,
@@ -163,29 +236,24 @@ const styles = StyleSheet.create({
         color: '#606060',
         fontWeight: 'bold',
     },
-    title: {
-        fontWeight: 'bold',
-        color: 'orange',
-        fontSize: 16,
-    },
     imageContainer: {
         flex: 1,
-        marginTop: 10
+        paddingBottom: 10
     },
-    productTile: {
-        width: 350,
-        padding: 10,
-        marginVertical: 8,
-        marginHorizontal: 16,
+    checkboxContainer: {
+        flexDirection: 'row',
         borderColor: 'black',
         borderWidth: 2,
         borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center'
+        padding: 10,
+        marginVertical: 8,
+        marginHorizontal: 16,
     },
-    productImg: {
-        flex: 1,
+    checkbox: {
+        transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+        color: 'black'
+    },
+    image: {
         aspectRatio: 1.2, 
         resizeMode: 'contain',
         margin: 10,
@@ -193,10 +261,13 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 10,
     },
-    productInfo: {
-        flex: 1,
-        flexWrap: 'wrap',
+    noImageText:{
         textAlign: 'center',
+        marginTop: 50,
+        fontSize: 20,
+        borderColor: 'black',
+        borderWidth: 2,
+        borderRadius: 10,
     },
     inputField: {
         borderColor: 'black',

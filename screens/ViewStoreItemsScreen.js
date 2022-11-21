@@ -40,12 +40,12 @@ class Product extends React.Component {
     }
 }
 
-const ViewStoreItemsScreen = ({navigation}) => {
+const ViewStoreItemsScreen = ({route, navigation}) => {
 
     const [data, setData] = useState([]);
     const [store_name, setStore_name] = useState("");
 
-    const store_id = 'AC6Y6Rb7dSrscb2FBhPO';
+    const store_id = route.params.store_id;
 
     const actions = [
         {
@@ -112,7 +112,7 @@ const ViewStoreItemsScreen = ({navigation}) => {
                 <FloatingAction
                     actions={actions}
                     onPressItem={name => {
-                        navigation.navigate(name)
+                        navigation.navigate(name, {store_id: store_id})
                     }}
                 />
             </View>
