@@ -7,6 +7,7 @@ import { collection, query, where, getDocs, setDoc, doc, onSnapshot } from "fire
 import { db } from '../firebase';
 import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
 import { debugErrorMap } from 'firebase/auth';
+import * as SecureStore from 'expo-secure-store';
 
 import Scanner from './ScannerScreen';
 
@@ -57,20 +58,19 @@ class List extends React.Component {
 const SavedListsScreen = ({navigation}) => {
     const [savedLists, setSavedLists] = useState([]);
     const [savedProducts, setSavedProducts] = useState([]);
-    
-    //dynamically update list of saved lists
-    useEffect(() => {
-        const listsRef = collection(db, 'saved_lists'); //name of collection
-        const unsubscribe = onSnapshot(listsRef, (listsSnap) => {
-            const savedLists= []
-            listsSnap.forEach((doc) => {
-                savedLists.push(doc.data());
-            });
-            setSavedLists(savedLists);
-            // console.log(savedLists);
-        })
-        return () => unsubscribe;
-    }, []);
+    const [result, setResult] = useState([])
+    let key = 'uid'
+
+    //getting UID
+    useEffect(()=>{
+        const getValue = async ()=> {
+            let result = await SecureStore.getItemAsync(key)
+            if (result){
+                setResult(result)
+            }
+        }
+        getValue()
+    }, [])
 
     useEffect(() => {
         const productsRef = collection(db, 'products'); //name of collection
@@ -84,6 +84,35 @@ const SavedListsScreen = ({navigation}) => {
         })
         return () => unsubscribe;
     }, []);
+    
+    //dynamically update list of saved lists
+    useEffect(() => {
+        const listsRef = collection(db, 'saved_lists'); //name of collection
+        const unsubscribe = onSnapshot(listsRef, (listsSnap) => {
+            const savedLists= []
+            listsSnap.forEach((doc) => {
+                if (doc.data()['user_id'] == result){
+                    savedLists.push(doc.data());
+                }
+            });
+            setSavedLists(savedLists);
+            // console.log(savedLists);
+        })
+        return () => unsubscribe;
+    }, [result]);
+
+    //useEffect(() => {
+    //    const productsRef = collection(db, 'products'); //name of collection
+    //    const unsubscribe = onSnapshot(productsRef, (productsSnap) => {
+    //        const savedProducts= []
+    //        productsSnap.forEach((doc) => {
+    //            savedProducts.push(doc.data());
+    //        });
+    //        setSavedProducts(savedProducts);
+    //        //console.log(savedProducts)
+    //    })
+    //    return () => unsubscribe;
+    //}, []);
 
 
     const renderList = ({ item }) => {

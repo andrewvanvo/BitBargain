@@ -5,6 +5,7 @@ import { Platform, Text, View, StyleSheet, FlatList, Button, Pressable } from 'r
 import * as Location from 'expo-location';
 import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc, Firestore, updateDoc } from "firebase/firestore";
 import { db } from '../firebase';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 
 class List extends React.Component {
@@ -28,9 +29,7 @@ class List extends React.Component {
   navigateToUpdatePrice = async(item)=>{
     storeExists = false
     try {
-      //console.log(this.item)
       const curGeometry = {'latitude':this.item['geometry']['location']['lat'], 'longitude':this.item['geometry']['location']['lng'] }
-      //console.log(curGeometry)
       let storeID = null
       const querySnapshot = await getDocs(collection(db, "stores"));
       querySnapshot.forEach((doc) => {
@@ -57,9 +56,6 @@ class List extends React.Component {
         const productSnapshot = await getDocs(collection(db, 'products'))
         productSnapshot.forEach((product)=>{
           let prodID = product.data().product_id
-
-          //console.log(prodID)
-
           const prodRef = doc(db, 'products', prodID)
           updateDoc(prodRef,{
             [`stores_carrying.${storeID}.on_sale`]: false,
@@ -168,10 +164,15 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   return (
 
     <View style={styles.mainContainer}>
-        <View style ={styles.header}>
-          <Text style={{fontSize: 24, color: 'white'}}>SELECT NEARBY STORE</Text>
+        <View>
+          <View style ={styles.header}>
+            <Text style={{fontSize: 24, color: 'white'}}>SELECT NEARBY STORE</Text>
+          </View>
         </View>
+        
+
         {isLoading? 
+
           <View style={styles.listContainer}>
             <Text>Loading...</Text>
           </View>
@@ -183,7 +184,7 @@ const UpdateSelectStoreScreen = ({navigation}) => {
             />
           </View>
           }
-      </View>
+    </View>
   );
 }
 
