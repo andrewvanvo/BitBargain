@@ -37,4 +37,4 @@ let app = initializeApp(firebaseConfig);
 let auth = getAuth(app);
 let db = getFirestore(app)
 
-export {auth, db};
+export {app, auth, db};

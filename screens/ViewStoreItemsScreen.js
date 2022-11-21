@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase';
-import { useNavigation } from '@react-navigation/native';
+import { FloatingAction } from "react-native-floating-action";
 
 class Product extends React.Component {
     constructor(props) {
@@ -40,11 +40,27 @@ class Product extends React.Component {
     }
 }
 
-const ViewStoreItemsScreen = ({navigation}) => {
+const ViewStoreItemsScreen = ({route, navigation}) => {
 
     const [data, setData] = useState([]);
+    const [store_name, setStore_name] = useState("");
 
-    const store_name = '112233';
+    const store_id = route.params.store_id;
+
+    const actions = [
+        {
+            text: "Scan to Add",
+            icon: require("../assets/scan-icon.png"),
+            name: "Scanning",
+            position: 1
+        },
+        {
+            text: "Enter New Product",
+            icon: require("../assets/add-icon.png"),
+            name: "AddProduct",
+            position: 2
+        }
+    ];
 
     const renderProduct = ({ item }) => {
         return (
@@ -61,21 +77,20 @@ const ViewStoreItemsScreen = ({navigation}) => {
             var storeList = [];
             productSnap.forEach((doc) => {
                 var object = doc.data();
-                object.stores_carrying.forEach((eachStore) => {
-                    // The 112233 can be replaced by the store id passed in
-                    if (eachStore.store_id === 112233) {
+                for (var eachStore in object.stores_carrying) {
+                    if (eachStore === store_id) {
                         storeList.push({
                             "image_url": object.image_url,
                             "product_id": object.product_id,
                             "product_name": object.product_name,
-                            "store_price": eachStore.price,
-                            "store_id": eachStore.store_id
+                            "store_price": object.stores_carrying[eachStore].price,
+                            "store_id": eachStore,
                         })
+                        setStore_name(object.stores_carrying[eachStore].store_name);
                     }
-                })
+                }
             });
             setData(storeList);
-            
         })
         return () => unsubscribe;
     }, []);
@@ -93,6 +108,14 @@ const ViewStoreItemsScreen = ({navigation}) => {
                     renderItem={renderProduct}
                 />
             </View>
+            <View style={styles.buttonContainer}>
+                <FloatingAction
+                    actions={actions}
+                    onPressItem={name => {
+                        navigation.navigate(name, {store_id: store_id})
+                    }}
+                />
+            </View>
         </View>
     );
 }
@@ -105,12 +128,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 50,
+        marginTop: 75,
     },
     title: {
         fontWeight: 'bold',
         color: 'blue',
-
     },
     productContainer: {
         flex: 9,
@@ -142,4 +164,14 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         textAlign: 'center',
     },
+    buttonContainer: {
+        flex: 1,
+        width: '110%',
+        marginTop: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        bottom: 35
+    }
 });

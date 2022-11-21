@@ -44,7 +44,7 @@ class List extends React.Component {
                 })
             })
             //console.log(this.props.dbProducts)
-            // console.log(cartItems)
+            // console.log(cartItems);
 
             await AsyncStorage.setItem('@named_list', JSON.stringify(cartItems));
             //console.log(test)

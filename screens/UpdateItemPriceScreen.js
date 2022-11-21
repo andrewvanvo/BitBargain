@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput} from 'react-native'
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 
 
 const UpdateItemPriceScreen = ({route, navigation}) => {
+
+    const [Product_price, setProduct_price] = useState("");
+
 
     const store_id = route.params.store_id;
     const product_id = route.params.product_id;
@@ -12,9 +15,23 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
     const product_name = route.params.product_name;
     const price = route.params.price;
 
-    const updatePrice = () => {
+    const updatePrice = async () => {
         // const productRef = updateDoc(doc(db, 'products', product_id), {
         // });
+        const productRef = doc(db, 'products', product_id);
+        const result = await getDoc(productRef);
+        const prev_price = (result.data().stores_carrying[store_id].prev_price);
+        var on_sale = false
+        if (price < prev_price) {
+            on_sale = true
+        }
+        const price_ref = 'stores_carrying.'+ store_id.toString() +'.price'
+        const on_sale_ref = 'stores_carrying.'+ store_id.toString() +'.on_sale'
+        await updateDoc(productRef, {
+            [price_ref] : Number(Product_price),
+            [on_sale_ref]: on_sale
+        }
+        );
     }
 
     return (
@@ -37,14 +54,18 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                 <Text style={styles.title}>    New Price:</Text>
                 <TextInput 
                     placeholder='New Price'
+                    keyboardType='numeric'
                     style={styles.inputField}
+                    onChangeText={(pPrice) => setProduct_price(pPrice)}
+                    maxLength={10}
                 />
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={()=>{navigation.goBack()}}>
+                <TouchableOpacity style={styles.button} onPress={()=>{updatePrice()}}>
                     <Text>Update</Text>
                 </TouchableOpacity>
             </View>
+
         </View>
     );
 }
