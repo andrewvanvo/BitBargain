@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Platform, Text, View, StyleSheet, FlatList, Button, Pressable } from 'react-native';
-
 import * as Location from 'expo-location';
+import { collection, onSnapshot, addDoc, query, where, getDocs, setDoc, doc, Firestore, updateDoc } from "firebase/firestore";
+import { db } from '../firebase';
 
 
 class List extends React.Component {
@@ -11,7 +12,7 @@ class List extends React.Component {
       super(props);
       this.item = props.item;
       this.navigation = props.navigation; //nav prop accesible from parent screen
-      //this.dbProducts = props.savedProducts //product collection snapshot passed down
+      this.dbStores = props.allStores
   }
   render() {
       //console.log(this.item)
@@ -24,14 +25,53 @@ class List extends React.Component {
           </Pressable>
       );
   }
-
-  //on press
   navigateToUpdatePrice = async(item)=>{
+    storeExists = false
     try {
-       console.log(this.item)
-        
-      //await AsyncStorage.setItem('@storage_Key');
-        
+      //console.log(this.item)
+      const curGeometry = {'latitude':this.item['geometry']['location']['lat'], 'longitude':this.item['geometry']['location']['lng'] }
+      //console.log(curGeometry)
+      let storeID = null
+      const querySnapshot = await getDocs(collection(db, "stores"));
+      querySnapshot.forEach((doc) => {
+        if (curGeometry['latitude'] == doc.data()['location']['latitude']){
+          if (curGeometry['longitude'] == doc.data()['location']['longitude']){
+            storeExists = true
+            storeID = doc.id
+          }
+        }
+      });
+
+      if (storeExists == false){
+        const docRef = await addDoc(collection(db, "stores"), {
+          location: curGeometry,
+          store_address: this.item.vicinity,
+          store_name : this.item.name
+        })
+        storeID = docRef.id
+        const storeRef = doc(db, 'stores', storeID)
+        updateDoc(storeRef, {
+          store_id: storeID
+        })
+
+        const productSnapshot = await getDocs(collection(db, 'products'))
+        productSnapshot.forEach((product)=>{
+          let prodID = product.data().product_id
+
+          //console.log(prodID)
+
+          const prodRef = doc(db, 'products', prodID)
+          updateDoc(prodRef,{
+            [`stores_carrying.${storeID}.on_sale`]: false,
+            [`stores_carrying.${storeID}.prev_price`]: 0,
+            [`stores_carrying.${storeID}.price`]: 0,
+            [`stores_carrying.${storeID}.store_name`]: this.item.name
+          })
+        })      
+      }
+      //console.log(storeID)
+      this.navigation.navigate('UpdatePrice', {store_id: storeID})
+
     } catch (error){
       console.log(error);
     }
@@ -49,72 +89,71 @@ const UpdateSelectStoreScreen = ({navigation}) => {
   const storeList = ['Micro Center', 'Walmart', 'Target', "Gamestop", 'The Source',
    'Memory Express', 'Canada Computers & Electronics', 'Best Buy', 'Staples', 'Computer Elite']
 
-   //initial placeholder location on load
-  let lat = '44.5666670'
-  let long = '-123.2833330'
 
   const [location, setLocation] = useState(null);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true)
-  const [isFilter, setFilter] = useState([])
+  const [allStores, setAllStores] = useState([]);
+  //const [storeExists, setStoreExists] = useState(false)
 
   useEffect(()=>{
-    //let runHook = true
+    let runHook = true
     const fetchLocation = async ()=>{
-      let {status} = await Location.requestForegroundPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
           return;
         }
       let location = await Location.getCurrentPositionAsync({});
-      //if(runHook){
+      if(runHook){
         setLocation(location);
-      //}
+      }
     }
     fetchLocation()
-    //return () => runHook = false
+    return () => runHook = false
   }, [])
-
-  //location data populated from api
-  if (location){
-    lat = location['coords']['latitude']
-    long = location['coords']['longitude']
-  }
-  
-  //gmaps api
+ 
   useEffect(() => {
     async function fetchGoogle(){
-      await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=computer&key=${api_key}`)
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
+      if (location){
+        let lat = location['coords']['latitude']
+        let long = location['coords']['longitude']
+        await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=computer&key=${api_key}`)
+        .then((response) => response.json())
+        .then((json) => {
+          let reducedList = {'results':[]}
+          for (var i = 0; i < json['results'].length; i++){
+            if (reducedList['results'].length === 10){break}
+            else if (storeList.includes(json['results'][i]['name'])){
+              reducedList['results'].push(json['results'][i])
+            }
+          }
+          //console.log(reducedList)
+          setData(reducedList)
+        })
+        .catch((error) => console.error(error))
+      }
     }
     fetchGoogle();
-    //if(data !== []){
+    if(data !== []){
       setLoading(false)
-    //}
+    }
   }, [location]);
-  
-  //useEffect(()=>{
-  //  var filteredList = []
-  //  const filterList = () =>{
-  //    if(data.length !== 0){
-  //      const sliced = data['results'].slice(0,9)
-  //      sliced.forEach((element)=>{
-  //        if(storeList.includes(element.name)){
-  //          filteredList.push(element)
-  //          //console.log(element)
-  //        }
-  //      }) 
-  //    }
-  //  }
-  //  if (data !== []){
-  //    filterList()
-  //    setFilter(filteredList)
-  //    console.log('setFilter')
-  //  }  
-  //}, [data])
-  
+
+  useEffect(() => {
+    if(data!==[]){
+      const storeRef = collection(db, 'stores');
+      const unsubscribe = onSnapshot(storeRef, (storeSnap) => {
+        const stores = [];
+        storeSnap.forEach((doc) => {
+          stores.push(doc.data());
+          //console.log(doc.data())
+        });
+        setAllStores(stores);
+        });
+    return () => unsubscribe();
+    }  
+  }, [data]);
 
   const renderList = ({ item }) => {
     return (
@@ -122,26 +161,26 @@ const UpdateSelectStoreScreen = ({navigation}) => {
         <List 
             item={item}
             navigation = {navigation} //pull navigation prop from parent screen and pass as prop
-            //dbProducts ={savedProducts}
+            dbStores = {allStores}
+            
         />
     );
   };
   return (
 
     <View style={styles.mainContainer}>
-
+        <View style ={styles.header}>
+          <Text style={{fontSize: 24, color: 'white'}}>SELECT NEARBY STORE</Text>
+        </View>
         {isLoading? 
-          <View style={styles.textContainer}>
-            <Text>LOADING</Text>
+          <View style={styles.listContainer}>
+            <Text>Loading...</Text>
           </View>
           :
           <View style={styles.listContainer}>
             <FlatList
                 data={data['results']}
-                //data ={isFilter}
-                //extraData = {savedProducts}
                 renderItem={renderList}
-                //keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving li
             />
           </View>
           }
@@ -156,10 +195,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'steelblue'
   },
 
+  header:{
+    alighItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'steelblue',
+    marginTop: 50,
+    paddingBottom: 25
+  },  
+
   listContainer: {
-    backgroundColor: 'orange',
+    backgroundColor: 'steelblue',
     flex: 1,
     
   },
@@ -170,12 +218,12 @@ const styles = StyleSheet.create({
       padding: 10,
       marginVertical: 8,
       marginHorizontal: 16,
-      borderColor: 'black',
       borderWidth: 2,
       borderRadius: 10,
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'stretch'
+      alignItems: 'stretch',
+      borderColor: 'white'
   },
   textContainer:{
     backgroundColor: 'orange',

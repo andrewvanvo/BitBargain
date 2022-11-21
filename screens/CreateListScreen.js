@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, ActivityIndicator} from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput, } from 'react-native'
+import Stars from 'react-native-stars';
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconA5 from 'react-native-vector-icons/Fontisto';
+import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, getDocs, doc, setDoc, updateDoc, increment, where, query } from "firebase/firestore";
 import { db } from '../firebase';
-import Icon from 'react-native-vector-icons/Ionicons';
-
+import * as SecureStore from 'expo-secure-store';
 
 // User's added items. Can be used for later screens.
 const currShoppingList = new Set();
@@ -27,6 +28,101 @@ const Category = ( props ) => {
     );
 };
 
+class ExistingReview extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            liked: false,
+            disliked: false,
+        }
+    }
+
+    likeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = -1;
+
+
+        if(this.state.liked === false) {
+            value = 1;
+        }
+
+        if(this.state.disliked !== true) {
+            await updateDoc(productRef, {
+                likes: increment(value)
+            });
+            this.setState({ liked: !this.state.liked })
+        }
+    }
+
+    dislikeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = 1;
+
+        if(this.state.disliked === true) {
+            value = -1;
+        }
+
+        if(this.state.liked !== true) {
+            await updateDoc(productRef, {
+                dislikes: increment(value)
+            });
+            this.setState({ disliked: !this.state.disliked })
+        }
+    }
+
+    render() {
+        let stars = [];
+        let rounding = Math.floor(this.props.item.rating);
+        let date = this.props.item.date.toDate();
+
+        let year = date.getFullYear()
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+            
+        for(let i=0; i < rounding; i++) {
+            stars.push(
+                <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.props.item.product_id+i}></IconA5>
+            );
+        }
+
+        if(this.props.item.rating - rounding > 0) {
+            stars.push(
+                <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.props.item.product_id+rounding}></IconA5>
+            );
+        }
+
+        return (
+            <View style={[styles.isColumn, styles.windowsWidth, {padding: 20, backgroundColor: '',}]}>
+
+                <View style={[styles.isRow, styles.verticalSpacer, {flex: 1, justifyContent: 'space-between'}]}>
+                    <View style={[styles.isRow,]}>
+                        {stars}
+                        <Text style={[styles.horizontalSpacer, styles.boldMediumBlack,]}>{this.props.item.title}</Text>
+                    </View>
+                    <View>
+                        <Text style={[styles.shadow, ]}>{month}/{day}/{year}</Text>
+                    </View>
+                </View>
+                <View style={[styles.centerItems, {flex: 9}]}>
+                    <Text>{this.props.item.content}</Text>
+                </View>
+                <View style={[styles.isRow, styles.horizontalSpacer, {justifyContent: 'flex-end'}]}>
+                    <TouchableOpacity style={styles.isRow} onPress={() => this.likeProduct(this.props.item)}>
+                        <Text style={[styles.shadow, {color: this.state.liked ? 'blue' : 'black'}]}>{this.props.item.likes}</Text>
+                        <Ionicons name={'heart'} size={20} style={{color: this.state.liked ? 'red' : 'lightgray'}}></Ionicons>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.isRow, styles.horizontalSpacer]} onPress={() => this.dislikeProduct(this.props.item)}>
+                        <Text style={[styles.shadow, {color: this.state.disliked ? 'blue' : 'black'}]}>{this.props.item.dislikes}</Text>
+                        <Ionicons name={'heart-dislike'} size={20} style={{color: this.state.disliked ? 'red' : 'lightgray'}}></Ionicons>
+                    </TouchableOpacity>
+                </View>
+            </View>
+          );
+    }
+}
+
 // Component for list of products in the vertical flatlist
 class Product extends React.Component {
     constructor(props) {
@@ -36,8 +132,13 @@ class Product extends React.Component {
         this.state = {
             selected: false,
             showModal: false,
+            showReviews: false,
+            reviews: 'reviews' in props.item ? props.item.reviews : [],
+            liked: false,
+            disliked: false,
         };
     }
+
     // update whether the product has been selected by the user
     toggleProduct = () => {
         if(!currShoppingList.has(this.item)) {
@@ -49,30 +150,118 @@ class Product extends React.Component {
         }
     }
 
+    likeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = -1;
+
+
+        if(this.state.liked === false) {
+            value = 1;
+        }
+
+        if(this.state.disliked !== true) {
+            await updateDoc(productRef, {
+                likes: increment(value)
+            });
+            this.setState({ liked: !this.state.liked })
+        }
+    }
+
+    dislikeProduct = async (review) => {
+        const reviewId = review.review_id;
+        const productRef = doc(db, 'reviews', reviewId);
+        let value = 1;
+
+
+        if(this.state.disliked === false) {
+            value = -1;
+        }
+
+        if(this.state.liked !== true) {
+            await updateDoc(productRef, {
+                dislikes: increment(value)
+            });
+            this.setState({ disliked: !this.state.disliked })
+        }
+    }
+
+    renderReviews = ({ item }) => {
+        return (
+            <ExistingReview item={item}></ExistingReview>
+          );
+    }
+
     // experimental, this function probably not necessary, remove in future
     getReviews = () => {
-        if(this.props.item.reviews == undefined || this.props.item.reviews.length == 0) {
+        if(this.state.reviews == undefined || this.state.reviews.length == 0) {
             return null;
         }
-        return <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue'}]}>User Reviews: {this.props.item.reviews.length}</Text>
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => this.setState({showReviews: !this.state.showReviews})}
+                >
+                    <Text style={[styles.shadow, styles.productInfo, {color: 'mediumblue', fontSize: 14}]}>({this.state.reviews.length})</Text>
+                </TouchableOpacity>
+                <Modal
+                    animationType='fade'
+                    transparent={false}
+                    visible={this.state.showReviews}
+                >
+                    <View style={styles.centerItems}>
+                        <View style={[styles.centerItems, {width: '100%'}]}>
+                            <FlatList
+                                data={this.state.reviews}
+                                renderItem={this.renderReviews}
+                                keyExtractor={(item) => item.review_id}
+                                vertical={true}
+                                showsHorizontalScrollIndicator={false}
+                            />
+                            <TouchableOpacity
+                                style={[styles.whiteBtn, styles.grayBtn,]}
+                                onPress={() => this.setState({showReviews: !this.state.showReviews})}
+                            >
+                                <Text>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                
+                </Modal>
+            </View>
+        );
+    }
+
+    assignReviews = async () => {
+        let reviews = [];
+        const reviewsQuery = query(collection(db, 'reviews'), where('product_id', '==', this.item.product_id));
+        const unsubscribe = onSnapshot(reviewsQuery, (querySnapshot) => {
+            const reviews = [];
+            querySnapshot.forEach((doc) => {
+                if(doc.data().product_id === this.item.product_id){
+                    reviews.push(doc.data());
+                }
+            });
+            this.setState({reviews: reviews});
+        });
     }
 
     getRatings = () => {
         var totalRating = 0;
-
-        if(this.props.item.reviews == undefined) {
+        if(this.state.reviews == undefined) {
             return null;
         }
 
-        this.props.item.reviews.forEach(review => {
+        this.state.reviews.forEach(review => {
             totalRating += review.rating;
         });
 
         if(totalRating > 0) {
             let stars = [];
-            let averageRating = totalRating / this.props.item.reviews.length;
+            let averageRating = totalRating / this.state.reviews.length;
+            let rounding = Math.floor(averageRating);
             
-            for(let i=0; i < Math.floor(averageRating); i++) {
+            for(let i=0; i < rounding; i++) {
                 stars.push(
                     <IconA5 name='star' size={13} style={{color: 'gold',}} key={this.item.product_id+i}></IconA5>
                 );
@@ -80,11 +269,9 @@ class Product extends React.Component {
 
             if(5 % averageRating > 0) {
                 stars.push(
-                    <IconA5 name='star-half' size={13} style={{color: 'gold'}}></IconA5>
+                    <IconA5 name='star-half' size={13} style={{color: 'gold'}} key={this.item.product_id+rounding}></IconA5>
                 );
             }
-
-
             return stars;
         }
     }
@@ -103,13 +290,23 @@ class Product extends React.Component {
         return <Text style={[styles.shadow, styles.productInfo, {color: statusColor}]}>{stockStatus}</Text>
     }
 
+    writeReview = () => {
+        // return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
+        // navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
+        this.props.navigation.navigate('Review', {userID: this.props.userID, productID: this.item.product_id});
+    }
+
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
-    componentDidUpdate() {
+    async componentDidUpdate() {
         if(currShoppingList.size > 0) {
             this.continue(true);
         } else {
             this.continue(false);
         }
+    }
+
+    componentDidMount() {
+        this.assignReviews();
     }
 
     render() {
@@ -155,25 +352,31 @@ class Product extends React.Component {
                     </TouchableOpacity>
                 </ImageBackground>
                 <View style={{flex: 1}}>
-                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: 50}}>
                         <Text style={[styles.shadow, styles.boldMediumBlack, styles.productName, {marginVertical: 0}]}>{this.item.product_name}</Text>
-                        <View style={styles.isRow}>{this.getRatings()}</View>
+                        <View style={[styles.isRow, styles.centerItems, {flex: 0}]}>
+                            {this.getRatings()}{this.getReviews()}
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => this.writeReview()}
+                        >
+                            <Text style={[styles.shadow, styles.interactable, styles.horizontalSpacer]}>
+                                Write a review
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                    <View style={[{marginVertical: 12}]}>
-                        {this.getReviews()}
-                    </View>
-                    <View style={[{marginVertical: 12}]}>
+                    {/* <View style={[{marginVertical: 12}]}>
                         {this.getItemStocks()}
-                    </View>
+                    </View> */}
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
-                        {this.item.tags.map((tag, index) => {
+                        {this.item.tag.map((tag, index) => {
                             return (
                                 <Tags 
                                     item={this.item} 
                                     category={this.props.category} 
                                     products={this.props.products}
                                     productList={this.props.productList}
-                                    tag={this.props.item.tags[index]}
+                                    tag={this.props.item.tag[index]}
                                     tags={this.props.tags}
                                     setTags={this.props.setTags}
                                     key={`${this.item.product_id}`+index}
@@ -208,7 +411,7 @@ class Tags extends React.Component {
 
         currProducts.slice(1).forEach(category => {
             category.name.forEach(product => {
-                if(product.tags.includes(this.props.tag)) {
+                if(product.tag.includes(this.props.tag)) {
                     newProducts.add(product);
                 }
             })
@@ -275,9 +478,7 @@ const CreateListScreen = ({navigation}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
-    // experimental
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [userID, setUserID] = useState (null);
 
     const [wholeList, setWholeList] = useState([        // the initial states here looks kind of ugly, but functional
         {id: 0, name: [], category: 'All'},
@@ -291,7 +492,6 @@ const CreateListScreen = ({navigation}) => {
         {id: 8, name: [], category: 'Monitor'},
     ]
 );
-
     // dynamically update data for the product flatlist
     useEffect(() => {
         const productRef = collection(db, 'products');
@@ -323,15 +523,18 @@ const CreateListScreen = ({navigation}) => {
     }, []);
 
     useEffect(() => {
-        const categoryRef = collection(db, 'reviews');
-        const unsubscribe = onSnapshot(categoryRef, (categorySnap) => {
-            const categories = [];
-            categorySnap.forEach((doc) => {
-                categories.push(doc.data());
-            });
-            setReviews(categories);
-        });
-        return () => unsubscribe();
+        //uses expo securestore uid saved from DashBoard Screen during auth change
+        const getUserID = async () => {
+            try {
+                const result = await SecureStore.getItemAsync('uid');
+                if (result) {
+                    setUserID(result)
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }
+        getUserID();
     }, []);
 
     // dynamically update data for the category flatlist 
@@ -368,19 +571,19 @@ const CreateListScreen = ({navigation}) => {
                 tags={tags}
                 setTags={setTags}
                 setSelectedCategory={setSelectedCategory}
+                userID={userID}
+                navigation={navigation}
             />
         );
     };
 
     const navigateToCurrentList = async () => {
         var cartItems = [];
-
         // get shopping cart items
         try {
             const data = await AsyncStorage.getItem('@storage_Key1');
             if(data !== null) {
                 var jsonObject = JSON.parse(data);
-
                 jsonObject.forEach(function(item){
                     cartItems.push(item);
                 });
@@ -388,7 +591,6 @@ const CreateListScreen = ({navigation}) => {
         } catch(error) {
             console.log(error);
         }
-
         // add new items to shopping cart
         try {
             currShoppingList.forEach(async function(product) {
@@ -402,7 +604,7 @@ const CreateListScreen = ({navigation}) => {
         } catch (error) {
             console.log(error);
         }
-        navigation.navigate('CurrentList', {storageKey: '@storage_Key1'});
+        navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
     };
 
     var tagContainer = [];
@@ -422,33 +624,6 @@ const CreateListScreen = ({navigation}) => {
                 </Tags>
               )  
             })
-        );
-    }
-
-    useEffect(() => {
-        if(reviews.length > 0) {
-            setLoading(false);
-        } else {
-            return;
-        }
-
-        // assigning reviews to each product
-        wholeList.slice(1).forEach(category => {
-            category.name.forEach(product => {
-                let totalReviews = reviews.filter(review => review.product_id === product.product_id);
-                if(totalReviews === undefined) {
-                    totalReviews = [];
-                }
-                product.reviews = totalReviews;
-            });
-        });
-    }, [reviews]);
-
-    if(loading) {
-        return (
-            <View style={styles.centerItems}>
-                <ActivityIndicator size={'large'} color='orange'/>
-            </View>
         );
     }
 

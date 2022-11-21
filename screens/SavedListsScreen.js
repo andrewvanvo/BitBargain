@@ -99,13 +99,15 @@ const SavedListsScreen = ({navigation}) => {
 
     return (
         <View style={styles.mainContainer}>
+            <View style={styles.header}>
+                <Text style={{fontSize: 24, color: 'white'}}>SELECT A SAVED LIST</Text>
+            </View>
             <View style={styles.listContainer}>
                 <FlatList
                     data={savedLists}
                     extraData = {savedProducts}
                     renderItem={renderList}
                     keyExtractor={item => item.list_name} //listname must be unique, ensure it is when saving list
-
                 />
             </View>
         </View>
@@ -116,30 +118,48 @@ export default SavedListsScreen;
 
 const styles = StyleSheet.create({
     mainContainer: {
-        backgroundColor: 'orange',
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 50,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'steelblue'
     },
+  
+    header:{
+      alighItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'steelblue',
+      marginTop: 50,
+      paddingBottom: 25
+    },  
+  
     listContainer: {
-        backgroundColor: 'orange',
-        flex: 1,
-        
+      backgroundColor: 'steelblue',
+      flex: 1,
+      
     },
     listTile: {
-        
+  
         backgroundColor: 'white',
         width: 350,
         padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
-        borderColor: 'black',
         borderWidth: 2,
         borderRadius: 10,
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center'
+        justifyContent: 'space-between',
+        alignItems: 'stretch',
+        borderColor: 'white'
     },
-    
-});
+    textContainer:{
+      backgroundColor: 'orange',
+      flex: 1,
+    },
+    storeName:{
+      textAlign: 'left'
+    },
+  
+    storeAddress:{
+      textAlign: 'right'
+    }
+  }); 

@@ -132,7 +132,7 @@ const NamedListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('SelectStore')}  
+                    // onPress={() => navigation.navigate('SelectStore')}
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>

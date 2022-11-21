@@ -36,12 +36,9 @@ const DashboardScreen = ({navigation}) => {
         querySnapshot.forEach((doc) => {
           posts.push(doc.data())
         })
-      // setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
       setDataSource(posts.reverse())
       })
       return unsubscribe;
-      // const documentSnapshots = await getDocs(first)
-      // let documentData = documentSnapshots.docs.map(document => document.data());
 
       
     }
@@ -49,26 +46,7 @@ const DashboardScreen = ({navigation}) => {
       console.log(error);
     }
   };
-  // const getMore = async () => {
-  //   try {
-  //     if (lastDocument != null) {
-  //       console.log('Trying to retrieve more data!')
-  //       const next = query(collection(db, 'system_activity'), startAfter(lastDocument), limit(3)) //orderBy('postCreated)
-  //       const documentSnapshots = await getDocs(next)
-  //       let documentData = documentSnapshots.docs.map(document => document.data());
-  //       setLastDocument(documentSnapshots.docs[documentSnapshots.docs.length-1])
-  //       setDataSource([...documentData.reverse(), ...dataSource, ])
-  //       console.log('Success!')
 
-  //     }
-  //     else{
-  //       console.log('There is no more data!')
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -113,9 +91,7 @@ const DashboardScreen = ({navigation}) => {
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
-  //https://reactnative.dev/docs/colors for named color palette
 
-  //TOP LEVEL CONTAINER
   mainContainer: {
     flex: 1,
     flexDirection: "column",
