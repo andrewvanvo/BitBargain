@@ -110,12 +110,12 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
             <Text style={{ fontSize: 16, color: "white", marginLeft: 5 }}>
               Welcome Back!
             </Text>
-            <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
+            <Text style={{ fontSize: 22, color: "white" }}> {user['fname']} </Text>
           </View>
           <View style={{overflow: 'hidden', width: 40, height: 40, borderRadius: 20, marginRight: 15}}>
             <TouchableOpacity onPress={pickImage}>
               <Image
-                source={{uri: user.profileImage}}
+                source={{uri: user['profileImage']}}
                 resizeMode="cover"
                 style={{
                   width: 40,
@@ -129,14 +129,6 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
 
       <View style={styles.headerContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          {/* <Image
-                source={require("../assets/rank-gold-img.png")}
-                resizeMode="cover"
-                style={{
-                  width: 150,
-                  height: 150,
-                }}
-          ></Image> */}
           <AnimatedCircularProgress
             size={150} 
             width={15}
@@ -154,7 +146,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
                   //         width: 100}}
                   // ></Image>
                   <Text style={{color: 'white'}}>
-                    Rank: {user.rank}
+                    Rank: {user['rank']}
                   </Text>
                 )
               }

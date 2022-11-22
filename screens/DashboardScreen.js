@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Text, Button, StyleSheet, View, TouchableOpacity } from "react-native";
 import { auth, db, } from "../firebase/";
 
@@ -13,16 +13,30 @@ import { DashboardHeader } from "../components/DashboardHeader";
 import * as SecureStore from 'expo-secure-store';
 import { DashboardFeed } from "../components/DashboardFeed";
 import Icon from "react-native-vector-icons/Ionicons";
+import { UserContext } from '../contexts/UserContext';
 
 const DashboardScreen = ({navigation}) => {
-  const [user, setUser] = useState({ fname: "Unknown", rank: "Unknown" });
-  const [userObj, setUserObj] = useState({});
+  // const [user, setUser] = useState({ fname: "Unknown", rank: "Unknown" });
+  // const [userObj, setUserObj] = useState({});
   const [dataSource, setDataSource] = useState([]);
   const [lastDocument, setLastDocument] = useState(null);
   const [refresh, setRefresh] = useState(false);
-  
+  const {user, loading, setUser, userObj} = useContext(UserContext)
+  const [userProfile, setUserProfile] = useState('test');
+  const [userData, setUserData] = useState('test');
 
-
+  useEffect(() => {
+    if(!loading){
+      setUserProfile(user)
+      setUserData(userObj)
+    }
+    const key = 'uid';
+    const storeUser = async(key, value) => {
+      await SecureStore.setItemAsync(key, value)
+    }
+    storeUser(key, userObj['uid'])
+  }, [loading]);
+ 
   const getData = async () => {
     try {
       
@@ -46,35 +60,7 @@ const DashboardScreen = ({navigation}) => {
       console.log(error);
     }
   };
-
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        var key = 'uid';
-        const getUser = async () => {
-          const userCollection = doc(db, "users", uid);
-          const userSnapshot = await getDoc(userCollection);
-          setUser(userSnapshot.data());
-          setUserObj(user)
-          //console.log("useEffect success");
-          //Uses Secure Store
-          storeUser(key, uid)
-        };
-        //key/value
-        const storeUser = async (key, value)=>{
-          await SecureStore.setItemAsync(key, value)
-        }
-
-        getUser();
-
-      } else {
-        setUser({});
-      }
-    });
-    return unsubscribe;
-  }, []);
+ 
   useEffect(() => {
     getData();
   }, [])
@@ -82,8 +68,10 @@ const DashboardScreen = ({navigation}) => {
   
   return (
     <View style={styles.mainContainer}>
-      <DashboardHeader user={user} userObj={userObj} setUser={setUser}/>
-      <DashboardFeed user={user} dataSource={dataSource} refresh={refresh} onRefresh={getData} />    
+      {/* <Text> {user['lname']} </Text> */}
+      {/* <Text> {user.fname}</Text> */}
+      <DashboardHeader user={userProfile} userObj={userData} setUser={setUser} />
+      <DashboardFeed user={userProfile} dataSource={dataSource} refresh={refresh} onRefresh={getData} />    
     </View>
   );
 };

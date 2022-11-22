@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Image} from 'react-native';
 import Tags from "react-native-tags";
 import Checkbox from 'expo-checkbox';
@@ -10,6 +10,8 @@ import { app, auth, db } from '../firebase';
 import {  doc, addDoc, getDoc, updateDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
+
+import { UserContext } from '../contexts/UserContext';
 
 const AddProductScreen = ( {route, navigation} ) => {
 
@@ -23,6 +25,8 @@ const AddProductScreen = ( {route, navigation} ) => {
     const [uploading, setUploading] = useState(false)
     const [isSelected, setSelection] = useState(false);
 
+    const {user, setUser, userObj} = useContext(UserContext)
+    
     // const store_id = route.params.store_id;
     const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
@@ -37,7 +41,9 @@ const AddProductScreen = ( {route, navigation} ) => {
               }
         }
         fetchData().catch(console.error);
-    })
+        // console.log(user.fname)
+        // console.log(userObj.uid)
+    }, [])
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
