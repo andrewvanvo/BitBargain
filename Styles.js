@@ -15,6 +15,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
+    regularBlack: {
+        fontSize: 12, 
+        textAlign: 'center', 
+        color: 'black',
+    },
     largeText: {
         fontSize: 25,
     },
@@ -80,7 +85,9 @@ const styles = StyleSheet.create({
     isRow: {
         flexDirection: 'row', 
     },
-
+    smallRowMargin: {
+        marginHorizontal: 5,
+    },
     horizontalSpacer: {
         marginHorizontal: 10,
     },

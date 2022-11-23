@@ -23,7 +23,6 @@ const LoginScreen = ({ navigation}) => {
         password: '',
     }
 
-
     // the validation schema that Formik form will valid with
     const signInSchema = Yup.object().shape({
         email: Yup.string()

@@ -19,12 +19,13 @@ const AddProductScreen = ( {route, navigation} ) => {
     const [Brand, setBrand] = useState("");
     const [Type, setType] = useState("");
     const [Store, setStore] = useState("");
+    const [storeName, setStoreName] = useState("");
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false)
     const [isSelected, setSelection] = useState(false);
 
-    // const store_id = route.params.store_id;
-    const store_id = "AC6Y6Rb7dSrscb2FBhPO";
+    const store_id = route.params.store_id;
+    // const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
     useEffect(()=>{
         const fetchData = async () => {
@@ -34,6 +35,7 @@ const AddProductScreen = ( {route, navigation} ) => {
                 console.log('No such document!');
               } else {
                 setStore(store.data().store_name + " at " + store.data().store_address);
+                setStoreName(store.data().store_name);
               }
         }
         fetchData().catch(console.error);
@@ -107,6 +109,7 @@ const AddProductScreen = ( {route, navigation} ) => {
                     on_sale: isSelected,
                     prev_price: Product_price,
                     price: Product_price,
+                    store_name: storeName,
                 }}
         }
             const res = await addDoc(productRef, data);
@@ -149,7 +152,7 @@ const AddProductScreen = ( {route, navigation} ) => {
                         style={styles.inputField}
                     />
                     <TextInput
-                        placeholder='Prodcut Price...'
+                        placeholder='Product Price...'
                         keyboardType='numeric'
                         onChangeText={(pPrice) => setProduct_price(pPrice)}
                         style={styles.inputField}                           

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, TextInput, } from 'react-native'
+import { Text, TouchableOpacity, View, FlatList, Image, ImageBackground, Modal, } from 'react-native'
 import Stars from 'react-native-stars';
 import styles from '../Styles'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -132,6 +132,7 @@ class Product extends React.Component {
         this.state = {
             selected: false,
             showModal: false,
+            removeItemModal: false,
             showReviews: false,
             reviews: 'reviews' in props.item ? props.item.reviews : [],
             liked: false,
@@ -145,8 +146,7 @@ class Product extends React.Component {
             currShoppingList.add(this.item);
             this.setState({ selected: true });
         } else {
-            currShoppingList.delete(this.item);
-            this.setState({ selected: false });
+            this.setState({ removeItemModal: true} );
         }
     }
 
@@ -276,24 +276,63 @@ class Product extends React.Component {
         }
     }
 
-    getItemStocks = () => {
-        let stockStatus;
-        let statusColor;
-
-        if(this.item.stores_carrying.length > 0) {
-            stockStatus = 'In Stock.';
-            statusColor = 'green';
-        } else {
-            stockStatus = 'Out of Stock.';
-            statusColor = 'red';
-        }
-        return <Text style={[styles.shadow, styles.productInfo, {color: statusColor}]}>{stockStatus}</Text>
-    }
-
     writeReview = () => {
         // return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
         // navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
         this.props.navigation.navigate('Review', {userID: this.props.userID, productID: this.item.product_id});
+    }
+
+    removeFromCart = async () => {
+        currShoppingList.delete(this.item);
+        this.setState({ selected: false });
+        this.setState({removeItemModal: !this.state.removeItemModal})
+
+        var cartItems = [];
+        // get current shopping cart's items
+        try {
+            const data = await AsyncStorage.getItem('@storage_Key1');
+            if(data !== null) {
+                var jsonObject = JSON.parse(data);
+                jsonObject.forEach(function(item){
+                    cartItems.push(item);
+                });
+            }
+        } catch(error) {
+            console.log(error);
+        }
+        // add all existing items, except for the de-selected one.
+        try {
+            cartItems = cartItems.filter(currItem => currItem.product_id != this.item.product_id)
+            await AsyncStorage.setItem('@storage_Key1', JSON.stringify(cartItems));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    renderTags = () => {
+        if(typeof this.item.tag === 'string') {
+            return;
+        }
+
+        var tags = [];
+        for(let i=0; i<this.item.tag.length; i++) {
+            tags.push(
+                <Tags 
+                item={this.item} 
+                category={this.props.category} 
+                products={this.props.products}
+                productList={this.props.productList}
+                tag={this.props.item.tag[i]}
+                tags={this.props.tags}
+                setTags={this.props.setTags}
+                key={`${this.item.product_id}`+i}
+                remove={false}
+                setSelectedCategory={this.props.setSelectedCategory}
+            >
+            </Tags>
+            )
+        }
+        return tags;
     }
 
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
@@ -306,7 +345,7 @@ class Product extends React.Component {
     }
 
     componentDidMount() {
-        this.assignReviews();
+        // this.assignReviews();
     }
 
     render() {
@@ -315,6 +354,39 @@ class Product extends React.Component {
                 style={[styles.productTile, {padding: 10, backgroundColor: currShoppingList.has(this.item) ? 'orange' : 'white'}]}
                 onPress={this.toggleProduct}
             >   
+                <Modal
+                    animationType='fade'
+                    transparent={true}              // we can set this to 'false', and it'll seem like a new screen
+                    visible={this.state.removeItemModal}
+                    onRequestClose={() => this.setState({removeItemModal: !this.state.removeItemModal})}
+                >
+                    <View style={styles.centerItems}>
+                        <View style={[styles.whiteBtn, styles.mediumPadding]}>
+                            <Text style={[styles.boldMediumBlack, styles.shadow]}>This product is currently in shopping cart.</Text>
+                            
+                            
+                            <View style={[styles.centerItems, {flex: 0}]}>
+                                <Text style={[styles.regularBlack,]}>Are you sure that you want to remove this item?</Text>
+                                <View style={[styles.isRow, styles.verticalSpacer, ]}>
+                                    <TouchableOpacity
+                                        style={[styles.whiteBtn, styles.grayBtn, styles.isRow, {alignItems: 'center'}]}
+                                        onPress={() => this.setState({removeItemModal: !this.state.removeItemModal})}
+                                    >
+                                        <IconA5 name={'close-a'} size={10} style={styles.smallRowMargin}></IconA5>
+                                        <Text>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.whiteBtn, styles.orangeBtn, styles.isRow, {alignItems: 'center'}]}
+                                        onPress={() => this.removeFromCart()}
+                                    >
+                                        <Ionicons name={'trash-outline'} size={18} style={styles.smallRowMargin}></Ionicons>
+                                        <Text>Remove Item</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
                 <ImageBackground
                     source={{uri: this.item.image_url}}
                     style={[styles.productImg, {flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end'}]}
@@ -369,23 +441,7 @@ class Product extends React.Component {
                         {this.getItemStocks()}
                     </View> */}
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
-                        {this.item.tag.map((tag, index) => {
-                            return (
-                                <Tags 
-                                    item={this.item} 
-                                    category={this.props.category} 
-                                    products={this.props.products}
-                                    productList={this.props.productList}
-                                    tag={this.props.item.tag[index]}
-                                    tags={this.props.tags}
-                                    setTags={this.props.setTags}
-                                    key={`${this.item.product_id}`+index}
-                                    remove={false}
-                                    setSelectedCategory={this.props.setSelectedCategory}
-                                >
-                                </Tags>
-                            )
-                        })}
+                        {this.renderTags()}
                     </View>
                 </View>
             </TouchableOpacity>
