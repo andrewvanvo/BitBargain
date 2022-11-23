@@ -50,26 +50,27 @@ class ReviewScreen extends React.Component {
         });
     }
     
-    // postData = async (values) => {
-    //     const newCommentRef = doc(collection(db, 'system_activity'))
-    //     const postDescription = `${store_name} - ${product_name} @ $${Product_price}`
-    //     await setDoc(newCommentRef, {
-    //       id: newCommentRef.id,
-    //       imageURL: user['profileImage'],
-    //       postDescription: postDescription,
-    //       postCreated: Timestamp.now(),
-    //       postType: 'review',
-    //       username: user['fname'] + ' ' + user['lname']
-    //     })
-    //     await updateProfile();
-    //   }
+    postData = async (values, user) => {
+        const newCommentRef = doc(collection(db, 'system_activity'))
+        const previewPost = values.review
+        
+        const postDescription = `Title: ${values.title}\nStars: ${this.state.rating}\n${previewPost}`
+        await setDoc(newCommentRef, {
+          id: newCommentRef.id,
+          imageURL: user['profileImage'],
+          postDescription: postDescription,
+          postCreated: Timestamp.now(),
+          postType: 'review',
+          username: user['fname'] + ' ' + user['lname']
+        })
+      }
 
-    // updateProfile = async () => {
-    //     const newUserProfileRef = doc(db, 'users', userObj['uid'])
-    //     await updateDoc(newUserProfileRef, {
-    //         numReviews: increment(1)
-    //     })
-    // }
+    updateProfile = async (userObj) => {
+        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+        await updateDoc(newUserProfileRef, {
+            numReviews: increment(1)
+        })
+    }
 
     render() {
         const {user, setUser, userObj} = this.context
@@ -85,7 +86,7 @@ class ReviewScreen extends React.Component {
                             // Will create a function that submits the form values to 'reviews' in Firebase
                             this.submitToDatabase(values);
                             this.postData(values, user);
-                            this.updateProfile();
+                            this.updateProfile(userObj);
                             actions.resetForm();
                             this.props.navigation.goBack()
                         }}
