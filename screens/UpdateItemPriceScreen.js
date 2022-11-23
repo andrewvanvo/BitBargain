@@ -10,10 +10,12 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
 
 
     const store_id = route.params.store_id;
+    const store_address = route.params.store_address;
     const product_id = route.params.product_id;
     const image_url = route.params.image_url;
     const product_name = route.params.product_name;
     const price = route.params.price;
+    const store_name = route.params.store_name;
 
     const updatePrice = async () => {
         // const productRef = updateDoc(doc(db, 'products', product_id), {
@@ -37,6 +39,11 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
 
     return (
         <View style={styles.mainContainer}>
+            <View>
+                <Text style={{fontSize:20, marginTop: 10}}>
+                    {store_name} at {store_address}
+                </Text>
+            </View>
             <View style={styles.imageContainer}>
                 <Image
                     source={{uri: image_url}}
