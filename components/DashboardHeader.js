@@ -19,26 +19,33 @@ import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, start
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { HorizontalCarousel } from "./DashboardCarousel";
 
-const DATA = [ //TODO 
-  { 
-    id: '1',
-    number: 2,
-  },
-  {
-    id: '2',
-    number: 4
-  },
-  {
-    id: '3',
-    number: 20
-  }
-]
+
 
 export const DashboardHeader = ({ user, userObj, setUser }) => {
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false)
 
+  const DATA = [ 
+  { 
+    id: '1',
+    number: user['numSubmission'],
+    postType: 'Submissions',
+    imageURL: 'https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/graphics-cards/geforce-ada-4090-web-og-1200x630@2x.jpg'
+  },
+  {
+    id: '2',
+    number: user['numUpdate'],
+    postType: 'Updates',
+    imageURL: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2021/03/Intel-Rocker-Lake-2-e1615908186584.jpg'
+  },
+  {
+    id: '3',
+    number: user['numReviews'],
+    postType: 'Reviews',
+    imageURL: 'https://www.pcworld.com/wp-content/uploads/2022/02/pc-cases-cooling-versus.jpg?quality=50&strip=all'
+  }
+]
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -138,13 +145,6 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
             backgroundColor="#3d5875">
               {
                 (fill) => (
-                  // <Image
-                  //       source={require("../assets/Untitled.png")}
-                  //       resizeMode="cover"
-                  //       style={{
-                  //         height: 100, 
-                  //         width: 100}}
-                  // ></Image>
                   <Text style={{color: 'white'}}>
                     Rank: {user['rank']}
                   </Text>
@@ -155,14 +155,11 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
         <View style={{ 
           flex: 1, 
           margin: 10, 
-          // backgroundColor: 'white',
           padding: 5,
           justifyContent: 'center', alignItems: 'center'
           
           }}>
-          {/* <Text style={{fontSize: 80}}>22</Text>
-          <Text style={{fontSize: 20}}>Submissions</Text> */}
-          
+  
           <HorizontalCarousel w={200} h={200} data={DATA}></HorizontalCarousel>
 
         </View>
