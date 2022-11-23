@@ -100,6 +100,7 @@ const UpdateSelectStoreScreen = ({navigation}) => {
           return;
         }
       let location = await Location.getCurrentPositionAsync({});
+      // let location = {coords: {"latitude": 37.3861, longitude: -122.0620}};
       if(runHook){
         setLocation(location);
       }

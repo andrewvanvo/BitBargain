@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Modal, TextInput} from 'react-native'
 import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { useNavigation } from '@react-navigation/native';
-
-
+import * as SecureStore from 'expo-secure-store';
 
 
 class Product extends React.Component {
@@ -92,6 +89,7 @@ const NamedListScreen = ({ route, navigation }) => {
     const [data, setData] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const { storageKey } = route.params;
+    const [userID, setUserID] = useState (null);
     
     const renderProduct = ({ item }) => {
         return (
@@ -103,6 +101,21 @@ const NamedListScreen = ({ route, navigation }) => {
         />
         );
     };
+
+    useEffect(() => {
+        //uses expo securestore uid saved from DashBoard Screen during auth change
+        const getUserID = async () => {
+            try {
+                const result = await SecureStore.getItemAsync('uid');
+                if (result) {
+                    setUserID(result)
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }
+        getUserID();
+    }, []);
 
     // https://react-native-async-storage.github.io/async-storage/docs/usage/
     // update product list (data), whenever it is ready from async storage
@@ -132,7 +145,7 @@ const NamedListScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.selectStoreButton}>
                 <TouchableOpacity
-                    // onPress={() => navigation.navigate('SelectStore')}
+                    onPress={() => navigation.navigate('CurrentList', {storageKey: storageKey , userId: userID})}
                 >
                     <Text>Select Store</Text>
                 </TouchableOpacity>
