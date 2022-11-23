@@ -282,8 +282,6 @@ class Product extends React.Component {
         this.props.navigation.navigate('Review', {userID: this.props.userID, productID: this.item.product_id});
     }
 
-
-
     removeFromCart = async () => {
         currShoppingList.delete(this.item);
         this.setState({ selected: false });
@@ -311,6 +309,32 @@ class Product extends React.Component {
         }
     }
 
+    renderTags = () => {
+        if(typeof this.item.tag === 'string') {
+            return;
+        }
+
+        var tags = [];
+        for(let i=0; i<this.item.tag.length; i++) {
+            tags.push(
+                <Tags 
+                item={this.item} 
+                category={this.props.category} 
+                products={this.props.products}
+                productList={this.props.productList}
+                tag={this.props.item.tag[i]}
+                tags={this.props.tags}
+                setTags={this.props.setTags}
+                key={`${this.item.product_id}`+i}
+                remove={false}
+                setSelectedCategory={this.props.setSelectedCategory}
+            >
+            </Tags>
+            )
+        }
+        return tags;
+    }
+
     // allow user to continue to 'CurrentList' screen, only when > 1 product is selected.
     async componentDidUpdate() {
         if(currShoppingList.size > 0) {
@@ -321,7 +345,7 @@ class Product extends React.Component {
     }
 
     componentDidMount() {
-        this.assignReviews();
+        // this.assignReviews();
     }
 
     render() {
@@ -417,23 +441,7 @@ class Product extends React.Component {
                         {this.getItemStocks()}
                     </View> */}
                     <View style={{flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',}}>
-                        {this.item.tag.map((tag, index) => {
-                            return (
-                                <Tags 
-                                    item={this.item} 
-                                    category={this.props.category} 
-                                    products={this.props.products}
-                                    productList={this.props.productList}
-                                    tag={this.props.item.tag[index]}
-                                    tags={this.props.tags}
-                                    setTags={this.props.setTags}
-                                    key={`${this.item.product_id}`+index}
-                                    remove={false}
-                                    setSelectedCategory={this.props.setSelectedCategory}
-                                >
-                                </Tags>
-                            )
-                        })}
+                        {this.renderTags()}
                     </View>
                 </View>
             </TouchableOpacity>
