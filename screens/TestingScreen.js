@@ -74,6 +74,7 @@ const TestingScreen = ({navigation}) => {
     
     return (
         <View style ={styles.buttonContainer}>
+            <Button style ={styles.button} title = "SCAN" onPress={() => navigateToScan()}></Button>
             <Button style ={styles.button} title = "UPDATE PRICE" onPress={() => updateProductPrice()}></Button> 
             <Button style ={styles.button} title = "RESET ASYNCSTORAGE" onPress={() => resetAsyncStorage()}></Button> 
             <Button style ={styles.button} title = "GET PRODUCTS" onPress={() => findStoreProducts()}></Button> 
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '70%',
         marginTop: 15,
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-evenly',
         alignItems: 'center',
     },
