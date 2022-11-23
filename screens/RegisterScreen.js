@@ -59,7 +59,8 @@ const RegisterScreen = ( {navigation} ) => {
             numReviews: 0,
             numSubmission: 0,
             numUpdate: 0,
-            rank: 'Bronze'
+            rank: 'Bronze',
+            progressLeve: 0
         })
         console.log('New user created: ', values.email, values.password)
         } catch (error) {
