@@ -32,7 +32,7 @@ class Product extends React.Component {
                 <View style={{flex: 1}}>
                     <Text style={styles.productInfo}>{this.item.product_name}</Text>
                     <View style={{flexDirection: 'row', justifyContent: 'flex-end', flexWrap: 'wrap'}}>
-                        <Text >USD ${this.item.store_price}</Text>
+                        <Text >{this.item.store_price===0 ? "Please enter a price" : "USD $" + this.item.store_price}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
