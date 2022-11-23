@@ -34,7 +34,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
             [on_sale_ref]: on_sale
         }
         );
-        navigation.goBack();
+        navigation.navigate('Home');
     }
 
     return (
