@@ -27,7 +27,7 @@ class List extends React.Component {
       );
   }
   navigateToUpdatePrice = async(item)=>{
-    storeExists = false
+    let storeExists = false
     try {
       const curGeometry = {'latitude':this.item['geometry']['location']['lat'], 'longitude':this.item['geometry']['location']['lng'] }
       let storeID = null
