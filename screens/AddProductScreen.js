@@ -110,8 +110,8 @@ const AddProductScreen = ( {route, navigation} ) => {
                 }}
         }
             const res = await addDoc(productRef, data);
-            await updateDoc(res, {prdocut_id: res.id});
-            // navigation.goBack();
+            await updateDoc(res, {product_id: res.id});
+            navigation.goBack();
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;

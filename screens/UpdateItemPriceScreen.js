@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput, ScrollView } from 'react-native'
 import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 
@@ -32,6 +32,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
             [on_sale_ref]: on_sale
         }
         );
+        navigation.goBack();
     }
 
     return (
@@ -42,7 +43,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                     style={styles.productImg}
                 />
             </View>
-            <View style={{flex: 1}}>
+            <ScrollView style={{flex: 1}} keyboardShouldPersistTaps= "never">
                 <Text style={styles.title}>    Product: </Text>
                 <View style={styles.productTile}>
                     <Text>{product_name}</Text>
@@ -59,7 +60,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                     onChangeText={(pPrice) => setProduct_price(pPrice)}
                     maxLength={10}
                 />
-            </View>
+            </ScrollView>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={()=>{updatePrice()}}>
                     <Text>Update</Text>

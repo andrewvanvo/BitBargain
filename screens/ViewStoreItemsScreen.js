@@ -90,6 +90,7 @@ const ViewStoreItemsScreen = ({route, navigation}) => {
                     }
                 }
             });
+            // console.log(storeList);
             setData(storeList);
         })
         return () => unsubscribe;
