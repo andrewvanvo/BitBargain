@@ -345,7 +345,7 @@ class Product extends React.Component {
     }
 
     componentDidMount() {
-        // this.assignReviews();
+        this.assignReviews();
     }
 
     render() {
@@ -363,8 +363,6 @@ class Product extends React.Component {
                     <View style={styles.centerItems}>
                         <View style={[styles.whiteBtn, styles.mediumPadding]}>
                             <Text style={[styles.boldMediumBlack, styles.shadow]}>This product is currently in shopping cart.</Text>
-                            
-                            
                             <View style={[styles.centerItems, {flex: 0}]}>
                                 <Text style={[styles.regularBlack,]}>Are you sure that you want to remove this item?</Text>
                                 <View style={[styles.isRow, styles.verticalSpacer, ]}>
