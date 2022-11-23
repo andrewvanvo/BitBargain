@@ -27,15 +27,15 @@ const DashboardScreen = ({navigation}) => {
 
   useEffect(() => {
     if(!loading){
+      const key = 'uid';
+      const storeUser = async(key, value) => {
+        await SecureStore.setItemAsync(key, value)
+      }
       setUserProfile(user)
       setUserData(userObj)
+      storeUser(key, userObj['uid'])
     }
-    const key = 'uid';
-    const storeUser = async(key, value) => {
-      await SecureStore.setItemAsync(key, value)
-    }
-    storeUser(key, userObj['uid'])
-  }, [loading]);
+  }, [loading, user]);
  
   const getData = async () => {
     try {

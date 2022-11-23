@@ -4,19 +4,25 @@ import Stars from 'react-native-stars';
 import styles from '../Styles'
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { Formik } from 'formik';
-import { collection, doc, setDoc, } from "firebase/firestore";
+import { collection, doc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from '../firebase';
 
+import { Timestamp } from "firebase/firestore";
+import { UserContext } from '../contexts/UserContext';
+
 class ReviewScreen extends React.Component {
+    
     constructor(props) {
         // console.log(props.route.params.);
         super(props);
+        
         this.state = {
             showModal: false,
             rating: 4,
         }
     }
-
+    static contextType = UserContext;
+   
     setShowModal = (show) => {
         this.setState({showModal: show});
       }
@@ -43,8 +49,30 @@ class ReviewScreen extends React.Component {
             review_id: reviewRef.id,
         });
     }
+    
+    // postData = async (values) => {
+    //     const newCommentRef = doc(collection(db, 'system_activity'))
+    //     const postDescription = `${store_name} - ${product_name} @ $${Product_price}`
+    //     await setDoc(newCommentRef, {
+    //       id: newCommentRef.id,
+    //       imageURL: user['profileImage'],
+    //       postDescription: postDescription,
+    //       postCreated: Timestamp.now(),
+    //       postType: 'review',
+    //       username: user['fname'] + ' ' + user['lname']
+    //     })
+    //     await updateProfile();
+    //   }
+
+    // updateProfile = async () => {
+    //     const newUserProfileRef = doc(db, 'users', userObj['uid'])
+    //     await updateDoc(newUserProfileRef, {
+    //         numReviews: increment(1)
+    //     })
+    // }
 
     render() {
+        const {user, setUser, userObj} = this.context
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.centerItems} >
@@ -56,6 +84,8 @@ class ReviewScreen extends React.Component {
                         onSubmit={async (values, actions) => {
                             // Will create a function that submits the form values to 'reviews' in Firebase
                             this.submitToDatabase(values);
+                            this.postData(values, user);
+                            this.updateProfile();
                             actions.resetForm();
                             this.props.navigation.goBack()
                         }}

@@ -16,6 +16,7 @@ class Product extends React.Component {
             style={[styles.productTile, {backgroundColor: 'white'}]}
             onPress={()=>{this.props.navigation.navigate('UpdatePrice', {
                 "store_id": this.item.store_id, 
+                "store_name": this.item.store_name,
                 "product_id": this.item.product_id,
                 "image_url": this.item.image_url,
                 "product_name": this.item.product_name,
@@ -85,6 +86,7 @@ const ViewStoreItemsScreen = ({route, navigation}) => {
                             "product_name": object.product_name,
                             "store_price": object.stores_carrying[eachStore].price,
                             "store_id": eachStore,
+                            "store_name": object.stores_carrying[eachStore].store_name,
                         })
                         setStore_name(object.stores_carrying[eachStore].store_name);
                     }

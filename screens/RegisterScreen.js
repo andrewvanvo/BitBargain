@@ -56,6 +56,9 @@ const RegisterScreen = ( {navigation} ) => {
             fname: values.fname,
             lname: values.lname,
             email: values.email,
+            numReviews: 0,
+            numSubmission: 0,
+            numUpdate: 0,
             rank: 'Bronze'
         })
         console.log('New user created: ', values.email, values.password)

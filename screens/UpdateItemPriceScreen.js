@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput} from 'react-native'
-import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, collection, setDoc, updateDoc, getDoc, increment } from "firebase/firestore";
 import { db } from '../firebase';
 
+import { Timestamp } from "firebase/firestore";
+import { UserContext } from '../contexts/UserContext';
 
 const UpdateItemPriceScreen = ({route, navigation}) => {
 
     const [Product_price, setProduct_price] = useState("");
 
-
+    const store_name = route.params.store_name
+    const store_address = route.params.store_address
     const store_id = route.params.store_id;
     const product_id = route.params.product_id;
     const image_url = route.params.image_url;
     const product_name = route.params.product_name;
     const price = route.params.price;
+    const {user, setUser, userObj} = useContext(UserContext)
 
     const updatePrice = async () => {
         // const productRef = updateDoc(doc(db, 'products', product_id), {
@@ -32,6 +36,28 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
             [on_sale_ref]: on_sale
         }
         );
+        await postData();
+    }
+
+    const postData = async () => {
+        const newCommentRef = doc(collection(db, 'system_activity'))
+        const postDescription = `${store_name} - ${product_name} @ $${Product_price}`
+        await setDoc(newCommentRef, {
+          id: newCommentRef.id,
+          imageURL: user['profileImage'],
+          postDescription: postDescription,
+          postCreated: Timestamp.now(),
+          postType: 'update',
+          username: user['fname'] + ' ' + user['lname']
+        })
+        await updateProfile();
+      }
+
+    const updateProfile = async () => {
+        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+        await updateDoc(newUserProfileRef, {
+            numUpdate: increment(1)
+        })
     }
 
     return (

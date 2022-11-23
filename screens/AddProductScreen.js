@@ -7,11 +7,12 @@ import { collection } from "firebase/firestore";
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { app, auth, db } from '../firebase';
-import {  doc, addDoc, getDoc, updateDoc } from 'firebase/firestore';
+import {  doc, addDoc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
 
 import { UserContext } from '../contexts/UserContext';
+import { Timestamp } from "firebase/firestore";
 
 const AddProductScreen = ( {route, navigation} ) => {
 
@@ -41,8 +42,7 @@ const AddProductScreen = ( {route, navigation} ) => {
               }
         }
         fetchData().catch(console.error);
-        // console.log(user.fname)
-        // console.log(userObj.uid)
+
     }, [])
 
     const pickImage = async () => {
@@ -117,13 +117,35 @@ const AddProductScreen = ( {route, navigation} ) => {
         }
             const res = await addDoc(productRef, data);
             await updateDoc(res, {prdocut_id: res.id});
+            await postData();
             // navigation.goBack();
+
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;
         }
     };
     
+    const postData = async () => {
+        const newCommentRef = doc(collection(db, 'system_activity'))
+        const postDescription = `${Store} - [${Brand}] ${Product_name} @ $${Product_price}`
+        await setDoc(newCommentRef, {
+          id: newCommentRef.id,
+          imageURL: user['profileImage'],
+          postDescription: postDescription,
+          postCreated: Timestamp.now(),
+          postType: 'submission',
+          username: user['fname'] + ' ' + user['lname']
+        })
+        await updateProfile();
+      }
+
+    const updateProfile = async () => {
+        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+        await updateDoc(newUserProfileRef, {
+            numSubmission: increment(1)
+        })
+    }
 
     return (
         <View style={styles.mainContainer}>

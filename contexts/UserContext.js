@@ -21,7 +21,6 @@ const UserContextProvider = (props) => {
             const userSnapshot = await getDoc(userCollection);
             setUser(userSnapshot.data());
             setUserObj(user)
-            console.log("useEffect success");
             setLoading(false)
           };
           getUser();
