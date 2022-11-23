@@ -9,7 +9,7 @@ import { db } from '../firebase';
 
 class ReviewScreen extends React.Component {
     constructor(props) {
-        // console.log(props.route.params.);
+        console.log(props.route.params);
         super(props);
         this.state = {
             showModal: false,
@@ -36,7 +36,7 @@ class ReviewScreen extends React.Component {
             date: new Date(),
             dislikes: 0,
             likes: 0,
-            product_id: this.props.route.params.productID,
+            product_id: this.props.route.params.item.product_id,
             rating: this.state.rating,
             title: values.title,
             user_id: this.props.route.params.userID,
