@@ -68,8 +68,6 @@ const DashboardScreen = ({navigation}) => {
   
   return (
     <View style={styles.mainContainer}>
-      {/* <Text> {user['lname']} </Text> */}
-      {/* <Text> {user.fname}</Text> */}
       <DashboardHeader user={userProfile} userObj={userData} setUser={setUser} />
       <DashboardFeed user={userProfile} dataSource={dataSource} refresh={refresh} onRefresh={getData} />    
     </View>
