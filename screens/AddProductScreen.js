@@ -27,7 +27,7 @@ const AddProductScreen = ( {route, navigation} ) => {
     const store_id = route.params.store_id;
     // const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
-    //Barcode Data
+    //Barcode Data (Andrew)
     let barcodeData = null
     if (route.params.barcodeData){
         barcodeData = route.params.barcodeData
