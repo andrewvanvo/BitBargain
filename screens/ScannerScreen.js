@@ -4,11 +4,12 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function ScannerScreen() {
+export default function ScannerScreen({route}) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const navigation = useNavigation()
 
+  const store_id = route.params.store_id;
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -21,9 +22,7 @@ export default function ScannerScreen() {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     //CHANGE TO REDIRECT TO NON-TESTING PAGE
-    navigation.navigate('Testing', {barcodeData: data});
-    
-
+    navigation.navigate('AddProduct', {barcodeData: data, store_id: store_id});
   };
 
   if (hasPermission === null) {
