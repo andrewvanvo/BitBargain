@@ -26,11 +26,14 @@ export default function ScannerScreen({route}) {
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return (
+          <Text>Requesting for camera permission</Text>
+    )
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-    //modify for error handling if access permission not granted. Ask again?
+    return( 
+          <Text>Camera Permission Denied</Text>
+    )
   }
 
   return (
@@ -44,7 +47,7 @@ export default function ScannerScreen({route}) {
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           />
       </View>
-      {scanned && <Button title={'Tap to Scan Again'} color='white' onPress={() => setScanned(false)} />}
+      {scanned && <Button title={'Tap to Scan Again'} color='black' onPress={() => setScanned(false)} />}
     </View>
   );
 }
@@ -54,7 +57,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       padding: 50,
-      justifyContent: 'top',
+      //justifyContent: 'top',
       backgroundColor: 'steelblue'
     },
 
