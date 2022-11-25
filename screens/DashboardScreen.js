@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Text, Button, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Text, Button, StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { auth, db, } from "../firebase/";
+
+
 
 import {
   getAdditionalUserInfo,
@@ -21,6 +23,20 @@ const DashboardScreen = ({navigation}) => {
   const [lastDocument, setLastDocument] = useState(null);
   const [refresh, setRefresh] = useState(false);
   
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  useEffect( () => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+        if(!user) {
+          navigation.navigate('Login');
+        } else {
+          setIsLoading(false);
+        }
+      })
+    // when leaving the Login screen to Dashboard, the listener will stop
+      return unsubscribe;
+    }, [])
 
 
   const getData = async () => {
@@ -79,7 +95,11 @@ const DashboardScreen = ({navigation}) => {
     getData();
   }, [])
   
-  
+  if(isLoading) {
+    return <View style={{}}><Image source={require("../assets/BitBargain-logo.png")} resizeMode='center'></Image></View>
+    // return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><Text>Loading...</Text></View>
+  }
+
   return (
     <View style={styles.mainContainer}>
       <DashboardHeader user={user} userObj={userObj} setUser={setUser}/>
