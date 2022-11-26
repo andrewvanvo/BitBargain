@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput, ScrollView } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput} from 'react-native'
 import { doc, collection, setDoc, updateDoc, getDoc, increment } from "firebase/firestore";
 import { db } from '../firebase';
 
@@ -38,8 +38,6 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
         }
         );
         await postData();
-        navigation.navigate('Home');
-
     }
 
     const postData = async () => {
@@ -61,6 +59,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
         await updateDoc(newUserProfileRef, {
             numUpdate: increment(1)
         })
+        navigation.goBack();
     }
 
     return (
