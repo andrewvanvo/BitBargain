@@ -131,8 +131,8 @@ const AddProductScreen = ( {route, navigation} ) => {
             const res = await addDoc(productRef, data);
             await updateDoc(res, {product_id: res.id});
             await postData();
-            // navigation.goBack();
-            navigation.goBack();
+            await updateProfile();
+            navigation.navigate('Home');
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;
@@ -150,7 +150,6 @@ const AddProductScreen = ( {route, navigation} ) => {
           postType: 'submission',
           username: user['fname'] + ' ' + user['lname']
         })
-        await updateProfile();
       }
 
     const updateProfile = async () => {
