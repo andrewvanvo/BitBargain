@@ -4,12 +4,11 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function ScannerScreen({route}) {
+export default function ScannerScreen() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const navigation = useNavigation()
 
-  const store_id = route.params.store_id;
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -22,18 +21,17 @@ export default function ScannerScreen({route}) {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     //CHANGE TO REDIRECT TO NON-TESTING PAGE
-    navigation.navigate('AddProduct', {barcodeData: data, store_id: store_id});
+    navigation.navigate('Testing', {barcodeData: data});
+    
+
   };
 
   if (hasPermission === null) {
-    return (
-          <Text>Requesting for camera permission</Text>
-    )
+    return <Text>Requesting for camera permission</Text>;
   }
   if (hasPermission === false) {
-    return( 
-          <Text>Camera Permission Denied</Text>
-    )
+    return <Text>No access to camera</Text>;
+    //modify for error handling if access permission not granted. Ask again?
   }
 
   return (
@@ -47,7 +45,7 @@ export default function ScannerScreen({route}) {
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           />
       </View>
-      {scanned && <Button title={'Tap to Scan Again'} color='black' onPress={() => setScanned(false)} />}
+      {scanned && <Button title={'Tap to Scan Again'} color='white' onPress={() => setScanned(false)} />}
     </View>
   );
 }
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       padding: 50,
-      //justifyContent: 'top',
+      justifyContent: 'top',
       backgroundColor: 'steelblue'
     },
 

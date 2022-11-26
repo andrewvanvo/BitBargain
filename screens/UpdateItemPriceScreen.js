@@ -19,7 +19,6 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
     const price = route.params.price;
     const {user, setUser, userObj} = useContext(UserContext)
 
-
     const updatePrice = async () => {
         // const productRef = updateDoc(doc(db, 'products', product_id), {
         // });
@@ -59,23 +58,17 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
         await updateDoc(newUserProfileRef, {
             numUpdate: increment(1)
         })
-        navigation.goBack();
     }
 
     return (
         <View style={styles.mainContainer}>
-            <View>
-                <Text style={{fontSize:20, marginTop: 10}}>
-                    {store_name} at {store_address}
-                </Text>
-            </View>
             <View style={styles.imageContainer}>
                 <Image
                     source={{uri: image_url}}
                     style={styles.productImg}
                 />
             </View>
-            <ScrollView style={{flex: 1}} keyboardShouldPersistTaps= "never">
+            <View style={{flex: 1}}>
                 <Text style={styles.title}>    Product: </Text>
                 <View style={styles.productTile}>
                     <Text>{product_name}</Text>
@@ -92,7 +85,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                     onChangeText={(pPrice) => setProduct_price(pPrice)}
                     maxLength={10}
                 />
-            </ScrollView>
+            </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={()=>{updatePrice()}}>
                     <Text>Update</Text>
