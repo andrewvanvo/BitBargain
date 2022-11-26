@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, TextInput, ScrollView} from 'react-native'
 import { doc, collection, setDoc, updateDoc, getDoc, increment } from "firebase/firestore";
+
 import { db } from '../firebase';
 
 import { Timestamp } from "firebase/firestore";
@@ -17,6 +18,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
     const image_url = route.params.image_url;
     const product_name = route.params.product_name;
     const price = route.params.price;
+
     const {user, setUser, userObj} = useContext(UserContext)
 
     const updatePrice = async () => {
@@ -36,7 +38,9 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
             [on_sale_ref]: on_sale
         }
         );
+
         await postData();
+        navigation.goBack();
     }
 
     const postData = async () => {
@@ -62,13 +66,18 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
 
     return (
         <View style={styles.mainContainer}>
+            <View>
+                <Text style={{fontSize:20, marginTop: 10}}>
+                    {store_name} at {store_address}
+                </Text>
+            </View>
             <View style={styles.imageContainer}>
                 <Image
                     source={{uri: image_url}}
                     style={styles.productImg}
                 />
             </View>
-            <View style={{flex: 1}}>
+            <ScrollView style={{flex: 1}} keyboardShouldPersistTaps= "never">
                 <Text style={styles.title}>    Product: </Text>
                 <View style={styles.productTile}>
                     <Text>{product_name}</Text>
@@ -85,7 +94,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
                     onChangeText={(pPrice) => setProduct_price(pPrice)}
                     maxLength={10}
                 />
-            </View>
+            </ScrollView>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={()=>{updatePrice()}}>
                     <Text>Update</Text>

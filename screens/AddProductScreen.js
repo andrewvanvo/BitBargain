@@ -33,6 +33,13 @@ const AddProductScreen = ( {route, navigation} ) => {
     // const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
 
+    //Barcode Data (Andrew)
+    let barcodeData = null
+    if (route.params.barcodeData){
+        barcodeData = route.params.barcodeData
+        //console.log(`barcode: ${barcodeData}`)
+    } 
+
     useEffect(()=>{
         const fetchData = async () => {
             const storeRef = doc(db, 'stores', store_id);
@@ -117,13 +124,15 @@ const AddProductScreen = ( {route, navigation} ) => {
                     prev_price: Product_price,
                     price: Product_price,
                     store_name: storeName,
-                }}
+                }},
+                //Barcode entry
+                SKU: barcodeData,
         }
             const res = await addDoc(productRef, data);
             await updateDoc(res, {product_id: res.id});
             await postData();
             // navigation.goBack();
-
+            navigation.goBack();
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;

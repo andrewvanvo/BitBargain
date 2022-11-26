@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native'
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, getDoc, onSnapshot, doc } from "firebase/firestore";
 import { db } from '../firebase';
 import { FloatingAction } from "react-native-floating-action";
 
@@ -20,7 +20,9 @@ class Product extends React.Component {
                 "product_id": this.item.product_id,
                 "image_url": this.item.image_url,
                 "product_name": this.item.product_name,
-                "price": this.item.store_price
+                "price": this.item.store_price,
+                "store_address": this.item.store_address,
+                "store_name": this.item.store_name,
             })}}
             >
                 <View style={styles.productImg}>
@@ -33,7 +35,7 @@ class Product extends React.Component {
                 <View style={{flex: 1}}>
                     <Text style={styles.productInfo}>{this.item.product_name}</Text>
                     <View style={{flexDirection: 'row', justifyContent: 'flex-end', flexWrap: 'wrap'}}>
-                        <Text >USD ${this.item.store_price}</Text>
+                        <Text >{this.item.store_price===0 ? "Please enter a price" : "USD $" + this.item.store_price}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -72,29 +74,40 @@ const ViewStoreItemsScreen = ({route, navigation}) => {
         );
     };
 
+
     useEffect(() => {
-        const productRef = collection(db, 'products');
-        const unsubscribe = onSnapshot(productRef, (productSnap) => {
-            var storeList = [];
-            productSnap.forEach((doc) => {
-                var object = doc.data();
-                for (var eachStore in object.stores_carrying) {
-                    if (eachStore === store_id) {
-                        storeList.push({
-                            "image_url": object.image_url,
-                            "product_id": object.product_id,
-                            "product_name": object.product_name,
-                            "store_price": object.stores_carrying[eachStore].price,
-                            "store_id": eachStore,
-                            "store_name": object.stores_carrying[eachStore].store_name,
-                        })
-                        setStore_name(object.stores_carrying[eachStore].store_name);
+        const getStoreAdress = async () => {
+            const docRef = doc(db, 'stores', store_id);
+            const result = await getDoc(docRef);
+            const address = await result.data().store_address;
+            const productRef = collection(db, 'products');
+            const unsubscribe = onSnapshot(productRef, (productSnap) => {
+                var storeList = [];
+                productSnap.forEach((docu) => {
+                    var object = docu.data();
+                    for (var eachStore in object.stores_carrying) {
+                        if (eachStore === store_id) {
+                            storeList.push({
+                                "image_url": object.image_url,
+                                "product_id": object.product_id,
+                                "product_name": object.product_name,
+                                "store_price": object.stores_carrying[eachStore].price,
+                                "store_id": eachStore,
+                                "store_name": object.stores_carrying[eachStore].store_name,
+                                "store_address": address
+                            })
+                            setStore_name(object.stores_carrying[eachStore].store_name);
+                        }
                     }
-                }
-            });
-            setData(storeList);
-        })
-        return () => unsubscribe;
+                });
+                // console.log(storeList);
+                setData(storeList);
+                
+            })
+            
+            return () => unsubscribe;
+        }
+        getStoreAdress();
     }, []);
 
     return (
