@@ -6,7 +6,6 @@ import { auth } from '../firebase';
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 
 
-
 const ForgetPass = ({ navigation}) => {
     const loginValues = {
         email: '',

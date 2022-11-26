@@ -27,7 +27,7 @@ class List extends React.Component {
       );
   }
   navigateToUpdatePrice = async(item)=>{
-    storeExists = false
+    let storeExists = false
     try {
       const curGeometry = {'latitude':this.item['geometry']['location']['lat'], 'longitude':this.item['geometry']['location']['lng'] }
       let storeID = null
@@ -100,6 +100,7 @@ const UpdateSelectStoreScreen = ({navigation}) => {
           return;
         }
       let location = await Location.getCurrentPositionAsync({});
+      // let location = {coords: {"latitude": 37.3861, longitude: -122.0620}};
       if(runHook){
         setLocation(location);
       }
