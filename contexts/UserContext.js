@@ -30,7 +30,6 @@ const UserContextProvider = (props) => {
           })
 
         } 
-        console.log('ran')
       });
       return unsubscribe
     },[loading])

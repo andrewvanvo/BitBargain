@@ -25,7 +25,8 @@ export const DashboardHeader = ({ user, UID, setUser }) => {
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false)
-  const [rank, setRank] = useState('')
+  const [rank, setRank] = useState('Bronze')
+  const [fill, setFill] = useState(0)
   
   const DATA = [ 
   { 
@@ -48,11 +49,41 @@ export const DashboardHeader = ({ user, UID, setUser }) => {
   }
 ]
 
-  const checkRank = (progressLevel) => {
-    if (progressLevel > 0 && progressLevel < 400){
-      setRank('Silver')
-      console.log('rank')
+useEffect(()=>{
+  checkRank(user['progressLevel'])
+}, [user])
 
+  const checkRank = (progressLevel) => {
+    if (progressLevel >= 0 && progressLevel <= 200){
+      setRank('Bronze')
+      setFill(progressLevel/200 * 100)
+      
+    }
+    else if (progressLevel >= 201 && progressLevel <= 400){
+      setRank('Silver')
+      setFill((progressLevel -200)/200 * 100)
+
+    }
+    else if (progressLevel >= 401 && progressLevel <= 800){
+      setRank('Gold')
+      setFill((progressLevel - 400)/400 * 100)
+
+    }
+    else if (progressLevel >= 801 && progressLevel <= 1200){
+      setRank('Platinum')
+      setFill((progressLevel - 800)/400 * 100)
+    }
+    else if (progressLevel >= 1201 && progressLevel <= 1600){
+      setRank('Diamond')
+      setFill((progressLevel - 1200)/400 * 100)
+    }
+    else if (progressLevel >= 1601 && progressLevel <= 2000){
+      setRank('Master')
+      setFill((progressLevel - 1600)/400 * 100)
+    }
+    else if (progressLevel >= 2001 && progressLevel <= 2400){
+      setRank('Grand Master')
+      setFill((progressLevel - 2000)/400 * 100)
     }
   }
 
@@ -149,18 +180,20 @@ export const DashboardHeader = ({ user, UID, setUser }) => {
           <AnimatedCircularProgress
             size={150} 
             width={15}
-            fill={5}
+            fill={fill}
             tintColor="orange"
-            onAnimationComplete={() => checkRank(user['progressLevel'])}
+            onAnimationComplete={() =>{
+
+            }}
             backgroundColor="#3d5875">
               {
                 (fill) => (
                   <View style={{alignItems:'center'}}>
-                    <Text style={{color: 'white'}}>
+                    <Text style={{fontSize: 11, color: 'white'}}>
                     Rank: {rank} 
                     </Text>
-                    <Text style={{color: 'white'}}>
-                      {user['progressLevel']}
+                    <Text style={{fontSize: 11, color: 'white'}}>
+                      EXP: {user['progressLevel']}
                     </Text>
                   </View>
                   
