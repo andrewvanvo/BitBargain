@@ -42,7 +42,7 @@ import {
     
     return (
     <View style={styles.item}>
-        <View style={{width: 50, height: 50, overflow: 'hidden', borderWidth: 2, borderColor: 'black', borderRadius: 25}}>
+        <View style={{width: 50, height: 50, justifyContent:'center', alignItems: 'center', overflow: 'hidden', borderWidth: 2, borderColor: 'black', borderRadius: 25}}>
           <Image
           source={{uri: props.item.imageURL}}
           resizeMode="cover"
