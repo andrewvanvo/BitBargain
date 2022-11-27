@@ -28,7 +28,7 @@ const AddProductScreen = ( {route, navigation} ) => {
     const [isSelected, setSelection] = useState(false);
 
 
-    const {user, setUser, userObj} = useContext(UserContext)
+    const {userProfile, setUserProfile, loading, setLoading, UID} = useContext(UserContext)
     const store_id = route.params.store_id;
     // const store_id = "AC6Y6Rb7dSrscb2FBhPO";
 
@@ -144,20 +144,23 @@ const AddProductScreen = ( {route, navigation} ) => {
         const postDescription = `${Store} - [${Brand}] ${Product_name} @ $${Product_price}`
         await setDoc(newCommentRef, {
           id: newCommentRef.id,
-          imageURL: user['profileImage'],
+          imageURL: userProfile['profileImage'],
           postDescription: postDescription,
           postCreated: Timestamp.now(),
           postType: 'submission',
-          username: user['fname'] + ' ' + user['lname']
+          username: userProfile['fname'] + ' ' + userProfile['lname']
         })
         await updateProfile();
       }
 
     const updateProfile = async () => {
-        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+        const newUserProfileRef = doc(db, 'users', UID)
         await updateDoc(newUserProfileRef, {
-            numSubmission: increment(1)
+            numSubmission: increment(1),
+            progressLevel: increment(20),
         })
+
+        setLoading(!loading)
     }
 
     return (

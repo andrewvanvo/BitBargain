@@ -16,26 +16,17 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { UserContext } from '../contexts/UserContext';
 
 const DashboardScreen = ({navigation}) => {
-  // const [user, setUser] = useState({ fname: "Unknown", rank: "Unknown" });
-  // const [userObj, setUserObj] = useState({});
   const [dataSource, setDataSource] = useState([]);
-  const [lastDocument, setLastDocument] = useState(null);
   const [refresh, setRefresh] = useState(false);
-  const {user, loading, setUser, userObj} = useContext(UserContext)
-  const [userProfile, setUserProfile] = useState('test');
-  const [userData, setUserData] = useState('test');
+  const {userProfile, setUserProfile, loading, setLoading, UID} = useContext(UserContext)
 
   useEffect(() => {
-    if(!loading){
       const key = 'uid';
       const storeUser = async(key, value) => {
         await SecureStore.setItemAsync(key, value)
       }
-      setUserProfile(user)
-      setUserData(userObj)
-      storeUser(key, userObj['uid'])
-    }
-  }, [loading, user]);
+      storeUser(key, JSON.stringify(UID))
+    }, []);
  
   const getData = async () => {
     try {
@@ -68,7 +59,7 @@ const DashboardScreen = ({navigation}) => {
   
   return (
     <View style={styles.mainContainer}>
-      <DashboardHeader user={userProfile} userObj={userData} setUser={setUser} />
+      <DashboardHeader user={userProfile} UID={UID} setUser={setUserProfile} />
       <DashboardFeed user={userProfile} dataSource={dataSource} refresh={refresh} onRefresh={getData} />    
     </View>
   );

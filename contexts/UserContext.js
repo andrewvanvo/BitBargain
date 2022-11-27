@@ -9,30 +9,34 @@ export const UserContext = createContext();
 
 const UserContextProvider = (props) => {
  const [loading, setLoading] = useState(true);
- const [user, setUser] = useState();
- const [userObj, setUserObj] = useState();
+ const [userProfile, setUserProfile] = useState({"email": "", "fname": "", "": "", "numReviews": 0, "numSubmission": 0, "numUpdate": 0, "profileImage": "https://i.stack.imgur.com/l60Hf.png", "progressLevel": 0, "rank": ""});
+ const [UID, setUID] = useState(null);
 
  useEffect( () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          const uid = user.uid;
+          setUID(user.uid)
           const getUser = async () => {
-            const userCollection = doc(db, "users", uid);
+            const userCollection = doc(db, "users", user.uid);
             const userSnapshot = await getDoc(userCollection);
-            setUser(userSnapshot.data());
-            setUserObj(user)
-            setLoading(false)
+            return userSnapshot
           };
-          getUser();
-        } else {
-          setUser({});
-        }
+          getUser().then(response => {
+              const userData = response.data()
+              setUserProfile(userData)
+          })
+          .catch(error => {
+            console.error(`Error! ${error}`)
+          })
+
+        } 
+        console.log('ran')
       });
       return unsubscribe
     },[loading])
  
  return(
-    <UserContext.Provider value={{user, loading, setUser, userObj}}>
+    <UserContext.Provider value={{userProfile, setUserProfile, loading, setLoading, UID }}>
         {props.children}
     </UserContext.Provider>
  )   

@@ -21,11 +21,12 @@ import { HorizontalCarousel } from "./DashboardCarousel";
 
 
 
-export const DashboardHeader = ({ user, userObj, setUser }) => {
+export const DashboardHeader = ({ user, UID, setUser }) => {
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false)
-
+  const [rank, setRank] = useState('')
+  
   const DATA = [ 
   { 
     id: '1',
@@ -41,11 +42,20 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   },
   {
     id: '3',
-    number: user['numReviews'],
+    number: user['numReview'],
     postType: 'Reviews',
     imageURL: 'https://www.pcworld.com/wp-content/uploads/2022/02/pc-cases-cooling-versus.jpg?quality=50&strip=all'
   }
 ]
+
+  const checkRank = (progressLevel) => {
+    if (progressLevel > 0 && progressLevel < 400){
+      setRank('Silver')
+      console.log('rank')
+
+    }
+  }
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -76,7 +86,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   };
 
   const uploadImageAsync = async (uri) => {
-    const filename = 'profile/' + userObj.uid;
+    const filename = 'profile/' + UID;
     const storage = getStorage();
     const storageRef = ref(storage, filename)
     const response = await fetch(uri);
@@ -89,7 +99,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   }
 
   const submitImage = async (url) => {
-    await updateDoc(doc(db, 'users', userObj.uid),{
+    await updateDoc(doc(db, 'users', UID),{
       profileImage: url
     })
     setUser({...user, profileImage: url})
@@ -139,15 +149,21 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
           <AnimatedCircularProgress
             size={150} 
             width={15}
-            fill={70}
+            fill={5}
             tintColor="orange"
-            onAnimationComplete={() => console.log('onAnimationComplete')}
+            onAnimationComplete={() => checkRank(user['progressLevel'])}
             backgroundColor="#3d5875">
               {
                 (fill) => (
-                  <Text style={{color: 'white'}}>
-                    Rank: {user['rank']}
-                  </Text>
+                  <View style={{alignItems:'center'}}>
+                    <Text style={{color: 'white'}}>
+                    Rank: {rank} 
+                    </Text>
+                    <Text style={{color: 'white'}}>
+                      {user['progressLevel']}
+                    </Text>
+                  </View>
+                  
                 )
               }
           </AnimatedCircularProgress>

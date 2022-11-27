@@ -19,7 +19,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
     const product_name = route.params.product_name;
     const price = route.params.price;
 
-    const {user, setUser, userObj} = useContext(UserContext)
+    const {userProfile, setUserProfile, loading, setLoading, UID} = useContext(UserContext)
 
     const updatePrice = async () => {
         // const productRef = updateDoc(doc(db, 'products', product_id), {
@@ -45,23 +45,26 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
 
     const postData = async () => {
         const newCommentRef = doc(collection(db, 'system_activity'))
-        const postDescription = `${store_name} - ${product_name} @ $${Product_price}`
+        const postDescription = `${store_name} at ${store_address} - ${product_name} @ $${Product_price}`
         await setDoc(newCommentRef, {
           id: newCommentRef.id,
-          imageURL: user['profileImage'],
+          imageURL: userProfile['profileImage'],
           postDescription: postDescription,
           postCreated: Timestamp.now(),
           postType: 'update',
-          username: user['fname'] + ' ' + user['lname']
+          username: userProfile['fname'] + ' ' + userProfile['lname']
         })
         await updateProfile();
       }
 
     const updateProfile = async () => {
-        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+        const newUserProfileRef = doc(db, 'users', UID)
         await updateDoc(newUserProfileRef, {
-            numUpdate: increment(1)
+            numUpdate: increment(1),
+            progressLevel: increment(20),
+
         })
+        setLoading(!loading)
     }
 
     return (

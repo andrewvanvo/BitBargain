@@ -54,7 +54,7 @@ class ReviewScreen extends React.Component {
         const newCommentRef = doc(collection(db, 'system_activity'))
         const previewPost = values.review
         
-        const postDescription = `Title: ${values.title}\nStars: ${this.state.rating}\n${previewPost}`
+        const postDescription = `Product: ${this.props.route.params.item.product_name}\nTitle: ${values.title}\nStars: ${this.state.rating}\n${previewPost}`
         await setDoc(newCommentRef, {
           id: newCommentRef.id,
           imageURL: user['profileImage'],
@@ -65,15 +65,17 @@ class ReviewScreen extends React.Component {
         })
       }
 
-    updateProfile = async (userObj) => {
-        const newUserProfileRef = doc(db, 'users', userObj['uid'])
+    updateProfile = async (UID, loading, setLoading) => {
+        const newUserProfileRef = doc(db, 'users', UID)
         await updateDoc(newUserProfileRef, {
-            numReviews: increment(1)
+            numReview: increment(1),
+            progressLevel: increment(20),
         })
+        setLoading(!loading)
     }
 
     render() {
-        const {user, setUser, userObj} = this.context
+        const {userProfile, setUserProfile, loading, setLoading, UID} = this.context
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.centerItems} >
@@ -85,10 +87,11 @@ class ReviewScreen extends React.Component {
                         onSubmit={async (values, actions) => {
                             // Will create a function that submits the form values to 'reviews' in Firebase
                             this.submitToDatabase(values);
-                            this.postData(values, user);
-                            this.updateProfile(userObj);
+                            this.postData(values, userProfile);
+                            this.updateProfile(UID, loading, setLoading);
                             actions.resetForm();
-                            this.props.navigation.goBack()
+                            // this.props.navigation.goBack()
+                            this.props.navigation.navigate('Home')
                         }}
                     >
                         {(formikProps) => (
