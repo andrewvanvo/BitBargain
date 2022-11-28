@@ -65,7 +65,7 @@ class List extends React.Component {
           })
         })      
       }
-      //console.log(storeID)
+
       this.navigation.navigate('ViewStoreItems', {store_id: storeID})
 
     } catch (error){

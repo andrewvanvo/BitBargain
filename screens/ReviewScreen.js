@@ -4,19 +4,25 @@ import Stars from 'react-native-stars';
 import styles from '../Styles'
 import IconA5 from 'react-native-vector-icons/Fontisto';
 import { Formik } from 'formik';
-import { collection, doc, setDoc, } from "firebase/firestore";
+import { collection, doc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from '../firebase';
 
+import { Timestamp } from "firebase/firestore";
+import { UserContext } from '../contexts/UserContext';
+
 class ReviewScreen extends React.Component {
+    
     constructor(props) {
-        // console.log(props.route.params.);
+        console.log(props.route.params);
         super(props);
+        
         this.state = {
             showModal: false,
             rating: 4,
         }
     }
-
+    static contextType = UserContext;
+   
     setShowModal = (show) => {
         this.setState({showModal: show});
       }
@@ -36,15 +42,40 @@ class ReviewScreen extends React.Component {
             date: new Date(),
             dislikes: 0,
             likes: 0,
-            product_id: this.props.route.params.productID,
+            product_id: this.props.route.params.item.product_id,
             rating: this.state.rating,
             title: values.title,
             user_id: this.props.route.params.userID,
             review_id: reviewRef.id,
         });
     }
+    
+    postData = async (values, user) => {
+        const newCommentRef = doc(collection(db, 'system_activity'))
+        const previewPost = values.review
+        
+        const postDescription = `Product: ${this.props.route.params.item.product_name}\nTitle: ${values.title}\nStars: ${this.state.rating}\n${previewPost}`
+        await setDoc(newCommentRef, {
+          id: newCommentRef.id,
+          imageURL: user['profileImage'],
+          postDescription: postDescription,
+          postCreated: Timestamp.now(),
+          postType: 'review',
+          username: user['fname'] + ' ' + user['lname']
+        })
+      }
+
+    updateProfile = async (UID, loading, setLoading) => {
+        const newUserProfileRef = doc(db, 'users', UID)
+        await updateDoc(newUserProfileRef, {
+            numReview: increment(1),
+            progressLevel: increment(20),
+        })
+        setLoading(!loading)
+    }
 
     render() {
+        const {userProfile, setUserProfile, loading, setLoading, UID} = this.context
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.centerItems} >
@@ -56,8 +87,11 @@ class ReviewScreen extends React.Component {
                         onSubmit={async (values, actions) => {
                             // Will create a function that submits the form values to 'reviews' in Firebase
                             this.submitToDatabase(values);
+                            this.postData(values, userProfile);
+                            this.updateProfile(UID, loading, setLoading);
                             actions.resetForm();
-                            this.props.navigation.goBack()
+                            // this.props.navigation.goBack()
+                            this.props.navigation.navigate('Home')
                         }}
                     >
                         {(formikProps) => (

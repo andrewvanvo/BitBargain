@@ -10,10 +10,10 @@ export const HorizontalCarousel = ({w, h, data}) => {
     }, []);
 
     const renderItem = ({ item }) => (
-        <ImageBackground imageStyle={{ width: w, height: h, borderRadius: 20, opacity: 0.5}}source={{uri: 'https://www.pcworld.com/wp-content/uploads/2022/11/best-graphics-cards-banner-100815257-orig-1.jpg?quality=50&strip=all&w=1024'}}>
+        <ImageBackground imageStyle={{ width: w, height: h, borderRadius: 20, opacity: 0.5}}source={{uri: item.imageURL}}>
             <View style={{width: w, height: h, justifyContent: 'center', alignItems: 'center', }}>
                 <Text style={{fontSize: 70, color: 'white'}}>{item.number}</Text>
-                <Text style={{fontSize: 30, color: 'white'}}>Submissions</Text>
+                <Text style={{fontSize: 30, color: 'white'}}>{item.postType}</Text>
             </View>
         </ImageBackground>    
 
