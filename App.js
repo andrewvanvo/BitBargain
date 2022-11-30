@@ -27,6 +27,7 @@ import ScannerScreen from './screens/ScannerScreen';
 import TestingScreen from './screens/TestingScreen';
 import UpdateSelectStoreScreen from './screens/UpdateSelectStoreScreen';
 
+import UserContextProvider from './contexts/UserContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -81,28 +82,30 @@ function HomeTabs() {
 }
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Tabs" component={HomeTabs} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="ForgetPass" component={ForgetScreen} />
-        <Stack.Screen name="CreateList" component={CreateListScreen} />
-        <Stack.Screen name="CurrentList" component={CurrentListScreen} />
-        <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
-        <Stack.Screen name="CommentScreen" component={CommentScreen} />
-        <Stack.Screen name="SavedLists" component={SavedListsScreen} />
-        <Stack.Screen name="NamedList" component={NamedListScreen} />
-        <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
-        <Stack.Screen name="Scanning" component={ScannerScreen} />
-        <Stack.Screen name="Testing" component={TestingScreen} />
-        <Stack.Screen name="ViewStoreItems" component={ViewStoreItemsScreen} />
-        <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
-        {/* <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/> */}
-        <Stack.Screen name ="AddProduct" component={AddProductScreen}/>
-        <Stack.Screen name="Review" component={ReviewScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <UserContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Tabs" component={HomeTabs} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ForgetPass" component={ForgetScreen} />
+          <Stack.Screen name="CreateList" component={CreateListScreen} />
+          <Stack.Screen name="CurrentList" component={CurrentListScreen} />
+          <Stack.Screen name="SelectStore" component={SelectStoreScreen} />
+          <Stack.Screen name="CommentScreen" component={CommentScreen} />
+          <Stack.Screen name="SavedLists" component={SavedListsScreen} />
+          <Stack.Screen name="NamedList" component={NamedListScreen} />
+          <Stack.Screen name="UpdatePrice" component={UpdateItemPriceScreen} />
+          <Stack.Screen name="Scanning" component={ScannerScreen} />
+          <Stack.Screen name="Testing" component={TestingScreen} />
+          <Stack.Screen name="ViewStoreItems" component={ViewStoreItemsScreen} />
+          <Stack.Screen name ="UpdateSelectStore" component={UpdateSelectStoreScreen}/>
+          {/* <Stack.Screen name ="UpdatePriceOnly" component={UpdatePriceOnlyScreen}/> */}
+          <Stack.Screen name ="AddProduct" component={AddProductScreen}/>
+          <Stack.Screen name="Review" component={ReviewScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContextProvider>
   );
 }
 

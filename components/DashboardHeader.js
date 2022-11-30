@@ -19,25 +19,73 @@ import { collection, getDoc, updateDoc, doc, orderBy, where, limit, query, start
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { HorizontalCarousel } from "./DashboardCarousel";
 
-const DATA = [ //TODO 
-  { 
-    id: '1',
-    number: 2,
-  },
-  {
-    id: '2',
-    number: 4
-  },
-  {
-    id: '3',
-    number: 20
-  }
-]
 
-export const DashboardHeader = ({ user, userObj, setUser }) => {
+
+export const DashboardHeader = ({ user, UID, setUser }) => {
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false)
+  const [rank, setRank] = useState('Bronze')
+  const [fill, setFill] = useState(0)
+  
+  const DATA = [ 
+  { 
+    id: '1',
+    number: user['numSubmission'],
+    postType: 'Submissions',
+    imageURL: 'https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/graphics-cards/geforce-ada-4090-web-og-1200x630@2x.jpg'
+  },
+  {
+    id: '2',
+    number: user['numUpdate'],
+    postType: 'Updates',
+    imageURL: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2021/03/Intel-Rocker-Lake-2-e1615908186584.jpg'
+  },
+  {
+    id: '3',
+    number: user['numReview'],
+    postType: 'Reviews',
+    imageURL: 'https://www.pcworld.com/wp-content/uploads/2022/02/pc-cases-cooling-versus.jpg?quality=50&strip=all'
+  }
+]
+
+useEffect(()=>{
+  checkRank(user['progressLevel'])
+}, [user])
+
+  const checkRank = (progressLevel) => {
+    if (progressLevel >= 0 && progressLevel <= 200){
+      setRank('Bronze')
+      setFill(progressLevel/200 * 100)
+      
+    }
+    else if (progressLevel >= 201 && progressLevel <= 400){
+      setRank('Silver')
+      setFill((progressLevel -200)/200 * 100)
+
+    }
+    else if (progressLevel >= 401 && progressLevel <= 800){
+      setRank('Gold')
+      setFill((progressLevel - 400)/400 * 100)
+
+    }
+    else if (progressLevel >= 801 && progressLevel <= 1200){
+      setRank('Platinum')
+      setFill((progressLevel - 800)/400 * 100)
+    }
+    else if (progressLevel >= 1201 && progressLevel <= 1600){
+      setRank('Diamond')
+      setFill((progressLevel - 1200)/400 * 100)
+    }
+    else if (progressLevel >= 1601 && progressLevel <= 2000){
+      setRank('Master')
+      setFill((progressLevel - 1600)/400 * 100)
+    }
+    else if (progressLevel >= 2001 && progressLevel <= 2400){
+      setRank('Grand Master')
+      setFill((progressLevel - 2000)/400 * 100)
+    }
+  }
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,7 +117,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   };
 
   const uploadImageAsync = async (uri) => {
-    const filename = 'profile/' + userObj.uid;
+    const filename = 'profile/' + UID;
     const storage = getStorage();
     const storageRef = ref(storage, filename)
     const response = await fetch(uri);
@@ -82,7 +130,7 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
   }
 
   const submitImage = async (url) => {
-    await updateDoc(doc(db, 'users', userObj.uid),{
+    await updateDoc(doc(db, 'users', UID),{
       profileImage: url
     })
     setUser({...user, profileImage: url})
@@ -110,12 +158,12 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
             <Text style={{ fontSize: 16, color: "white", marginLeft: 5 }}>
               Welcome Back!
             </Text>
-            <Text style={{ fontSize: 22, color: "white" }}> {user.fname} </Text>
+            <Text style={{ fontSize: 22, color: "white" }}> {user['fname']} </Text>
           </View>
           <View style={{overflow: 'hidden', width: 40, height: 40, borderRadius: 20, marginRight: 15}}>
             <TouchableOpacity onPress={pickImage}>
               <Image
-                source={{uri: user.profileImage}}
+                source={{uri: user['profileImage']}}
                 resizeMode="cover"
                 style={{
                   width: 40,
@@ -129,33 +177,26 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
 
       <View style={styles.headerContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          {/* <Image
-                source={require("../assets/rank-gold-img.png")}
-                resizeMode="cover"
-                style={{
-                  width: 150,
-                  height: 150,
-                }}
-          ></Image> */}
           <AnimatedCircularProgress
             size={150} 
             width={15}
-            fill={70}
+            fill={fill}
             tintColor="orange"
-            onAnimationComplete={() => console.log('onAnimationComplete')}
+            onAnimationComplete={() =>{
+
+            }}
             backgroundColor="#3d5875">
               {
                 (fill) => (
-                  // <Image
-                  //       source={require("../assets/Untitled.png")}
-                  //       resizeMode="cover"
-                  //       style={{
-                  //         height: 100, 
-                  //         width: 100}}
-                  // ></Image>
-                  <Text style={{color: 'white'}}>
-                    Rank: {user.rank}
-                  </Text>
+                  <View style={{alignItems:'center'}}>
+                    <Text style={{fontSize: 11, color: 'white'}}>
+                    Rank: {rank} 
+                    </Text>
+                    <Text style={{fontSize: 11, color: 'white'}}>
+                      EXP: {user['progressLevel']}
+                    </Text>
+                  </View>
+                  
                 )
               }
           </AnimatedCircularProgress>
@@ -163,14 +204,11 @@ export const DashboardHeader = ({ user, userObj, setUser }) => {
         <View style={{ 
           flex: 1, 
           margin: 10, 
-          // backgroundColor: 'white',
           padding: 5,
           justifyContent: 'center', alignItems: 'center'
           
           }}>
-          {/* <Text style={{fontSize: 80}}>22</Text>
-          <Text style={{fontSize: 20}}>Submissions</Text> */}
-          
+  
           <HorizontalCarousel w={200} h={200} data={DATA}></HorizontalCarousel>
 
         </View>

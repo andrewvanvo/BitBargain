@@ -279,7 +279,7 @@ class Product extends React.Component {
     writeReview = () => {
         // return <Review userID={this.props.userID} productID={this.item.product_id}></Review>
         // navigation.navigate('CurrentList', {storageKey: '@storage_Key1', userId: userID});
-        this.props.navigation.navigate('Review', {userID: this.props.userID, productID: this.item.product_id});
+        this.props.navigation.navigate('Review', {userID: this.props.userID, item: this.item});
     }
 
     removeFromCart = async () => {

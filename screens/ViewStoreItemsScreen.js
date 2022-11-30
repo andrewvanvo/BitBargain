@@ -16,6 +16,7 @@ class Product extends React.Component {
             style={[styles.productTile, {backgroundColor: 'white'}]}
             onPress={()=>{this.props.navigation.navigate('UpdatePrice', {
                 "store_id": this.item.store_id, 
+                "store_name": this.item.store_name,
                 "product_id": this.item.product_id,
                 "image_url": this.item.image_url,
                 "product_name": this.item.product_name,

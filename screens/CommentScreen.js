@@ -106,7 +106,7 @@ const CommentScreen = ({ route, navigation }) => {
                 }}
               >
                 <Image
-                  source={{ uri: user.profileImage }}
+                  source={{ uri: user['profileImage'] }}
                   resizeMode="cover"
                   style={{
                     width: 40,
