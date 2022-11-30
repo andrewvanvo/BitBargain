@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Image} from 'react-native';
 import Tags from "react-native-tags";
 import Checkbox from 'expo-checkbox';
@@ -7,9 +7,12 @@ import { collection } from "firebase/firestore";
 // import is tentative (I just used one of my existing firebase to play around with; 
 // import might change depending how the fb config is going be setup)
 import { app, auth, db } from '../firebase';
-import {  doc, addDoc, getDoc, updateDoc } from 'firebase/firestore';
+import {  doc, addDoc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from "firebase/storage";
+
+import { UserContext } from '../contexts/UserContext';
+import { Timestamp } from "firebase/firestore";
 
 const AddProductScreen = ( {route, navigation} ) => {
 
@@ -24,8 +27,18 @@ const AddProductScreen = ( {route, navigation} ) => {
     const [uploading, setUploading] = useState(false)
     const [isSelected, setSelection] = useState(false);
 
+
+    const {userProfile, setUserProfile, loading, setLoading, UID} = useContext(UserContext)
     const store_id = route.params.store_id;
     // const store_id = "AC6Y6Rb7dSrscb2FBhPO";
+
+
+    //Barcode Data (Andrew)
+    let barcodeData = null
+    if (route.params.barcodeData){
+        barcodeData = route.params.barcodeData
+        //console.log(`barcode: ${barcodeData}`)
+    } 
 
     useEffect(()=>{
         const fetchData = async () => {
@@ -39,7 +52,8 @@ const AddProductScreen = ( {route, navigation} ) => {
               }
         }
         fetchData().catch(console.error);
-    })
+
+    }, [])
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -95,7 +109,6 @@ const AddProductScreen = ( {route, navigation} ) => {
         try {
             const uploadUrl = await uploadImageAsync(image.uri);
             const productRef = collection(db, "products");
-            
             const data = {
                 image_url: uploadUrl,
                 categories: {
@@ -110,17 +123,45 @@ const AddProductScreen = ( {route, navigation} ) => {
                     prev_price: Product_price,
                     price: Product_price,
                     store_name: storeName,
-                }}
+                }},
+                //Barcode entry
+                SKU: barcodeData,
         }
             const res = await addDoc(productRef, data);
             await updateDoc(res, {product_id: res.id});
+            
+            await postData();
             // navigation.goBack();
+            navigation.navigate('Home');
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;
         }
     };
     
+    const postData = async () => {
+        const newCommentRef = doc(collection(db, 'system_activity'))
+        const postDescription = `${Store} - [${Brand}] ${Product_name} @ $${Product_price}`
+        await setDoc(newCommentRef, {
+          id: newCommentRef.id,
+          imageURL: userProfile['profileImage'],
+          postDescription: postDescription,
+          postCreated: Timestamp.now(),
+          postType: 'submission',
+          username: userProfile['fname'] + ' ' + userProfile['lname']
+        })
+        await updateProfile();
+      }
+
+    const updateProfile = async () => {
+        const newUserProfileRef = doc(db, 'users', UID)
+        await updateDoc(newUserProfileRef, {
+            numSubmission: increment(1),
+            progressLevel: increment(20),
+        })
+
+        setLoading(!loading)
+    }
 
     return (
         <View style={styles.mainContainer}>
