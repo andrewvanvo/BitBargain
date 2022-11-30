@@ -40,7 +40,7 @@ const UpdateItemPriceScreen = ({route, navigation}) => {
         );
 
         await postData();
-        navigation.goBack();
+        navigation.navigate('Home');
     }
 
     const postData = async () => {

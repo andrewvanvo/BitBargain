@@ -109,7 +109,6 @@ const AddProductScreen = ( {route, navigation} ) => {
         try {
             const uploadUrl = await uploadImageAsync(image.uri);
             const productRef = collection(db, "products");
-            
             const data = {
                 image_url: uploadUrl,
                 categories: {
@@ -130,9 +129,10 @@ const AddProductScreen = ( {route, navigation} ) => {
         }
             const res = await addDoc(productRef, data);
             await updateDoc(res, {product_id: res.id});
+            
             await postData();
             // navigation.goBack();
-            navigation.goBack();
+            navigation.navigate('Home');
         } catch (error) {
             console.log('Add product has an error!', error)
             return error.code;
