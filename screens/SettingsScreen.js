@@ -1,10 +1,12 @@
-import React from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Alert, Image } from 'react-native'
 import { Formik } from 'formik';
 
 import { auth, db } from '../firebase/';
 import { getAdditionalUserInfo, signOut } from 'firebase/auth';
-import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+
+import * as SecureStore from 'expo-secure-store';
 
 
 
@@ -13,13 +15,14 @@ const SettingsScreen = ({ navigation }) => {
     const handleSignOut = () => {
         signOut(auth)
         .then( () => {
+            SecureStore.deleteItemAsync('uid');
             navigation.navigate('Login');
         })
         .catch(error => {
             console.log(error);
         });
     }
-    
+
     return (
         <View style={styles.formikContainer}>
             <View style={styles.buttonContainer}>
