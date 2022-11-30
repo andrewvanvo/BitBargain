@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Text, Button, StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import { auth, db, } from "../firebase/";
